@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CrmForum</title>
+</head>
+<body>
+<table style="width:100%">
+  <tr>
+    <th>Category Name</th>
+    <th>Last Topic</th>
+  </tr>
+  <tr th:each="category : ${categories}">
+    <td th:text="${category.name}">CATEGORY_NAME</td>
+    <td th:text="${category.getLastTopic()}">CATEGORY_LAST_TOPIC</td>
+  </tr>
+</table>
+</body>
+</html>

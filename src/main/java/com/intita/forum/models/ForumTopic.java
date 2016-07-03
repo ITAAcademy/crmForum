@@ -32,6 +32,9 @@ import com.intita.forum.jsonview.Views;
  */
 @Entity(name="forum_topic")
 public class ForumTopic implements Serializable,Comparable<ForumTopic> {
+	@ManyToOne( fetch = FetchType.LAZY)
+	private ForumCategory parentCategory;
+	
 	@Id
 	@GeneratedValue
 	@JsonView(Views.Public.class)
@@ -142,5 +145,12 @@ public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	public ForumCategory getParentCategory() {
+		return parentCategory;
+	}
+
+	public void setParentCategory(ForumCategory parentCategory) {
+		this.parentCategory = parentCategory;
 	}
 }

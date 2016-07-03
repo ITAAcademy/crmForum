@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
@@ -16,9 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -39,6 +42,7 @@ import com.intita.forum.models.ForumUser;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.Lecture;
 import com.intita.forum.services.ConfigParamService;
+import com.intita.forum.services.ForumCategoryService;
 import com.intita.forum.services.ForumUsersService;
 import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.services.LectureService;
@@ -70,7 +74,7 @@ public class ForumController {
 	@Autowired private TopicMessageService userMessageService;
 	@Autowired private ForumUsersService forumUsersService;
 	@Autowired private LectureService lectureService;
-
+	@Autowired private ForumCategoryService forumCategoryService;
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -182,6 +186,33 @@ public class ForumController {
 		if(lg == null)
 			return "ua";
 		return lg;
+	}
+	@RequestMapping(value="/", method = RequestMethod.GET)
+	public ModelAndView  getIndex(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Principal principal) {
+		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
+		
+		//chatLangService.updateDataFromDatabase();
+		if(before != null)
+		{
+			 return new ModelAndView("redirect:"+ before);
+		}
+		//if(auth != null)
+			//addLocolization(model, forumUsersService.getForumUser(auth));
+		ModelAndView result = new ModelAndView("index");
+		result.addObject("username",forumUsersService.getForumUser(auth).getNickName());
+		return result;
+	}
+	//@author zinhcuk roman
+	@RequestMapping(value="/categories_list", method = RequestMethod.GET)
+	public ModelAndView getAllCategories(@RequestParam int page){
+		ModelAndView model = new ModelAndView("categories_list");
+		model.addObject("categories",forumCategoryService.getAllCategories(page));
+		return model;
+	}
+	@RequestMapping(value="/test",method = RequestMethod.GET)
+	@ResponseBody 
+	public String testMapping(){
+		return "test good";
 	}
 
 }
