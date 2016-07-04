@@ -9,4 +9,5 @@ import com.intita.forum.models.ForumUser;
 
 public interface ForumCategoryRepository  extends CrudRepository<ForumCategory, Long> {
 	Page<ForumCategory> findAll(Pageable pageable);
+	Page<ForumCategory> findByParentCategory(ForumCategory parentCategory, Pageable pageable);
 }

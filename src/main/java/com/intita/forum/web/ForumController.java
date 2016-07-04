@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +39,7 @@ import com.intita.forum.domain.SessionProfanity;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
 import com.intita.forum.jsonview.Views;
+import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumUser;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.Lecture;
@@ -199,7 +201,8 @@ public class ForumController {
 		//if(auth != null)
 			//addLocolization(model, forumUsersService.getForumUser(auth));
 		ModelAndView result = new ModelAndView("index");
-		result.addObject("username",forumUsersService.getForumUser(auth).getNickName());
+		ForumUser forumUser = forumUsersService.getForumUser(auth);
+		result.addObject("username",forumUser.getNickName());
 		return result;
 	}
 	//@author zinhcuk roman
@@ -213,6 +216,18 @@ public class ForumController {
 	@ResponseBody 
 	public String testMapping(){
 		return "test good";
+	}
+	
+	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page){
+		ModelAndView model = new ModelAndView("categories_list");
+		Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page);
+		model.addObject("categories",categories);
+		return model;
+	}
+	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId){
+		return viewCategoryById(categoryId);
 	}
 
 }

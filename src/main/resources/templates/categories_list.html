@@ -10,8 +10,8 @@
     <th>Last Post</th>
   </tr>
   <tr th:each="category : ${categories}">
-    <td th:text="${category.name}">CATEGORY_NAME</td>
-    <td th:text="${category.description}">CATEGORY_LAST_POST</td>
+    <td><a th:href="'view/category/'+${category.id}" th:text="${category.name}"></a></td>
+    <td><a th:text="${category.description}"></a></td>
   </tr>
 </table>
 </body>
