@@ -16,7 +16,7 @@ public class ForumCategoryService {
 	@Autowired
 	private ForumCategoryRepository forumCategoryRepository;
 	
-	@Value("${forum.categoriesCountForPage}")
+	@Value("${forum.categoriesOrTopicsCountPerPage}")
 	private int categoriesCountForPage;
 	
 	
@@ -24,7 +24,7 @@ public Page<ForumCategory> getAllCategories(int page){
 	return forumCategoryRepository.findAll(new PageRequest(page,categoriesCountForPage)); 
 }
 public Page<ForumCategory> getMainCategories(int page){
-	return forumCategoryRepository.findByParentCategory(null, new PageRequest(page,categoriesCountForPage));
+	return forumCategoryRepository.findByCategory(null, new PageRequest(page,categoriesCountForPage));
 }
 public ForumCategory getCategoryById(Long id){
 	return forumCategoryRepository.findOne(id);
@@ -36,7 +36,7 @@ public Page<ForumCategory> getSubCategories(Long id,int page){
 	switch(childrensType){
 	case ChildrenTopic: return null;
 	case ChildrenCategory:
-		return forumCategoryRepository.findByParentCategory(new ForumCategory(id),new PageRequest(page,categoriesCountForPage));
+		return forumCategoryRepository.findByCategory(new ForumCategory(id),new PageRequest(page,categoriesCountForPage));
 	default:
 		return null;
 	}

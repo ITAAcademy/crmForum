@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.intita.forum.services.IntitaUserService;
 
 /**
  * 
@@ -152,14 +153,6 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 	public boolean isEnabled() {
 		return true;
 	}
-	public static IntitaUser getCurrentIntitaUser() {
-		return (IntitaUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	}
-
-	public static Long getCurrentIntitaUserId() {
-		IntitaUser u = (IntitaUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		return u.getId();
-	}
 
 	public static boolean isAnonymous() {
 		// Method SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
@@ -253,6 +246,12 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 			return false;
 		return true;
 	}
+	
+	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+	private List<TopicMessage> topicMessages = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+	private List<ForumTopic> topics = new ArrayList<>();
 	
 
 }

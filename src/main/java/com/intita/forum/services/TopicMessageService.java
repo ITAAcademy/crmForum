@@ -15,7 +15,11 @@ import java.util.Set;
 
 import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +43,9 @@ public class TopicMessageService {
 	@Autowired
 	private IntitaUserService intitaUserService;
 
+	
+	@Value("${forum.messagesCountPerPage}")
+	private int messagesCountPerPage;
 
 	@Transactional(readOnly=true)
 	public ArrayList<TopicMessage> getMesagges(){
@@ -54,8 +61,8 @@ public class TopicMessageService {
 		return topicMessageRepository.findByAuthor(intitaUserService.getById(id));
 	}
 	@Transactional(readOnly=true)
-	public ArrayList<TopicMessage> getMessagesByTopic(ForumTopic topic) {
-		return topicMessageRepository.findByTopic(topic);
+	public Page<TopicMessage> getMessagesByTopic(ForumTopic topic, int page) {
+		return topicMessageRepository.findByTopic(topic, new PageRequest(page,messagesCountPerPage));
 	}
 	@Transactional(readOnly=true)
 	public TopicMessage getLastMessageByTopic(ForumTopic topic){
@@ -66,9 +73,9 @@ public class TopicMessageService {
 		return topicMessageRepository.findFirst20ByTopicOrderByIdDesc(topic);
 	}
 
-	public ArrayList<TopicMessage> getMessagesByTopicId(Long topicId) {
+	public Page<TopicMessage> getMessagesByTopicId(Long topicId,int page) {
 
-		return topicMessageRepository.findByTopic(new ForumTopic(topicId));
+		return topicMessageRepository.findByTopicId(topicId,new PageRequest(page,messagesCountPerPage));
 	}
 
 	@Transactional()

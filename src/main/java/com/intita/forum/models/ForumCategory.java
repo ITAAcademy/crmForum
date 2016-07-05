@@ -26,18 +26,18 @@ private String description;
 
 
 @ManyToOne( fetch = FetchType.LAZY)
-private ForumCategory parentCategory;
+private ForumCategory category;
 
-public ForumCategory getParentCategory() {
-	return parentCategory;
+public ForumCategory getCategory() {
+	return category;
 }
-public void setParentCategory(ForumCategory parentCategory) {
-	this.parentCategory = parentCategory;
+public void setCategory(ForumCategory category) {
+	this.category = category;
 }
-@OneToMany(mappedBy = "parentCategory", fetch = FetchType.LAZY)
+@OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
 private List<ForumCategory> categories;
 
-@OneToMany(mappedBy = "parentCategory", fetch = FetchType.LAZY)
+@OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
 private List<ForumTopic> topics;
 
 public CategoryChildrensType getCategoryChildrensType() {

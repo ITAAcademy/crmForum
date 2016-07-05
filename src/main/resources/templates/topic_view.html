@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CrmForum</title>
+	 <div th:include="includes">...</div>
+</head>
+<body>
+<h1 th:text="${topic.name}"></h1>
+<h2 th:text="${topic.author.email}"></h2>
+<table style="width:100%">
+  <tr>
+    <th>Message Author</th>
+    <th>Message Content</th>
+  </tr>
+  <tr th:each="message : ${messages}">
+    <td><span th:text="${message.author.email}"></span></td>
+    <td><span th:text="${message.body}"></span></td>
+  </tr>
+</table>
+<form th:action="@{/messages/add/__${topic.id}__}" method="POST">
+<input name="text" type="text" class="new_message_input">
+</input>
+</form>
+<div class="text-center">
+ <ul class="pagination" th:if="${pagesCount} > 1">
+		    <li th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+		      <a href="#" th:href="@{/view/topic/__${topicId}__/__${page}__}">
+		        <span th:text="${page}"></span>
+		      </a>
+		    </li>
+		</ul>
+</div>
+</body>
+</html>

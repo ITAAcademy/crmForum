@@ -150,7 +150,7 @@ public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 		return category;
 	}
 
-	public void setCategory(ForumCategory parentCategory) {
-		this.category = parentCategory;
+	public void setCategory(ForumCategory category) {
+		this.category = category;
 	}
 }

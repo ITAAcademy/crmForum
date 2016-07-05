@@ -13,7 +13,7 @@ import com.intita.forum.repositories.ForumTopicRepository;
 @Service
 public class ForumTopicService {
 	@Autowired ForumTopicRepository forumTopicRepository;
-	@Value("${forum.topicsCountForPage}")
+	@Value("${forum.categoriesOrTopicsCountPerPage}")
 	private int topicsCountForPage;
 	public Page<ForumTopic> getAllTopics(Long categoryId,int page){
 		return forumTopicRepository.findByCategoryId(categoryId,new PageRequest(page,topicsCountForPage)); 

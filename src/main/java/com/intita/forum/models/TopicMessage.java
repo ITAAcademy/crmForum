@@ -55,11 +55,11 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	@NotNull
 	@JsonManagedReference
 	@JsonView(Views.Public.class)
-	@NotFound(action=NotFoundAction.IGNORE)
+	//@NotFound(action=NotFoundAction.IGNORE)
 	private IntitaUser author;
 	
 	@ManyToOne(  fetch = FetchType.LAZY )
-	@NotFound(action=NotFoundAction.IGNORE)
+	//@NotFound(action=NotFoundAction.IGNORE)
 	private ForumTopic topic;
 	
 	@Size(max=64000)

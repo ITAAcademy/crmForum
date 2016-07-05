@@ -8,6 +8,6 @@ import com.intita.forum.models.ForumCategory;
 
 public interface ForumCategoryRepository  extends CrudRepository<ForumCategory, Long> {
 	Page<ForumCategory> findAll(Pageable pageable);
-	Page<ForumCategory> findByParentCategory(ForumCategory parentCategory, Pageable pageable);
+	Page<ForumCategory> findByCategory(ForumCategory category, Pageable pageable);
 	
 }

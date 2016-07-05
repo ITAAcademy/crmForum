@@ -16,10 +16,11 @@ import com.intita.forum.models.TopicMessage;
 
 @Qualifier("IntitaConf") 
 public interface TopicMessageRepository  extends CrudRepository<TopicMessage, Long>{
-	  Page<TopicMessage> findById(Long id, Pageable pageable);
-	  ArrayList<TopicMessage> findAll(Pageable pageable);
+	  TopicMessage findById(Long id);
+	  Page<TopicMessage> findAll(Pageable pageable);
 	  ArrayList<TopicMessage> findByAuthor(IntitaUser author);
-	  ArrayList<TopicMessage> findByTopic(ForumTopic topic);
+	  Page<TopicMessage> findByTopic(ForumTopic topic,Pageable page);
+	  Page<TopicMessage> findByTopicId(Long topicId,Pageable page);
 	  ArrayList<TopicMessage> findFirst20ByTopicOrderByIdDesc(ForumTopic topic);
 	  
 	  ArrayList<TopicMessage> findFirst10ByTopicAndDateAfter(ForumTopic topic, Date date);

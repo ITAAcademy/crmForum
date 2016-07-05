@@ -44,6 +44,7 @@ import com.intita.forum.models.ForumCategory.CategoryChildrensType;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.Lecture;
+import com.intita.forum.models.TopicMessage;
 import com.intita.forum.services.ConfigParamService;
 import com.intita.forum.services.ForumCategoryService;
 import com.intita.forum.services.ForumTopicService;
@@ -79,6 +80,7 @@ public class ForumController {
 	@Autowired private LectureService lectureService;
 	@Autowired private ForumCategoryService forumCategoryService;
 	@Autowired private ForumTopicService forumTopicService;
+	@Autowired private TopicMessageService topicMessageService;
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -161,12 +163,6 @@ public class ForumController {
 	 * Out from room
 	 */
 
-	@RequestMapping(value="/get_room_messages", method = RequestMethod.GET)
-	@ResponseBody
-	public String  getRoomMessages(@RequestParam Long roomId, Principal principal) throws JsonProcessingException {
-		mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
-		return mapper.writerWithView(Views.Public.class).writeValueAsString(userMessageService.getMessagesByTopicId(roomId));
-	}
 	
 	public int getCurrentLangInt()
 	{
@@ -228,7 +224,7 @@ public class ForumController {
 	
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page){
-		ModelAndView model = new ModelAndView("categories_list");
+		ModelAndView model = new ModelAndView();
 		
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		
@@ -241,11 +237,13 @@ public class ForumController {
 		Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
 		model.addObject("pagesCount",categories.getTotalPages());
 		model.addObject("categories",categories);
+		model.setViewName("categories_list");
 		}
 		else{
-			Page<ForumTopic> topics = forumTopicService.getAllTopics(categoryId, page);
+			Page<ForumTopic> topics = forumTopicService.getAllTopics(categoryId, page-1);
 			model.addObject("pagesCount",topics.getTotalPages());
 			model.addObject("topics",topics);
+			model.setViewName("topics_list");
 		}
 		
 		return model;
@@ -256,13 +254,27 @@ public class ForumController {
 	}
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page){
-		ModelAndView model = new ModelAndView("topics_list");
-		Page<ForumCategory> categories = forumTopicService.getAllTopics(categoryId, page)(topicId, page-1);
-		model.addObject("categories",categories);
-		model.addObject("pagesCount",categories.getTotalPages());
+		ModelAndView model = new ModelAndView("topic_view");
+		Page<TopicMessage> messages = topicMessageService.getMessagesByTopicId(topicId, page-1);
+		ForumTopic topic = forumTopicService.getTopic(topicId);
+		model.addObject("messages",messages);
+		model.addObject("pagesCount",messages.getTotalPages());
 		model.addObject("currentPage",page);
-		model.addObject("currentCategory",categoryId);
+		model.addObject("topic",topic); 
 		return model;
+	}
+	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
+	public ModelAndView viewTopicById(@PathVariable Long topicId){	
+		return viewTopicById(topicId,1);
+	}
+	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
+	public String addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request){
+		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
+		ForumTopic topic = forumTopicService.getTopic(topicId);
+		TopicMessage message = new TopicMessage(currentUser,topic,postText);
+		topicMessageService.addMessage(message);
+		 String referer = request.getHeader("Referer");
+		    return "redirect:"+ referer;
 	}
 
 }

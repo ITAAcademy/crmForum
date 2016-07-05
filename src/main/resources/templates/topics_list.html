@@ -7,12 +7,12 @@
 <body>
 <table style="width:100%">
   <tr>
-    <th>Category Name</th>
-    <th>Category Author</th>
+    <th>Topic Name</th>
+    <th>Topic Author</th>
   </tr>
   <tr th:each="topic : ${topics}">
     <td><a th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}"></a></td>
-    <td><a th:text="${topic.author}"></a></td>
+    <td><a th:text="${topic.author.email}"></a></td>
   </tr>
 </table>
 <div class="text-center">

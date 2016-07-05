@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,6 +128,19 @@ public class IntitaUserService {
 			return true;
 		return false;
 	}
+	public IntitaUser getCurrentIntitaUser() {
+		String idStr =  (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Long id = Long.parseLong(idStr);
+		IntitaUser user = usersRepo.findOne(id);
+		return user;
+	}
+
+	public static Long getCurrentIntitaUserId() {
+		String idStr = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Long id = Long.parseLong(idStr);
+		return id;
+	}
+	
 
 }
 
