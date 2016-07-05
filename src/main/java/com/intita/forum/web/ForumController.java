@@ -40,12 +40,13 @@ import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
 import com.intita.forum.jsonview.Views;
 import com.intita.forum.models.ForumCategory;
-import com.intita.forum.models.ForumUser;
+import com.intita.forum.models.ForumCategory.CategoryChildrensType;
+import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.Lecture;
 import com.intita.forum.services.ConfigParamService;
 import com.intita.forum.services.ForumCategoryService;
-import com.intita.forum.services.ForumUsersService;
+import com.intita.forum.services.ForumTopicService;
 import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.services.LectureService;
 import com.intita.forum.services.TopicMessageService;
@@ -74,9 +75,10 @@ public class ForumController {
 
 	@Autowired private IntitaUserService intitaUserService;
 	@Autowired private TopicMessageService userMessageService;
-	@Autowired private ForumUsersService forumUsersService;
+
 	@Autowired private LectureService lectureService;
 	@Autowired private ForumCategoryService forumCategoryService;
+	@Autowired private ForumTopicService forumTopicService;
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -111,8 +113,7 @@ public class ForumController {
 		Set<LoginEvent> userList = new HashSet<>();
 		for(IntitaUser user : pageUsers)
 		{
-			ForumUser forum_user = forumUsersService.getForumUserFromIntitaUser(user, true); 
-			userList.add(new LoginEvent(user.getId(),user.getUsername(), user.getAvatar(),participantRepository.isOnline(""+forum_user.getId())));
+			userList.add(new LoginEvent(user.getId(),user.getUsername(), user.getAvatar(),participantRepository.isOnline(""+user.getId())));
 		}
 		return  new ObjectMapper().writeValueAsString(userList);
 	}
@@ -201,15 +202,22 @@ public class ForumController {
 		//if(auth != null)
 			//addLocolization(model, forumUsersService.getForumUser(auth));
 		ModelAndView result = new ModelAndView("index");
-		ForumUser forumUser = forumUsersService.getForumUser(auth);
-		result.addObject("username",forumUser.getNickName());
+		IntitaUser intitaUser = intitaUserService.getIntitaUser(auth);
+		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
+		result.addObject("username",intitaUser.getNickName());
+		result.addObject("categories",categories);
+		result.addObject("pagesCount",categories.getTotalPages());
+		result.addObject("currentPage",1);
 		return result;
 	}
 	//@author zinhcuk roman
 	@RequestMapping(value="/categories_list", method = RequestMethod.GET)
 	public ModelAndView getAllCategories(@RequestParam int page){
 		ModelAndView model = new ModelAndView("categories_list");
-		model.addObject("categories",forumCategoryService.getAllCategories(page));
+		Page<ForumCategory> categoriesPage = forumCategoryService.getMainCategories(page-1);
+		model.addObject("categories",categoriesPage);
+		model.addObject("pagesCount",categoriesPage.getTotalPages());
+		model.addObject("currentPage",page);
 		return model;
 	}
 	@RequestMapping(value="/test",method = RequestMethod.GET)
@@ -221,13 +229,40 @@ public class ForumController {
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page){
 		ModelAndView model = new ModelAndView("categories_list");
-		Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page);
+		
+		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
+		
+	
+		model.addObject("currentPage",page);
+		model.addObject("currentCategory",categoryId);
+		model.addObject("isCategoriesContainer",category.isCategoriesContainer());
+		if (category.isCategoriesContainer())
+		{
+		Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
+		model.addObject("pagesCount",categories.getTotalPages());
 		model.addObject("categories",categories);
+		}
+		else{
+			Page<ForumTopic> topics = forumTopicService.getAllTopics(categoryId, page);
+			model.addObject("pagesCount",topics.getTotalPages());
+			model.addObject("topics",topics);
+		}
+		
 		return model;
 	}
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryById(@PathVariable Long categoryId){
-		return viewCategoryById(categoryId);
+		return viewCategoryById(categoryId,1);
+	}
+	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
+	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page){
+		ModelAndView model = new ModelAndView("topics_list");
+		Page<ForumCategory> categories = forumTopicService.getAllTopics(categoryId, page)(topicId, page-1);
+		model.addObject("categories",categories);
+		model.addObject("pagesCount",categories.getTotalPages());
+		model.addObject("currentPage",page);
+		model.addObject("currentCategory",categoryId);
+		return model;
 	}
 
 }

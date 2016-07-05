@@ -15,8 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.intita.forum.models.ForumUser;
-import com.intita.forum.models.ForumUser.Permissions;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.repositories.IntitaUserRepository;
 
@@ -24,9 +22,6 @@ import com.intita.forum.repositories.IntitaUserRepository;
 public class IntitaUserService {
 	@Autowired
 	private IntitaUserRepository usersRepo;
-	
-	@Autowired
-	private ForumUsersService forumUsersService;
 
 	@PostConstruct
 	@Transactional
@@ -43,16 +38,16 @@ public class IntitaUserService {
 	}
 	@Transactional
 	public IntitaUser getIntitaUser(Principal principal){
-		String forumUserIdStr = principal.getName();
-		Long forumUserId = 0L;
+		String intitaUserIdStr = principal.getName();
+		Long intitaUserId = 0L;
 				try{
-					forumUserId = Long.parseLong(forumUserIdStr);
+					intitaUserId = Long.parseLong(intitaUserIdStr);
 				}
 		catch(NumberFormatException e){
 		System.out.println(e);
 		return null;
 		}
-		IntitaUser user = forumUsersService.getIntitaUserFromForumUserId(forumUserId);
+		IntitaUser user = usersRepo.findOne(intitaUserId);
 		return user;
 	}
 
@@ -85,13 +80,6 @@ public class IntitaUserService {
 	@Transactional
 	public IntitaUser getUser(Long id){
 		return usersRepo.findOne(id);
-	}
-	@Transactional
-	public IntitaUser getIntitaUserFromForumUser(Long chatUserId){
-		ForumUser forumUser= forumUsersService.getChatUser(chatUserId);
-		if (forumUser==null) return null;
-		return forumUser.getIntitaUser();
-		
 	}
 
 	@Transactional

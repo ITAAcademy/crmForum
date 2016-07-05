@@ -29,8 +29,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intita.forum.models.ForumUser;
-import com.intita.forum.services.ForumUsersService;
+
 import com.intita.forum.services.RedisService;
 import com.intita.forum.util.SerializedPhpParser;
 import com.intita.forum.util.SerializedPhpParser.PhpObject;
@@ -44,8 +43,6 @@ import java.security.Principal;
 public class CustomAuthenticationProvider implements AuthenticationProvider{
 	@Autowired
 	RedisService redisService; 
-	@Autowired
-	ForumUsersService chatUserServise;
 
 	private	SerializedPhpParser serializedPhpParser;
 
@@ -66,15 +63,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				session.setMaxInactiveInterval(3600*12);
 				
 				String value = null;
-				String IntitaId = null;
 				String IntitaLg = "ua";
-				String ChatId = null;
+				String IntitaIdStr = null;
 				if(array != null)
 					for(Cookie cook : array)
 					{
 						if(cook.getName().equals("JSESSIONID"))
 						{
-							System.out.println("URAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 							System.out.println(cook.getValue());
 							value = cook.getValue();
 							session.setAttribute("id", value);
@@ -87,7 +82,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 								try {
 									System.out.println(phpSession);
 									serializedPhpParser = new SerializedPhpParser(phpSession);
-									IntitaId = (String)serializedPhpParser.findPatern(redisId);
+									IntitaIdStr = (String)serializedPhpParser.findPatern(redisId);
 									IntitaLg = (String)serializedPhpParser.find("lg");
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
@@ -99,32 +94,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 					}
 				Long intitaIdLong = null;
 				try{
-						intitaIdLong = Long.parseLong(IntitaId);
+						intitaIdLong = Long.parseLong(IntitaIdStr);
 				}
 				catch(NumberFormatException e){
 				log.info(e.getMessage());
 				}
-				if(intitaIdLong != null)
-					ChatId = chatUserServise.getForumUserFromIntitaId(intitaIdLong , true).getId().toString();
-				else
-				{
-					Object obj_s = session.getAttribute("chatId");
-					if(obj_s == null)
-					{
-						System.out.println("CREATE NEW SESSION");
-						ForumUser c_u_temp = chatUserServise.getForumUserFromIntitaId((long) -1, true);
-						ChatId = c_u_temp.getId().toString();
-						session.setAttribute("chatId", ChatId);
-					}
-					else
-					{
-						System.out.println("SESSION OK " + (String)obj_s);
-						ChatId = (String) obj_s;
-					}
+					Object obj_s = session.getAttribute("forumId");
 
-				}
 				session.setAttribute("chatLg", IntitaLg);
-				Authentication auth = new UsernamePasswordAuthenticationToken(ChatId, token.getCredentials(), authorities);
+				Authentication auth = new UsernamePasswordAuthenticationToken(intitaIdLong.toString(), token.getCredentials(), authorities);
 				//	auth.setAuthenticated(true);
 				return auth;
 	}

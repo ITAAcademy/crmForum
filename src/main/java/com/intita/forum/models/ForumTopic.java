@@ -33,7 +33,7 @@ import com.intita.forum.jsonview.Views;
 @Entity(name="forum_topic")
 public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 	@ManyToOne( fetch = FetchType.LAZY)
-	private ForumCategory parentCategory;
+	private ForumCategory category;
 	
 	@Id
 	@GeneratedValue
@@ -54,7 +54,7 @@ public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 	private short type;
 
 	@ManyToOne( fetch = FetchType.LAZY)
-	private ForumUser author;
+	private IntitaUser author;
 
 	@OneToMany(mappedBy = "topic", fetch = FetchType.LAZY)
 	private List<TopicMessage> topicMessages = new ArrayList<>();
@@ -71,12 +71,12 @@ public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 	{
 		setId(id);
 	}
-	public ForumUser getAuthor() {
+	public IntitaUser getAuthor() {
 		return author;
 	}
 
 
-	public void setAuthor(ForumUser autor) {
+	public void setAuthor(IntitaUser autor) {
 		this.author = autor;
 	}
 
@@ -146,11 +146,11 @@ public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 			return false;
 		return true;
 	}
-	public ForumCategory getParentCategory() {
-		return parentCategory;
+	public ForumCategory getCategory() {
+		return category;
 	}
 
-	public void setParentCategory(ForumCategory parentCategory) {
-		this.parentCategory = parentCategory;
+	public void setCategory(ForumCategory parentCategory) {
+		this.category = parentCategory;
 	}
 }

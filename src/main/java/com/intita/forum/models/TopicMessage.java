@@ -31,14 +31,14 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	public TopicMessage(){
 		this.date= new Date();
 	}
-	public TopicMessage(ForumUser author, ForumTopic topic, TopicMessage topicMessage){	
+	public TopicMessage(IntitaUser author, ForumTopic topic, TopicMessage topicMessage){	
 	this.author = author;
 	this.topic = topic;
 	this.body = topicMessage.getBody();
 	this.date= new Date();
 	this.attachedFiles = topicMessage.getAttachedFiles();
 	}
-	public TopicMessage(ForumUser author, ForumTopic topic, String body){	
+	public TopicMessage(IntitaUser author, ForumTopic topic, String body){	
 		this.author = author;
 		this.topic = topic;
 		this.body = body;
@@ -56,7 +56,7 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	@JsonManagedReference
 	@JsonView(Views.Public.class)
 	@NotFound(action=NotFoundAction.IGNORE)
-	private ForumUser author;
+	private IntitaUser author;
 	
 	@ManyToOne(  fetch = FetchType.LAZY )
 	@NotFound(action=NotFoundAction.IGNORE)
@@ -75,10 +75,10 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	@JsonView(Views.Public.class)
 	private Date date;
 
-	public ForumUser getAuthor() {
+	public IntitaUser getAuthor() {
 		return author;
 	}
-	public void setAuthor(ForumUser author) {
+	public void setAuthor(IntitaUser author) {
 		this.author = author;
 	}
 	public ForumTopic getTopic() {

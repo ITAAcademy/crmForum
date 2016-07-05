@@ -2,17 +2,27 @@
 <html>
 <head>
 	<title>CrmForum</title>
+	 <div th:include="includes">...</div>
 </head>
 <body>
 <table style="width:100%">
   <tr>
     <th>Category Name</th>
-    <th>Last Topic</th>
+    <th>Category Author</th>
   </tr>
-  <tr th:each="category : ${categories}">
-    <td th:text="${category.name}">CATEGORY_NAME</td>
-    <td th:text="${category.getLastTopic()}">CATEGORY_LAST_TOPIC</td>
+  <tr th:each="topic : ${topics}">
+    <td><a th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}"></a></td>
+    <td><a th:text="${topic.author}"></a></td>
   </tr>
 </table>
+<div class="text-center">
+ <ul class="pagination" th:if="${pagesCount} > 1">
+		    <li th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+		      <a href="#" th:href="@{/view/topic/__${categoryId}__/__${page}__}">
+		        <span th:text="${page}"></span>
+		      </a>
+		    </li>
+		</ul>
+</div>
 </body>
 </html>

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.intita.forum.models.ForumTopic;
-import com.intita.forum.models.ForumUser;
+import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.TopicMessage;
 import com.intita.forum.repositories.TopicMessageRepository;
 
@@ -33,11 +33,11 @@ public class TopicMessageService {
 	@Autowired
 	private TopicMessageRepository topicMessageRepository;
 
-	@Autowired 
-	private ForumUsersService forumUserService;
-
 	@Autowired
 	private ForumTopicService forumTopicService;
+	
+	@Autowired
+	private IntitaUserService intitaUserService;
 
 
 	@Transactional(readOnly=true)
@@ -51,7 +51,7 @@ public class TopicMessageService {
 	@Transactional(readOnly=true)
 	public ArrayList<TopicMessage> getMessagesByForumUserId(Long id) {
 
-		return topicMessageRepository.findByAuthor(forumUserService.getChatUser(id));
+		return topicMessageRepository.findByAuthor(intitaUserService.getById(id));
 	}
 	@Transactional(readOnly=true)
 	public ArrayList<TopicMessage> getMessagesByTopic(ForumTopic topic) {
@@ -72,7 +72,7 @@ public class TopicMessageService {
 	}
 
 	@Transactional()
-	public boolean addMessage(ForumUser user, ForumTopic topic,String body) {
+	public boolean addMessage(IntitaUser user, ForumTopic topic,String body) {
 		if(user == null || topic == null || body == null) return false;
 		//have premition?
 		TopicMessage topicMessage = new TopicMessage(user,topic,body);

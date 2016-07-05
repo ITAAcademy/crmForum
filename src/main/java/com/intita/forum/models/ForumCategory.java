@@ -43,6 +43,9 @@ private List<ForumTopic> topics;
 public CategoryChildrensType getCategoryChildrensType() {
 	return categoryChildrensType;
 }
+public boolean isCategoriesContainer(){
+	return categoryChildrensType == CategoryChildrensType.ChildrenCategory;
+}
 public void setCategoryChildrensType(CategoryChildrensType categoryChildrensType) {
 	this.categoryChildrensType = categoryChildrensType;
 }

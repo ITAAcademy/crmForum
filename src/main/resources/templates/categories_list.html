@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>CrmForum</title>
+	 <div th:include="includes">...</div>
 </head>
 <body>
 <table style="width:100%">
@@ -10,9 +11,23 @@
     <th>Last Post</th>
   </tr>
   <tr th:each="category : ${categories}">
-    <td><a th:href="'view/category/'+${category.id}" th:text="${category.name}"></a></td>
+    <td><a th:href="@{/view/category/__${category.id}__}" th:text="${category.name}"></a></td>
     <td><a th:text="${category.description}"></a></td>
   </tr>
 </table>
+<div class="text-center">
+ <ul class="pagination" th:if="${pagesCount} > 1">
+		    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+		      <a href="#" th:href="@{/view/category/__${currentCategory}__/__${page}__}">
+		        <span th:text="${page}"></span>
+		      </a>
+		    </li>
+		       <li th:if="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+		      <a href="#" th:href="@{/categories_list/?page=__${page}__}">
+		        <span th:text="${page}"></span>
+		      </a>
+		    </li>
+		</ul>
+</div>
 </body>
 </html>

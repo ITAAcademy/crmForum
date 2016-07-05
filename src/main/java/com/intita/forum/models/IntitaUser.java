@@ -46,10 +46,6 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 	@Column(unique = false,name="email")
 	private String login;
 
-	//@NotNull
-	@OneToOne(mappedBy = "intitaUser",fetch = FetchType.LAZY)
-	private ForumUser forumUser;
-
 	@NotBlank
 	@Size(min = 1, max = 100)
 	private String password;
@@ -227,13 +223,6 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 	}
 	public void setSecondName(String secondName) {
 		this.secondName = secondName;
-	}
-	public ForumUser getForumUser() {
-		return forumUser;
-	}
-
-	public void setForumUser(ForumUser forumUser) {
-		this.forumUser = forumUser;
 	}
 
 	@Override
