@@ -252,6 +252,21 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 	
 	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
 	private List<ForumTopic> topics = new ArrayList<>();
+
+
+
+	public List<TopicMessage> getTopicMessages() {
+		return topicMessages;
+	}
+	public void setTopicMessages(List<TopicMessage> topicMessages) {
+		this.topicMessages = topicMessages;
+	}
+	public List<ForumTopic> getTopics() {
+		return topics;
+	}
+	public void setTopics(List<ForumTopic> topics) {
+		this.topics = topics;
+	}
 	
 
 }
