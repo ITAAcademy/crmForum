@@ -41,19 +41,19 @@ public Lecture getLectureByTitleRU(String title){
 public Lecture getLectureByTitleEN(String title){	
 	return lecturesRepository.findOneByTitleEN(title);
 }
-
+@Transactional
 public List<Lecture> getFirstFiveLecturesByTitleUaLike(String title){
 	return lecturesRepository.findFirst5ByTitleUALike(title);
 }
-
+@Transactional
 public List<Lecture> getFirstFiveLecturesByTitleRuLike(String title){
 	return lecturesRepository.findFirst5ByTitleRULike(title);
 }
-
+@Transactional
 public List<Lecture> getFirstFiveLecturesByTitleEnLike(String title){
 	return lecturesRepository.findFirst5ByTitleENLike(title);
 }
-
+@Transactional
 public List<String> getFirstFiveLecturesTitlesByTitleUaLike(String title){
 List<Lecture> lectures = lecturesRepository.findFirst5ByTitleUALike(title + "%");
 	 List<String> titles = new ArrayList<>();
@@ -61,7 +61,7 @@ List<Lecture> lectures = lecturesRepository.findFirst5ByTitleUALike(title + "%")
 		 titles.add(lectures.get(i).gettitleUA());
 	 return titles;
 }
-
+@Transactional
 public List<String> getFirstFiveLecturesTitlesByTitleRuLike(String title){
 	List<Lecture> lectures = lecturesRepository.findFirst5ByTitleRULike(title+ "%");
 	 List<String> titles = new ArrayList<>();
@@ -69,7 +69,7 @@ public List<String> getFirstFiveLecturesTitlesByTitleRuLike(String title){
 		 titles.add(lectures.get(i).gettitleRU());
 	 return titles;
 }
-
+@Transactional
 public List<String> getFirstFiveLecturesTitlesByTitleEnLike(String title){
 	List<Lecture> lectures = lecturesRepository.findFirst5ByTitleENLike(title + "%" );
 	 List<String> titles = new ArrayList<>();

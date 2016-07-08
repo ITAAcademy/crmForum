@@ -24,6 +24,11 @@ private CategoryChildrensType categoryChildrensType;
 private String name;
 private String description;
 
+public ForumCategory(String name,String description){
+	this.name=name;
+	this.description=description;
+	this.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
+}
 
 @ManyToOne( fetch = FetchType.LAZY)
 private ForumCategory category;
