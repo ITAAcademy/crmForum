@@ -1,0 +1,404 @@
+.wraper {
+	width: auto;
+	/*border: 1px solid black;*/
+}
+
+.main-container {
+	/*background-color: #E6E6E6;	*/
+	/*min-height: 500px;*/
+	margin: 5px;
+}
+
+.top-logo-container {
+	width: 100%;
+	height: 100px;	
+}
+
+.top-logo {
+	    margin: 20px;
+}
+
+.menu-one {
+	height: 25px;
+	margin: 5px;
+}
+
+.menu-one-item {
+	float: right;
+    margin-right: 15px;
+    font-family: cursive;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.menu-one-item:hover {
+	cursor: pointer;
+}
+
+.hello-user-reg-login {
+	background-color: #F4E7EA;
+	height: 30px;
+	margin: 5px;
+	text-align: center;
+	padding-top: 3px;
+}
+
+.reg-login-a {
+	color: black;
+}
+
+.reg-login-a:hover {
+	cursor: pointer;
+}
+
+.navigate-menu {
+	/*background-color: #F0F5FA;*/
+	height: 30px;
+	margin: 5px;
+	padding: 0;
+
+    background-color: #4B75A4;
+}
+
+.topics {
+	margin: 5px;
+}
+
+.navigate-menu-ul {
+	list-style-type:none;
+    margin: 0; /* Обнуляем значение отступов */
+    position: relative;
+    padding: 0;
+    position: relative;
+    height: 100%;
+}
+
+.navigate-menu-ul > li {
+	display: inline-block; /* Отображать как строчный элемент */
+	padding: 3px; /* Поля вокруг текста */
+	font-weight: bold;
+	font-size: 13px;
+	color: white;
+	background-color: #4B75A4;
+	width: 80px;
+	padding-left: 10px;
+	height: 100%;
+    padding-top: 6px;
+    margin-right: -4px;
+}
+
+.navigate-menu-ul > li:hover {
+	background-color: #008AFF;
+}
+
+.navigate-menu-ul li:hover {
+	cursor: pointer;
+}
+
+.navigate-menu-ul li:hover > .navigate-menu-pop-up {
+	display: block;
+    left: -11px;
+}
+
+
+.navigate-menu-pop-up {
+	position: relative;
+	      margin-top: 3px;
+     left: -9999px; 
+    padding: 0;
+    width: 120px;
+
+    background-color: #4B75A4;
+    z-index: 100;
+}
+
+.navigate-menu-pop-up > li {
+    padding: 2px;
+    display: block;
+    color: white;
+    padding: 8px;
+    padding-left: 15px;
+}
+
+.navigate-menu-pop-up > li:hover {
+	background-color: #008AFF;
+}
+
+.topic-path {
+	width: auto;
+	background-color: #4597DE;
+	color: white;
+	height: 23px;
+}
+
+.topic-path-a {
+	color: white;
+}
+
+.topic-path-a:hover {
+	color: white;
+	cursor: pointer;
+}
+
+.topic-path-arrow {
+    font-size: 10px;
+    margin-right: 3px;
+    margin-left: 8px;
+}
+
+.topics-table {
+	width: auto;
+	/*background-color: #EFF6FF;*/
+	position: relative;
+	/*margin: 5px;*/
+	    display: table;
+    width: 100%;
+
+}
+
+.topics-table-row {
+	/*background-color: yellow;*/
+	width: auto;
+	min-height 20px;
+	position: relative;
+	display:table-row;
+}
+
+.topics-table-row:hover {
+	background-color: #EFF6FF;
+
+}
+
+.topics-table-row.first-row {
+	background-color:  #4597DE;/*  #97CBF4;*/
+	color: white;
+	    height: 40px;
+}
+
+.topics-table-cell {
+	width: auto;
+	/*border: 1px solid blue;*/
+	display: inline-block;
+	padding: 10px;
+	border: 2px solid #4597DE;
+	margin: 0;
+	margin-right: -5px;
+	/*align-items: stretch;*/
+	/*vertical-align: middle;*/
+display:table-cell;
+
+}
+
+.topics-table-cell .topic-path-a {
+	color: black;
+	text-decoration: underline;
+	    font-weight: bold;
+    font-size: 16px;
+}
+
+.topics-table-cell:nth-last-child() {
+	margin-right: 0;
+}
+
+.topics-table-row.first-row > .topics-table-cell {
+	border: none;
+	text-align: center;
+}
+/*
+.topics-table-cell.one {
+	width: 65%;
+}
+
+.topics-table-cell.four {
+	width: 35%;
+}*/
+
+.topics-table-cell  p {
+	margin: 0;
+}
+
+
+.footer {
+	height: 50px;
+	background-color: #4B75A4;
+	margin: 5px;
+    border-radius: 7px;
+    padding: 10px;
+    text-align: center;
+}
+
+.footer-button {
+	margin: 0 auto; 
+	    color: white;
+	    width: 130px;
+    padding: 5px;
+    font-size: 15px;
+    display: inline-block;
+}
+
+.footer-button  .icon {
+margin-left: 5px;
+    margin-right: 10px;
+}
+
+.footer-button a {
+	color: white;
+	text-decoration: underline;
+}
+
+.footer-button a:hover {
+	color: red;
+	cursor: pointer;
+}
+
+.post-body {
+	width: auto;
+	/*min-height: 100px;*/
+}
+
+
+.post-divider {
+	width: auto;
+	height: 15px;
+	margin-top: 2px;
+	background-color: #647EB7;
+}
+
+.post-body .topics-table {
+	   
+}
+
+.post-body  .topics-table-cell {
+	    border: 1px solid white;
+	     background-color: #F0F7FF;
+}
+
+.post-body  .topics-table-cell.four {
+	vertical-align: top;
+}
+
+.post-body  .topics-table-cell.one{
+    width: 30%;
+   
+}
+
+.post-body .first-row .topics-table-cell {
+	background-color: #C2DCF3;
+}
+
+.post-body .first-row .topics-table-cell.four {
+	text-align: left;
+}
+
+.post-body-user-nick {
+	font-weight: bold;
+	font-size: 13px;
+	color: black;
+	text-decoration: underline;	
+}
+
+.post-body-user-nick:hover {
+	color: #647EB7;
+	cursor: pointer;
+}
+
+.post-body-date {
+	color: black;
+	width: 50%;
+	display: inline-block;
+}
+
+.post-body-date .icon {
+
+}
+
+.post-body-msg-num {
+	float: right;
+	color: black;
+}
+
+.avatar {
+	text-align: center;
+}
+
+.avatar img {
+	width: 100px;
+	height: 100px;
+}
+
+.post-user-status {
+	font-size: 12px;
+	text-align: center;
+}
+
+.post-user-status.offline {
+	color: red;
+}
+
+.post-user-status.online {
+	color: blue;	
+}
+
+.post-body-msg-text {
+	color: black;
+	font-size: 14px;
+}
+
+
+.post-answer-button {
+    height: 30px;
+    padding: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: linear-gradient(to top, #8AC0F3, #EDF5FF);
+    color: black;
+}
+
+.post-answer-button:hover {
+	background: linear-gradient(to top, #4B75A4, #9FB7D3);
+}
+
+
+.post-msg-quote {
+	width: 97%;
+	    margin: 10px;
+	    position: relative;
+}
+
+.post-msg-quote .title {
+	color: black;
+	font-size: 14px;
+	background-color: #DDECFF;
+	padding: 10px;
+}
+
+.post-msg-quote .text {
+	    background-color: #FAFCFE;
+    color: black;
+    font-size: 14px;
+    padding: 5px;
+    padding-left: 15px;
+}
+
+
+.post-msg-quote  .left-rectangle {
+	float: left;
+    background-color: #8394B2;
+    position: absolute;
+    width: 5px;
+    top: 0;
+    bottom: 0;
+}
+
+
+.page-list {
+	text-align: center;
+	    margin: 0;
+    height: 30px;
+    padding: 0;
+    background-color: #F0F7FF;
+}
+
+.page-list ul {
+	margin-top: -2px;
+}
