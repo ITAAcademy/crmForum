@@ -1,6 +1,7 @@
 package com.intita.forum.models;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -86,6 +87,16 @@ public Long getId() {
 }
 public void setId(Long id) {
 	this.id = id;
+}
+public LinkedList<ForumCategory> getCategoriesTree(){
+	LinkedList<ForumCategory> tree = new LinkedList<ForumCategory>();
+	tree.addFirst(this);
+	ForumCategory parent = category;
+	while(parent!=null){
+		tree.addFirst(parent);
+		parent=parent.category;
+	}
+	return tree;
 }
 
 }

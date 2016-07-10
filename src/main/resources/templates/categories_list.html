@@ -5,6 +5,10 @@
 	 <div th:include="includes">...</div>
 </head>
 <body>
+<ul th:each="category : ${categoriesTree}">
+<li><a th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a></li>
+</ul>
+
 <table style="width:100%">
   <tr>
     <th>Category Name</th>
@@ -18,7 +22,7 @@
 <div class="text-center">
  <ul class="pagination" th:if="${pagesCount} > 1">
 		    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-		      <a href="#" th:href="@{/view/category/__${currentCategory}__/__${page}__}">
+		      <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
 		        <span th:text="${page}"></span>
 		      </a>
 		    </li>

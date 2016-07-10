@@ -230,7 +230,8 @@ public class ForumController {
 		
 	
 		model.addObject("currentPage",page);
-		model.addObject("currentCategory",categoryId);
+		model.addObject("currentCategory",category);
+		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
 		model.addObject("isCategoriesContainer",category.isCategoriesContainer());
 		if (category.isCategoriesContainer())
 		{

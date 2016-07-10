@@ -1,6 +1,8 @@
 package com.intita.forum.services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
 
@@ -30,19 +32,19 @@ public class ForumCategoryService {
 	@Value("${forum.categoriesOrTopicsCountPerPage}")
 	private int categoriesCountForPage;
 	
-@Transactional	
+
 public Page<ForumCategory> getAllCategories(int page){
 	return forumCategoryRepository.findAll(new PageRequest(page,categoriesCountForPage)); 
 }
-@Transactional
+
 public Page<ForumCategory> getMainCategories(int page){
 	return forumCategoryRepository.findByCategory(null, new PageRequest(page,categoriesCountForPage));
 }
-@Transactional
+
 public ForumCategory getCategoryById(Long id){
 	return forumCategoryRepository.findOne(id);
 }
-@Transactional
+
 public Page<ForumCategory> getSubCategories(Long id,int page){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
 	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
@@ -109,6 +111,22 @@ public void initEducationCategory(){
 	}
 	
 	
+}
+
+public LinkedList<ForumCategory> getCategoriesTree(ForumCategory lastCategory){
+	LinkedList<ForumCategory> tree = new LinkedList<ForumCategory>();
+	ForumCategory parent = lastCategory;
+	HashSet<Long> ids = new HashSet<Long>();
+	while(parent!=null){
+		tree.addFirst(parent);
+		//exit if category met before to prevent infinite cycle
+		if (ids.contains(parent.getId()))break;
+		ids.add(parent.getId());
+		ForumCategory parentCategoryTemp = parent.getCategory();
+		if (parentCategoryTemp==null) break; 
+		parent=forumCategoryRepository.findOne(parentCategoryTemp.getId());
+	}
+	return tree;
 }
 
 }
