@@ -4,40 +4,37 @@ package com.intita.forum.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Index;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.intita.forum.services.IntitaUserService;
 
 /**
  * 
- * @author Nicolas Haiduchok
+ * @author Nicolas Haiduchok, Zinchuk Roman
  */
 @Entity(name="user")
 public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUser>{
 	private static final long serialVersionUID = -532710433531902917L;
-
+	
+	@Transient
+	@Autowired
+	IntitaUserService intitaUserService;
 	@Id
 	@GeneratedValue
 	private Long id;
@@ -114,17 +111,8 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		//return AuthorityUtils.createAuthorityList("USER");
-		/*switch(permission){
-		case PERMISSIONS_ADMIN:
-			return AuthorityUtils.createAuthorityList("ADMIN");
-		case PERMISSIONS_USER:
-			return AuthorityUtils.createAuthorityList("USER");
-		default:
-			return AuthorityUtils.createAuthorityList("HACKER");
-
-		}*/
-		return AuthorityUtils.createAuthorityList("ADMIN");
+		ArrayList<String> authoritis = intitaUserService.getRoles(id);
+		return AuthorityUtils.createAuthorityList(authoritis.toArray(new String[authoritis.size()]));
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;

@@ -117,17 +117,61 @@ public class IntitaUserService {
 		return usersRepo.findFisrtById(id);
 	}
 	@Transactional
-	public boolean isAdmin(String id){
+	public boolean isAdmin(Long id){
 		if(usersRepo.findInAdminTable(id) != null)
 			return true;
 		return false;
 	}
 	@Transactional
-	public boolean isTenant(String id){
+	public boolean isTenant(Long id){
 		if(usersRepo.findInTenantTable(id) != null)
 			return true;
 		return false;
 	}
+	@Transactional
+	public ArrayList<String> getRoles(Long id){
+		ArrayList<String> roles = new ArrayList<String>();
+		roles.add("user");
+		if(usersRepo.findInAdminTable(id) != null)
+			roles.add("admin");
+		if(usersRepo.findInTenantTable(id) != null)
+		roles.add("tenant");
+		if(usersRepo.findInContentManagerTable(id) != null)
+			roles.add("contentmanager");
+		if(usersRepo.findInTeachersTable(id) != null)
+			roles.add("teacher");
+		if(usersRepo.findInAccountantTable(id) != null)
+			roles.add("accountant");
+		if(usersRepo.findInStudentTable(id) != null)
+			roles.add("student");
+		return roles;
+	}
+	
+	@Transactional
+	public boolean isContentManager(Long id){
+		if(usersRepo.findInContentManagerTable(id) != null)
+			return true;
+		return false;
+	}
+	@Transactional
+	public boolean isTeacher(Long id){
+		if(usersRepo.findInTeachersTable(id) != null)
+			return true;
+		return false;
+	}
+	@Transactional
+	public boolean isAccounant(Long id){
+		if(usersRepo.findInAccountantTable(id) != null)
+			return true;
+		return false;
+	}
+	@Transactional
+	public boolean isStudent(Long id){
+		if(usersRepo.findInStudentTable(id) != null)
+			return true;
+		return false;
+	}
+	
 	public IntitaUser getCurrentIntitaUser() {
 		String idStr =  (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Long id = Long.parseLong(idStr);

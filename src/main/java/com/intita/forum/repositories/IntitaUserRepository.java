@@ -25,9 +25,23 @@ public interface IntitaUserRepository extends CrudRepository<IntitaUser, Long> {
   List<IntitaUser> findFirst5ByLoginLike(String login);
   //
   @Query(value = "SELECT * FROM user_admin WHERE id_user = ?1 AND ((start_date <= NOW() AND end_date >= NOW()) OR end_date IS NULL) LIMIT 1", nativeQuery = true)
-  Object findInAdminTable(String userId);
+  Object findInAdminTable(Long userId);
   
   @Query(value = "SELECT * FROM user_tenant WHERE chat_user_id = ?1 AND ((start_date <= NOW() AND end_date >= NOW()) OR end_date IS NULL) LIMIT 1", nativeQuery = true)
-  Object findInTenantTable(String userId);
+  Object findInTenantTable(Long userId);
+  
+  @Query(value = "SELECT * FROM user_accountant WHERE id_user = ?1 AND ((start_date <= NOW() AND end_date >= NOW()) OR end_date IS NULL) LIMIT 1", nativeQuery = true)
+  Object findInAccountantTable(Long userId);
  
+  @Query(value = "SELECT * FROM user_consultant WHERE id_user = ?1 AND ((start_date <= NOW() AND end_date >= NOW()) OR end_date IS NULL) LIMIT 1", nativeQuery = true)
+  Object findInConsultantTable(Long userId);
+  
+  @Query(value = "SELECT * FROM teacher WHERE user_id = ?1 LIMIT 1", nativeQuery = true)
+  Object findInTeachersTable(Long userId);
+  
+  @Query(value = "SELECT * FROM user_content_manager WHERE user_id = ?1 LIMIT 1", nativeQuery = true)
+  Object findInContentManagerTable(Long userId);
+  
+  @Query(value = "SELECT * FROM user_student WHERE user_id = ?1 LIMIT 1", nativeQuery = true)
+  Object findInStudentTable(Long userId);
 }

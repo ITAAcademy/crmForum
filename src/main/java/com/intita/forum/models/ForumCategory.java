@@ -88,15 +88,6 @@ public Long getId() {
 public void setId(Long id) {
 	this.id = id;
 }
-public LinkedList<ForumCategory> getCategoriesTree(){
-	LinkedList<ForumCategory> tree = new LinkedList<ForumCategory>();
-	tree.addFirst(this);
-	ForumCategory parent = category;
-	while(parent!=null){
-		tree.addFirst(parent);
-		parent=parent.category;
-	}
-	return tree;
-}
+
 
 }

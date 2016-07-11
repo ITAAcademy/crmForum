@@ -1,5 +1,6 @@
 package com.intita.forum.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -201,7 +202,6 @@ public class Course {
 	public void setCourseNumber(Integer courseNumber) {
 		this.courseNumber = courseNumber;
 	}
-	
 	
 	
 }
