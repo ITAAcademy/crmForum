@@ -235,10 +235,10 @@ public class ForumController {
 		model.addObject("isCategoriesContainer",category.isCategoriesContainer());
 		if (category.isCategoriesContainer())
 		{
-		Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
-		model.addObject("pagesCount",categories.getTotalPages());
-		model.addObject("categories",categories);
-		model.setViewName("categories_list");
+			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
+			model.addObject("pagesCount",categories.getTotalPages());
+			model.addObject("categories",categories);
+			model.setViewName("categories_list");
 		}
 		else{
 			Page<ForumTopic> topics = forumTopicService.getAllTopics(categoryId, page-1);
@@ -249,10 +249,12 @@ public class ForumController {
 		
 		return model;
 	}
+	
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryById(@PathVariable Long categoryId){
 		return viewCategoryById(categoryId,1);
 	}
+	
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page){
 		ModelAndView model = new ModelAndView("topic_view");
@@ -264,10 +266,12 @@ public class ForumController {
 		model.addObject("topic",topic); 
 		return model;
 	}
+	
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
 	public ModelAndView viewTopicById(@PathVariable Long topicId){	
 		return viewTopicById(topicId,1);
 	}
+	
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
 	public String addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request){
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();

@@ -2,36 +2,106 @@
 <html>
 <head>
 	<title>CrmForum</title>
+	
 	 <div th:include="includes">...</div>
 </head>
-<body>
 <ul th:each="category : ${categoriesTree}">
 <li><a th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a></li>
 </ul>
 
-<table style="width:100%">
-  <tr>
-    <th>Category Name</th>
-    <th>Last Post</th>
-  </tr>
-  <tr th:each="category : ${categories}">
-    <td><a th:href="@{/view/category/__${category.id}__}" th:text="${category.name}"></a></td>
-    <td><a th:text="${category.description}"></a></td>
-  </tr>
-</table>
-<div class="text-center">
- <ul class="pagination" th:if="${pagesCount} > 1">
-		    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-		      <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
-		        <span th:text="${page}"></span>
-		      </a>
-		    </li>
-		       <li th:if="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-		      <a href="#" th:href="@{/categories_list/?page=__${page}__}">
-		        <span th:text="${page}"></span>
-		      </a>
-		    </li>
-		</ul>
-</div>
-</body>
+	<body>
+		<div id="forumcontainer" class="container"  >
+			<div class="wraper navigate-menu">
+		 		<ul class="navigate-menu-ul">
+		 			<li> Menu 1 	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 2 	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 3	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 4	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+		 		</ul>
+		 	</div>
+
+		 	<div class="wraper topics">
+		 		<div class="topic-path">
+		 			<div class="glyphicon glyphicon-play topic-path-arrow"></div>
+					<a class="topic-path-a"> Курс Java  </a> - 
+					<a class="topic-path-a"> Ознайомлення </a> - 
+					<a class="topic-path-a"> Що таке мова програмування </a> 
+		 		</div>
+			     		
+				<div class="topics-table">
+				 	<div class="topics-table-row first-row">
+					  	<div class="topics-table-cell one"> Розділи </div>
+					  	<div class="topics-table-cell four"> Останній пост </div>
+				  	</div>
+
+				  	<div class="topics-table-row" th:each="category : ${categories}">
+					  	<div class="topics-table-cell one"> 
+					  		<p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
+					  		 Назва розділу
+					  		 </a></p>
+					  		<p th:text="${category.description}"> 
+					  		</p>
+					  	 </div>
+					  	<div class="topics-table-cell four"> 
+							<p> Вчора, 21:44 </p>
+							<p> <b>Тема: </b> якась назва теми </p>
+							<p> <b>Автор: </b> ім'я даного user </p>
+					  	</div>
+				  	</div>
+			  	</div>
+		  	</div>
+
+			<div class="  page-list">
+				 <ul class="pagination">
+				    <li>
+				      <a href="#" aria-label="Previous">
+				        <span aria-hidden="true">&laquo;</span>
+				      </a>
+				    </li>
+				    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+				      <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
+				        <span th:text="${page}"></span>
+				      </a>
+				    </li>
+				       <li th:if="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+				      <a href="#" th:href="@{/categories_list/?page=__${page}__}">
+				        <span th:text="${page}"></span>
+				      </a>
+				    </li>
+				    <li>
+				      <a href="#" aria-label="Next">
+				        <span aria-hidden="true">&raquo;</span>
+				      </a>
+				    </li>
+				  </ul>
+			</div>
+		</div>
+	</body>
 </html>
