@@ -72,7 +72,7 @@ public class TopicMessageService {
 	public ArrayList<TopicMessage> getFirst20TipicMessagesByTopic(ForumTopic topic) {
 		return topicMessageRepository.findFirst20ByTopicOrderByIdDesc(topic);
 	}
-
+	@Transactional
 	public Page<TopicMessage> getMessagesByTopicId(Long topicId,int page) {
 
 		return topicMessageRepository.findByTopicId(topicId,new PageRequest(page,messagesCountPerPage));
