@@ -48,7 +48,7 @@
 		 		<div class="topic-path" >
 		 		<th:block th:each="category,itrStat : ${categoriesTree}">
 		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
-					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/topic/__${category.id}__}" ></a>
+					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
 		 		</th:block>
 		 		</div>
 			     		
