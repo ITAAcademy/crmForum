@@ -19,6 +19,7 @@ public class ParseUtility {
 		}  
 		return true;  
 	}
+	
 	@SuppressWarnings("deprecation")
 	public boolean isValidJSON(final String json) {
 		boolean valid = false;
