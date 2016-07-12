@@ -73,6 +73,10 @@
 					  	</div>
 				  	</div>
 			  	</div>
+			<form method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
+				<input type="text" name="topic_name"/>
+				<input type="submit" value="Додати"/>
+			</form>
 		  	</div>
 
 			<div class="  page-list">
@@ -83,7 +87,7 @@
 				      </a>
 				    </li>
 				    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-				      <a href="#" th:href="@{/view/topic/__${currentCategory.id}__/__${page}__}">
+				      <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
 				        <span th:text="${page}"></span>
 				      </a>
 				    </li>

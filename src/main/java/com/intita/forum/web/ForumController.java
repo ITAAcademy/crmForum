@@ -236,13 +236,17 @@ public class ForumController {
 		if (category.isCategoriesContainer())
 		{
 			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
-			model.addObject("pagesCount",categories.getTotalPages());
+			int pagesCount = categories.getTotalPages();
+			if(pagesCount<1)pagesCount=1;
+			model.addObject("pagesCount",pagesCount);
 			model.addObject("categories",categories);
 			model.setViewName("categories_list");
 		}
 		else{
 			Page<ForumTopic> topics = forumTopicService.getAllTopics(categoryId, page-1);
-			model.addObject("pagesCount",topics.getTotalPages());
+			int pagesCount = topics.getTotalPages();
+			if(pagesCount<1)pagesCount=1;
+			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
 			model.setViewName("topics_list");
 		}
@@ -280,6 +284,17 @@ public class ForumController {
 		topicMessageService.addMessage(message);
 		 String referer = request.getHeader("Referer");
 		    return "redirect:"+ referer;
+	}
+	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
+	public String addTopic(@RequestParam("topic_name") String topicName,@PathVariable Long categoryId,Principal principal,HttpServletRequest request){
+		 String referer = request.getHeader("Referer");
+		IntitaUser author  = intitaUserService.getIntitaUser(principal);
+		if (author == null) return "redirect:"+referer;
+		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
+		if (author == null) return "redirect:"+referer;
+		ForumTopic topic = forumTopicService.addTopic(topicName,category,author);
+		if (topic == null) return "redirect:"+referer;
+		return "redirect:"+"/view/topic/"+topic.getId();
 	}
 
 }
