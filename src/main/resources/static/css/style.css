@@ -130,9 +130,20 @@
 	color: white;
 	height: 23px;
 }
+.topic-path-a:after
+{
+  content: '-';
+}
+.topic-path-a:last-child:after
+{
+  content: '';
+}
+
+
 
 .topic-path-a {
 	color: white;
+	display:inline-block;
 }
 
 .topic-path-a:hover {

@@ -5,9 +5,6 @@
 	
 	 <div th:include="includes">...</div>
 </head>
-<ul th:each="category : ${categoriesTree}">
-<li><a th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a></li>
-</ul>
 
 	<body>
 		<div id="forumcontainer" class="container"  >
@@ -48,11 +45,11 @@
 		 	</div>
 
 		 	<div class="wraper topics">
-		 		<div class="topic-path">
-		 			<div class="glyphicon glyphicon-play topic-path-arrow"></div>
-					<a class="topic-path-a"> Курс Java  </a> - 
-					<a class="topic-path-a"> Ознайомлення </a> - 
-					<a class="topic-path-a"> Що таке мова програмування </a> 
+		 		<div class="topic-path" >
+		 		<th:block th:each="category,itrStat : ${categoriesTree}">
+		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
+					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
+		 		</th:block>
 		 		</div>
 			     		
 				<div class="topics-table">
@@ -64,7 +61,7 @@
 				  	<div class="topics-table-row" th:each="category : ${categories}">
 					  	<div class="topics-table-cell one"> 
 					  		<p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
-					  		 Назва розділу
+					  		 Назва розділуa
 					  		 </a></p>
 					  		<p th:text="${category.description}"> 
 					  		</p>
@@ -82,7 +79,7 @@
 				 <ul class="pagination">
 				    <li>
 				      <a href="#" aria-label="Previous">
-				        <span aria-hidden="true">&laquo;</span>
+				        <span aria-hidden="true">«</span>
 				      </a>
 				    </li>
 				    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
@@ -97,7 +94,7 @@
 				    </li>
 				    <li>
 				      <a href="#" aria-label="Next">
-				        <span aria-hidden="true">&raquo;</span>
+				        <span aria-hidden="true">»</span>
 				      </a>
 				    </li>
 				  </ul>
