@@ -30,6 +30,13 @@ public ForumCategory(String name,String description){
 	this.description=description;
 	this.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
 }
+public ForumCategory(String name,String description,boolean containSubCategories){
+	this.name=name;
+	this.description=description;
+	if (containSubCategories)
+	this.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
+	else this.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
+}
 
 @ManyToOne( fetch = FetchType.LAZY)
 private ForumCategory category;

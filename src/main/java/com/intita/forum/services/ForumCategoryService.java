@@ -68,9 +68,9 @@ public void initCategoriesByRoles(){
 	ForumCategory roleCategory = new ForumCategory("Розділ по ролях","для адміністраторів, бухгалтерів, вчителів");
 	roleCategory = forumCategoryRepository.save(roleCategory);
 	
-	ForumCategory adminCategory = new ForumCategory("Адміністратори","Для адмінчиків");
-	ForumCategory accountantCategory = new ForumCategory("Бухгалтери","Для бухгалтерів");
-	ForumCategory teacgersCategory = new ForumCategory("Вчителі","Для вчителів");
+	ForumCategory adminCategory = new ForumCategory("Адміністратори","Для адмінчиків",false);
+	ForumCategory accountantCategory = new ForumCategory("Бухгалтери","Для бухгалтерів",false);
+	ForumCategory teacgersCategory = new ForumCategory("Вчителі","Для вчителів",false);
 	adminCategory.setCategory(roleCategory);
 	accountantCategory.setCategory(roleCategory);
 	teacgersCategory.setCategory(roleCategory);
@@ -98,7 +98,7 @@ public void initEducationCategory(){
 		category = forumCategoryRepository.save(category);
 		
 		ArrayList<Module> modules = moduleService.getAllFromCourse(course);
-		ForumCategory moduleCategory = new ForumCategory("Модулі","Обговорення модулів");
+		ForumCategory moduleCategory = new ForumCategory("Модулі","Обговорення модулів",false);
 		moduleCategory.setCategory(category);
 		moduleCategory = forumCategoryRepository.save(moduleCategory);
 		

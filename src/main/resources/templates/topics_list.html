@@ -2,27 +2,98 @@
 <html>
 <head>
 	<title>CrmForum</title>
+	
 	 <div th:include="includes">...</div>
 </head>
-<body>
-<table style="width:100%">
-  <tr>
-    <th>Topic Name</th>
-    <th>Topic Author</th>
-  </tr>
-  <tr th:each="topic : ${topics}">
-    <td><a th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}"></a></td>
-    <td><a th:text="${topic.author.email}"></a></td>
-  </tr>
-</table>
-<div class="text-center">
- <ul class="pagination" th:if="${pagesCount} > 1">
-		    <li th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-		      <a href="#" th:href="@{/view/topic/__${categoryId}__/__${page}__}">
-		        <span th:text="${page}"></span>
-		      </a>
-		    </li>
-		</ul>
-</div>
-</body>
+
+	<body>
+		<div id="forumcontainer" class="container"  >
+			<div class="wraper navigate-menu">
+		 		<ul class="navigate-menu-ul">
+		 			<li> Menu 1 	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 2 	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 3	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 4	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+		 		</ul>
+		 	</div>
+
+		 	<div class="wraper topics">
+		 		<div class="topic-path" >
+		 		<th:block th:each="category,itrStat : ${categoriesTree}">
+		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
+					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/topic/__${category.id}__}" ></a>
+		 		</th:block>
+		 		</div>
+			     		
+				<div class="topics-table">
+				 	<div class="topics-table-row first-row">
+					  	<div class="topics-table-cell one"> Топіки </div>
+					  	<div class="topics-table-cell four"> Останній пост </div>
+				  	</div>
+
+				  	<div class="topics-table-row" th:each="topic : ${topics}">
+					  	<div class="topics-table-cell one"> 
+					  		<p><a class="topic-path-a" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
+					  		 Назва розділу
+					  		 </a></p>
+					  		<p th:text="${topic.author.email}"> 
+					  		</p>
+					  	 </div>
+					  	<div class="topics-table-cell four"> 
+							<p> Вчора, 21:44 </p>
+							<p> <b>Тема: </b> якась назва теми </p>
+							<p> <b>Автор: </b> ім'я даного user </p>
+					  	</div>
+				  	</div>
+			  	</div>
+		  	</div>
+
+			<div class="  page-list">
+				 <ul class="pagination">
+				    <li>
+				      <a href="#" aria-label="Previous">
+				        <span aria-hidden="true">«</span>
+				      </a>
+				    </li>
+				    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+				      <a href="#" th:href="@{/view/topic/__${currentCategory.id}__/__${page}__}">
+				        <span th:text="${page}"></span>
+				      </a>
+				    </li>
+				    <li>
+				      <a href="#" aria-label="Next">
+				        <span aria-hidden="true">»</span>
+				      </a>
+				    </li>
+				  </ul>
+			</div>
+		</div>
+	</body>
 </html>
