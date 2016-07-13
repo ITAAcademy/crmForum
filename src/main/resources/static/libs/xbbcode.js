@@ -344,8 +344,8 @@ var XBBCODE = (function() {
             openTag: function(params,content) {
 
                 var mySize = parseInt(params.substr(1),10) || 0;
-                if (mySize < 4 || mySize > 40) {
-                    mySize = 14;
+                if (mySize < 100 || mySize > 300) {
+                    mySize = 100;
                 }
 
                 return '<span class="xbbcode-size-' + mySize + '">';
