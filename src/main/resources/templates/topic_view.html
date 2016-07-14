@@ -2,41 +2,108 @@
 <html>
 <head>
 	<title>CrmForum</title>
-	<div th:include="includes">...</div>
-	<script th:src="@{/libs/xbbcode.js}"></script>
+	
+	 <div th:include="includes">...</div>
+	 <script th:src="@{/libs/xbbcode.js}"></script>
 	<script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
 	<link type="text/css" th:href="@{/libs/css/xbbcode.css}" rel="stylesheet" />	
 	<script th:src="@{/js/topic.js}"></script>
-
 </head>
-<body>
-<h1 th:text="${topic.name}"></h1>
-<h2 th:text="${topic.author.email}"></h2>
-<table style="width:100%">
-  <tr>
-    <th>Message Author</th>
-    <th>Message Content</th>
-  </tr>
-  <tr th:each="message : ${messages}">
-    <td><span th:text="${message.author.email}"></span></td>
-    <td><span class="topic_message_text" th:text="${message.body}"></span></td>
-  </tr>
-</table>
-<form th:action="@{/messages/add/__${topic.id}__}" method="POST">
+
+	<body>
+		<div id="forumcontainer" class="container"  >
+			<div class="wraper navigate-menu">
+		 		<ul class="navigate-menu-ul">
+		 			<li> Menu 1 	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 2 	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 3	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+
+		 			<li> Menu 4	
+		 				<ul class="navigate-menu-pop-up">
+		 					<li> SubMenu 2</li>
+			     			<li> SubMenu 3</li>
+			     			<li> SubMenu 4</li>
+		 				</ul> 	
+		 			</li>
+		 		</ul>
+		 	</div>
+
+		 	<div class="wraper topics">
+		 		<div class="topic-path" >
+		 		<th:block th:each="category,itrStat : ${categoriesTree}">
+		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
+					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
+		 		</th:block>
+		 		</div>
+			     		
+				<div class="topics-table">
+					<!-- Topic info -->
+				<h1 th:text="${topic.name}"></h1>
+				<h2 th:text="${topic.author.email}"></h2>
+				<!-- /Topic info -->
+				 	<div class="topics-table-row first-row">
+					  	<div class="topics-table-cell one"> Автор </div>
+					  	<div class="topics-table-cell four"> Пост </div>
+				  	</div>
+
+				  	<div class="topics-table-row" th:each="message : ${messages}">
+					  	<div class="topics-table-cell one"> 
+					  		<p class="topic-path-a" th:text="${message.author.email}">
+					  		 Назва розділу
+					  		 </p>
+					  		<p th:text="${topic.author.email}"> 
+					  		</p>
+					  	 </div>
+					  	<div class="topics-table-cell four"> 
+							<p class="topic_message_text" th:text="${message.body}">message.body</p>
+					  	</div>
+				  	</div>
+			  	</div>
+			<form th:action="@{/messages/add/__${topic.id}__}" method="POST">
 <textarea cols="80" id="ckeditor" name="text" rows="10">		
 	</textarea>
 </form>
+		  	</div>
 
-
-
-<div class="text-center">
- <ul class="pagination" th:if="${pagesCount} > 1">
-		    <li th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+			<div class="  page-list">
+				 <ul class="pagination">
+				    <li>
+				      <a href="#" aria-label="Previous">
+				        <span aria-hidden="true">«</span>
+				      </a>
+				    </li>
+				      <li th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
 		      <a href="#" th:href="@{/view/topic/__${topicId}__/__${page}__}">
 		        <span th:text="${page}"></span>
 		      </a>
 		    </li>
-		</ul>
-</div>
-</body>
+				    <li>
+				      <a href="#" aria-label="Next">
+				        <span aria-hidden="true">»</span>
+				      </a>
+				    </li>
+				  </ul>
+			</div>
+		</div>
+	</body>
 </html>
