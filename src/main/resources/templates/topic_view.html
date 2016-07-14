@@ -52,15 +52,18 @@
 		 		<div class="topic-path" >
 		 		<th:block th:each="category,itrStat : ${categoriesTree}">
 		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
-					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
+					<a th:if="${category.id}!=null"  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
+					<span th:if="${category.id}==null"  class="topic-path-a" th:text="${category.name}" ></span>
 		 		</th:block>
 		 		</div>
-			     		
-				<div class="topics-table">
-					<!-- Topic info -->
+			     
+			     			<!-- Topic info -->
+					<div class="topic_info">
 				<h1 th:text="${topic.name}"></h1>
 				<h2 th:text="${topic.author.email}"></h2>
-				<!-- /Topic info -->
+				</div>
+				<!-- /Topic info -->		
+				<div class="topics-table">
 				 	<div class="topics-table-row first-row">
 					  	<div class="topics-table-cell one"> Автор </div>
 					  	<div class="topics-table-cell four"> Пост </div>

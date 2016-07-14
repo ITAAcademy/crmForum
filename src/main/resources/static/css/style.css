@@ -413,3 +413,10 @@ margin-left: 5px;
 .page-list ul {
 	margin-top: -2px;
 }
+.topic_info{
+	background-color: #4582DE ;
+	margin:0 0;
+	display:inline-block;
+	width:100%;
+	color:white;
+}

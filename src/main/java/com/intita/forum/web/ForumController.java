@@ -268,6 +268,7 @@ public class ForumController {
 		model.addObject("pagesCount",messages.getTotalPages());
 		model.addObject("currentPage",page);
 		model.addObject("topic",topic); 
+		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
 		return model;
 	}
 	
@@ -297,4 +298,5 @@ public class ForumController {
 		return "redirect:"+"/view/topic/"+topic.getId();
 	}
 
+	
 }

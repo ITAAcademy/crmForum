@@ -13,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.models.Course;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumCategory.CategoryChildrensType;
+import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.Module;
 import com.intita.forum.repositories.ForumCategoryRepository;
 
@@ -113,12 +115,14 @@ public void initEducationCategory(){
 	
 }
 
-public LinkedList<ForumCategory> getCategoriesTree(ForumCategory lastCategory){
-	LinkedList<ForumCategory> tree = new LinkedList<ForumCategory>();
+public LinkedList<ForumTreeNode> getCategoriesTree(ForumCategory lastCategory){
+	if (lastCategory==null)return null;
+	LinkedList<ForumTreeNode> tree = new LinkedList<ForumTreeNode>();
 	ForumCategory parent = lastCategory;
 	HashSet<Long> ids = new HashSet<Long>();
 	while(parent!=null){
-		tree.addFirst(parent);
+		ForumTreeNode node = new ForumTreeNode(parent.getName(),parent.getId());
+		tree.addFirst(node);
 		//exit if category met before to prevent infinite cycle
 		if (ids.contains(parent.getId()))break;
 		ids.add(parent.getId());
@@ -126,6 +130,14 @@ public LinkedList<ForumCategory> getCategoriesTree(ForumCategory lastCategory){
 		if (parentCategoryTemp==null) break; 
 		parent=forumCategoryRepository.findOne(parentCategoryTemp.getId());
 	}
+	return tree;
+}
+public LinkedList<ForumTreeNode> getCategoriesTree(ForumTopic topic){
+	if (topic==null)return null;
+	LinkedList<ForumTreeNode> tree = getCategoriesTree(topic.getCategory());
+	ForumTreeNode topicNode = new ForumTreeNode(topic.getName(),null);//null id to distinguish categories and topic nodes
+	tree.addLast(topicNode);
+
 	return tree;
 }
 
