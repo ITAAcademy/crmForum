@@ -71,10 +71,7 @@
 
 				  	<div class="topics-table-row" th:each="message : ${messages}">
 					  	<div class="topics-table-cell one"> 
-					  		<p class="topic-path-a" th:text="${message.author.email}">
-					  		 Назва розділу
-					  		 </p>
-					  		<p th:text="${topic.author.email}"> 
+					  		<p class="topic_message_author"  th:text="${topic.author.email}"> 
 					  		</p>
 					  	 </div>
 					  	<div class="topics-table-cell four"> 

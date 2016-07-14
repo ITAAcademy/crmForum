@@ -420,3 +420,15 @@ margin-left: 5px;
 	width:100%;
 	color:white;
 }
+.topic_message_author{
+	color: black;
+	text-decoration: underline;
+	    font-weight: bold;
+    font-size: 16px;
+}
+.topic_name{
+	color: black;
+	text-decoration: underline;
+	    font-weight: bold;
+    font-size: 16px;
+}
