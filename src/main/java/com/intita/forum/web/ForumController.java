@@ -202,7 +202,9 @@ public class ForumController {
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
 		result.addObject("username",intitaUser.getNickName());
 		result.addObject("categories",categories);
-		result.addObject("pagesCount",categories.getTotalPages());
+		int pagesCount = categories.getTotalPages();
+		if(pagesCount<1)pagesCount=1;
+		result.addObject("pagesCount",pagesCount);
 		result.addObject("currentPage",1);
 		return result;
 	}
@@ -212,7 +214,9 @@ public class ForumController {
 		ModelAndView model = new ModelAndView("categories_list");
 		Page<ForumCategory> categoriesPage = forumCategoryService.getMainCategories(page-1);
 		model.addObject("categories",categoriesPage);
-		model.addObject("pagesCount",categoriesPage.getTotalPages());
+		int pagesCount = categoriesPage.getTotalPages();
+		if(pagesCount<1)pagesCount=1;
+		model.addObject("pagesCount",pagesCount);
 		model.addObject("currentPage",page);
 		return model;
 	}
@@ -265,7 +269,9 @@ public class ForumController {
 		Page<TopicMessage> messages = topicMessageService.getMessagesByTopicId(topicId, page-1);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		model.addObject("messages",messages);
-		model.addObject("pagesCount",messages.getTotalPages());
+		int pagesCount = messages.getTotalPages();
+		if(pagesCount<1)pagesCount=1;
+		model.addObject("pagesCount",pagesCount);
 		model.addObject("currentPage",page);
 		model.addObject("topic",topic); 
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
