@@ -1,14 +1,19 @@
 package com.intita.forum.config;
 
+import java.security.Principal;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -17,9 +22,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+
+import com.intita.forum.models.ForumCategory;
+import com.intita.forum.models.IntitaUser;
+import com.intita.forum.models.IntitaUser.IntitaUserRoles;
+import com.intita.forum.services.ForumCategoryService;
+import com.intita.forum.services.IntitaUserService;
 /**
  * 
- * @author Nicolas Haiduchok
+ * @author Nicolas Haiduchok, Zinchuk Roman
  */
 @Configuration
 @EnableWebSecurity
@@ -33,6 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private CustomAuthenticationProvider authenticationProvider;
 	@Autowired
 	private CustomFilter authenticationTokenFilter;
+
+	
 	
 	/*@Autowired
 	private RequestContextFilter requestContextFilter;*/
@@ -78,7 +91,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.permitAll()
 		.and()
 		.authorizeRequests()
-		.antMatchers("/test","/categories_list").permitAll()
+		//.antMatchers("/view/category/{categoryId}/**").access("@forumCategoryService.checkCategoryAccessToUser(authentication,request)")
+		.antMatchers("/","/test","/categories_list").permitAll()
 		.anyRequest().authenticated();
 
 		/*
@@ -100,6 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 	}
+
 	private static final String SECURE_ADMIN_PASSWORD = "rockandroll";
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

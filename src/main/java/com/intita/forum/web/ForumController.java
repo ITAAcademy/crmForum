@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -32,15 +33,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.SessionProfanity;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
-import com.intita.forum.jsonview.Views;
 import com.intita.forum.models.ForumCategory;
-import com.intita.forum.models.ForumCategory.CategoryChildrensType;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.Lecture;
@@ -257,7 +255,7 @@ public class ForumController {
 		
 		return model;
 	}
-	
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryById(@PathVariable Long categoryId){
 		return viewCategoryById(categoryId,1);

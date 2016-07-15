@@ -2,7 +2,9 @@ package com.intita.forum.services;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -10,13 +12,13 @@ import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.intita.forum.models.IntitaUser;
+import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.repositories.IntitaUserRepository;
 
 @Service
@@ -129,22 +131,31 @@ public class IntitaUserService {
 		return false;
 	}
 	@Transactional
-	public ArrayList<String> getRoles(Long id){
-		ArrayList<String> roles = new ArrayList<String>();
-		roles.add("user");
+	public Set<IntitaUserRoles> getRoles(Long id){
+		Set<IntitaUserRoles> roles = new HashSet<IntitaUserRoles>();
+		roles.add(IntitaUserRoles.USER);
 		if(usersRepo.findInAdminTable(id) != null)
-			roles.add("admin");
+			roles.add(IntitaUserRoles.ADMIN);
 		if(usersRepo.findInTenantTable(id) != null)
-		roles.add("tenant");
+		roles.add(IntitaUserRoles.TENANT);
 		if(usersRepo.findInContentManagerTable(id) != null)
-			roles.add("contentmanager");
+			roles.add(IntitaUserRoles.CONTENT_MANAGER);
 		if(usersRepo.findInTeachersTable(id) != null)
-			roles.add("teacher");
+			roles.add(IntitaUserRoles.TEACHER);
 		if(usersRepo.findInAccountantTable(id) != null)
-			roles.add("accountant");
+			roles.add(IntitaUserRoles.ACCOUNTANT);
 		if(usersRepo.findInStudentTable(id) != null)
-			roles.add("student");
+			roles.add(IntitaUserRoles.STUDENT);
 		return roles;
+	}
+
+	public Set<String> getRolesNames(Long id){
+		Set<IntitaUserRoles> roles = getRoles(id);
+		Set<String> stringRoles = new HashSet<String>();
+		for (IntitaUserRoles role : roles){
+			stringRoles.add(role.name());
+		}
+		return stringRoles;
 	}
 	
 	@Transactional
@@ -183,6 +194,14 @@ public class IntitaUserService {
 		String idStr = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Long id = Long.parseLong(idStr);
 		return id;
+	}
+	
+	public boolean hasRoles(Long userId,Set<IntitaUserRoles> demandedRoles){
+		Set<IntitaUserRoles> userRoles = getRoles(userId);
+		for(IntitaUserRoles role : demandedRoles){
+			if (!userRoles.contains(role))return false;			
+		}
+		return true;
 	}
 	
 

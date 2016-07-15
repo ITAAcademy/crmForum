@@ -1,15 +1,24 @@
 package com.intita.forum.models;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 
 @Entity(name="forum_category")
 public class ForumCategory {
@@ -24,6 +33,11 @@ public class ForumCategory {
 private CategoryChildrensType categoryChildrensType;
 private String name;
 private String description;
+@ElementCollection(targetClass = IntitaUserRoles.class)
+@Enumerated(EnumType.STRING)
+@CollectionTable(name="forum_categories_roles",joinColumns = {@JoinColumn(name="category_id")}) // use default join column name
+@Column( name="role_demand", nullable=false ) 
+private Set<IntitaUserRoles> rolesDemand = new HashSet<IntitaUserRoles>();
 
 public ForumCategory(String name,String description){
 	this.name=name;
@@ -95,6 +109,14 @@ public Long getId() {
 public void setId(Long id) {
 	this.id = id;
 }
-
+public Set<IntitaUserRoles> getRolesDemand() {
+	return rolesDemand;
+}
+public void setRolesDemand(Set<IntitaUserRoles> rolesDemand) {
+	this.rolesDemand = rolesDemand;
+}
+public void addRoleDemand(IntitaUserRoles role){
+	this.rolesDemand.add(role);
+}
 
 }

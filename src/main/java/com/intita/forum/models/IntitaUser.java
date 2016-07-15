@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +23,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.services.IntitaUserService;
 
 /**
@@ -31,7 +33,7 @@ import com.intita.forum.services.IntitaUserService;
 @Entity(name="user")
 public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUser>{
 	private static final long serialVersionUID = -532710433531902917L;
-	
+	public enum IntitaUserRoles  {ADMIN,ACCOUNTANT,STUDENT,TEACHER,USER,TENANT,CONTENT_MANAGER};
 	@Transient
 	@Autowired
 	IntitaUserService intitaUserService;
@@ -111,7 +113,7 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		ArrayList<String> authoritis = intitaUserService.getRoles(id);
+		Set<String> authoritis = intitaUserService.getRolesNames(id);
 		return AuthorityUtils.createAuthorityList(authoritis.toArray(new String[authoritis.size()]));
 	}
 	public static long getSerialversionuid() {
