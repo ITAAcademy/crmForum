@@ -50,8 +50,10 @@
 
 		 	<div class="wraper topics">
 		 		<div class="topic-path" >
+		 		<div class="glyphicon glyphicon-play topic-path-arrow"></div>
+		 		<a class = "topic-path-a" th:href="@{/}">Корінь</a>
+		 		<div class="glyphicon glyphicon-play topic-path-arrow"></div>
 		 		<th:block th:each="category,itrStat : ${categoriesTree}">
-		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
 					<a th:if="${category.id}!=null"  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
 					<span th:if="${category.id}==null"  class="topic-path-a" th:text="${category.name}" ></span>
 		 		</th:block>

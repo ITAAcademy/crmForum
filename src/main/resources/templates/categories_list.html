@@ -46,8 +46,9 @@
 
 		 	<div class="wraper topics">
 		 		<div class="topic-path" >
+		 		<div class="glyphicon glyphicon-play topic-path-arrow"></div>
+		 		<a class = "topic-path-a" th:href="@{/}">Корінь</a>
 		 		<th:block th:each="category,itrStat : ${categoriesTree}">
-		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
 					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
 		 		</th:block>
 		 		</div>
@@ -61,7 +62,7 @@
 				  	<div class="topics-table-row" th:each="category : ${categories}">
 					  	<div class="topics-table-cell one"> 
 					  		<p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
-					  		 Назва розділуa
+					  		 Назва розділу
 					  		 </a></p>
 					  		<p th:text="${category.description}"> 
 					  		</p>
