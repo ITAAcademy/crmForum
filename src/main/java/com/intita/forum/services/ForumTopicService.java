@@ -1,15 +1,21 @@
 package com.intita.forum.services;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
+import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.repositories.ForumTopicRepository;
 
 @Service
@@ -17,6 +23,8 @@ public class ForumTopicService {
 	@Autowired ForumTopicRepository forumTopicRepository;
 	@Value("${forum.categoriesOrTopicsCountPerPage}")
 	private int topicsCountForPage;
+	@Autowired ForumCategoryService forumCategoryService;
+	@Autowired IntitaUserService intitaUserService;
 	@Transactional
 	public Page<ForumTopic> getAllTopics(Long categoryId,int page){
 		return forumTopicRepository.findByCategoryId(categoryId,new PageRequest(page,topicsCountForPage)); 
@@ -36,5 +44,38 @@ public class ForumTopicService {
 		topic.setAuthor(author);
 		topic.setCategory(category);
 		return forumTopicRepository.save(topic);
+	}
+	public LinkedList<Set<IntitaUserRoles>> getDemandsForTopic(Long topicId){
+		if (topicId==null)return null;
+		ForumTopic topic = getTopic(topicId);
+		if (topic==null) return null;
+		LinkedList<Set<IntitaUserRoles>> roles = new LinkedList<Set<IntitaUserRoles>>();
+		ForumCategory parent = topic.getCategory();
+		HashSet<Long> ids = new HashSet<Long>();
+		while(parent!=null){
+			Set<IntitaUserRoles> rolesSet = parent.getRolesDemand();
+			roles.add(rolesSet);
+			//exit if category met before to prevent infinite cycle
+			if (ids.contains(parent.getId()))break;
+			ids.add(parent.getId());
+			ForumCategory parentCategoryTemp = parent.getCategory();
+			if (parentCategoryTemp==null) break; 
+			parent=forumCategoryService.getCategoryById(parentCategoryTemp.getId());
+		}
+		return roles;
+	}
+	public boolean checkTopicAccessToUser(Authentication  authentication,Long topicId){
+
+		
+		ForumTopic topic = getTopic(topicId);
+		if (topic==null) return false;
+		LinkedList<Set<IntitaUserRoles>> demandsList = getDemandsForTopic(topicId);
+		String id =  (String)authentication.getPrincipal();
+		Long longId = Long.parseLong(id);
+		IntitaUser currentUser = intitaUserService.getUser(longId);
+		if(intitaUserService.hasAllRolesSets(currentUser.getId(),demandsList)){
+			return true;
+		}
+		return false;
 	}
 }

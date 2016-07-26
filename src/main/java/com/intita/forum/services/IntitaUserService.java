@@ -3,6 +3,7 @@ package com.intita.forum.services;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -203,6 +204,24 @@ public class IntitaUserService {
 			if (userRoles.contains(role))return true;			
 		}
 		return false;
+	}
+	public boolean hasAllRolesSets(Long userId,LinkedList<Set<IntitaUserRoles>> demandedRoles){
+		if (demandedRoles==null || demandedRoles.size()<1) return true;
+		Set<IntitaUserRoles> userRoles = getRoles(userId);
+		boolean demandedListSatisfied = true;
+		for (Set<IntitaUserRoles> demandedSet : demandedRoles ){
+			if (demandedSet.size()<1)return true;// no demand, so all demands satisfied=)
+			boolean demandedSetSatisfied = false;
+			for(IntitaUserRoles role : demandedSet){
+				if (userRoles.contains(role))demandedSetSatisfied = true;
+				break;
+			}
+			if (!demandedSetSatisfied){
+				demandedListSatisfied = false;
+				break;
+			}
+		}		
+		return demandedListSatisfied;
 	}
 	
 

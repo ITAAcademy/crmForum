@@ -281,7 +281,7 @@ public class ForumController {
 	public ModelAndView viewCategoryById(@PathVariable Long categoryId){
 		return viewCategoryById(categoryId,1);
 	}
-	
+	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page){
 		ModelAndView model = new ModelAndView("topic_view");
@@ -296,7 +296,7 @@ public class ForumController {
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
 		return model;
 	}
-	
+	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
 	public ModelAndView viewTopicById(@PathVariable Long topicId){	
 		return viewTopicById(topicId,1);
