@@ -196,12 +196,13 @@ public class IntitaUserService {
 		return id;
 	}
 	
-	public boolean hasRoles(Long userId,Set<IntitaUserRoles> demandedRoles){
+	public boolean hasAnyRoles(Long userId,Set<IntitaUserRoles> demandedRoles){
+		if (demandedRoles==null || demandedRoles.size()<1) return true;
 		Set<IntitaUserRoles> userRoles = getRoles(userId);
 		for(IntitaUserRoles role : demandedRoles){
-			if (!userRoles.contains(role))return false;			
+			if (userRoles.contains(role))return true;			
 		}
-		return true;
+		return false;
 	}
 	
 

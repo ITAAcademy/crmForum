@@ -210,7 +210,7 @@ public boolean checkCategoryAccessToUser(Authentication  authentication,Long cat
 	String id =  (String)authentication.getPrincipal();
 	Long longId = Long.parseLong(id);
 	IntitaUser currentUser = intitaUserService.getUser(longId);
-	if(intitaUserService.hasRoles(currentUser.getId(),demandedRoles)){
+	if(intitaUserService.hasAnyRoles(currentUser.getId(),demandedRoles)){
 		return true;
 	}
 	return false;
