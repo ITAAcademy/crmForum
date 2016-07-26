@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -80,14 +81,14 @@ public void initDatabase(){
 }
 
 public void initCategoriesByRoles(){
-	ForumCategory roleCategory = new ForumCategory("Розділ по ролях","для адміністраторів, бухгалтерів, вчителів");
+	ForumCategory roleCategory = new ForumCategory("Розділ по ролях","для адміністраторів, бухгалтерів, вчителів",true);
 	roleCategory = forumCategoryRepository.save(roleCategory);
 	
-	ForumCategory adminCategory = new ForumCategory("Адміністратори","Для адмінчиків",false);
+	ForumCategory adminCategory = new ForumCategory("Адміністратори","Для адмінчиків",false,true);
 	adminCategory.addRoleDemand(IntitaUserRoles.ADMIN);
-	ForumCategory accountantCategory = new ForumCategory("Бухгалтери","Для бухгалтерів",false);
+	ForumCategory accountantCategory = new ForumCategory("Бухгалтери","Для бухгалтерів",false,true);
 	accountantCategory.addRoleDemand(IntitaUserRoles.ACCOUNTANT);
-	ForumCategory teacgersCategory = new ForumCategory("Вчителі","Для вчителів",false);
+	ForumCategory teacgersCategory = new ForumCategory("Вчителі","Для вчителів",false,true);
 	teacgersCategory.addRoleDemand(IntitaUserRoles.TEACHER);
 	adminCategory.setCategory(roleCategory);
 	accountantCategory.setCategory(roleCategory);
@@ -99,8 +100,8 @@ public void initCategoriesByRoles(){
 
 public void initEducationCategory(){
 	ArrayList<Course> courses = courseService.getAll();
-	ForumCategory educationCategory = new ForumCategory("Навчання","Для студентів");
-	ForumCategory courseCategory = new ForumCategory("Курси","Обговорення курсів");
+	ForumCategory educationCategory = new ForumCategory("Навчання","Для студентів",true);
+	ForumCategory courseCategory = new ForumCategory("Курси","Обговорення курсів",true);
 
 	
 	educationCategory = forumCategoryRepository.save(educationCategory);
@@ -111,17 +112,17 @@ public void initEducationCategory(){
 
 	for (Course course : courses){
 		
-		ForumCategory category = new ForumCategory(course.getTitleUa(),course.getAlias());
+		ForumCategory category = new ForumCategory(course.getTitleUa(),course.getAlias(),true);
 		category.setCategory(courseCategory);
 		category = forumCategoryRepository.save(category);
 		
 		ArrayList<Module> modules = moduleService.getAllFromCourse(course);
-		ForumCategory moduleCategory = new ForumCategory("Модулі","Обговорення модулів",false);
+		ForumCategory moduleCategory = new ForumCategory("Модулі","Обговорення модулів",false,true);
 		moduleCategory.setCategory(category);
 		moduleCategory = forumCategoryRepository.save(moduleCategory);
 		
 		for (Module module : modules){
-			ForumCategory c = new ForumCategory(module.getTitleUa(),module.getAlias());
+			ForumCategory c = new ForumCategory(module.getTitleUa(),module.getAlias(),true);
 			c.setCategory(moduleCategory);
 			forumCategoryRepository.save(c);
 		}
@@ -148,6 +149,50 @@ public LinkedList<ForumTreeNode> getCategoriesTree(ForumCategory lastCategory){
 	}
 	return tree;
 }
+public LinkedList<ForumCategory> getAllSubCategories(ForumCategory category,HashSet<Long> idsParam){
+	if (category==null || !category.isCategoriesContainer())return null;
+	LinkedList<ForumCategory> tree = new LinkedList<ForumCategory>();
+	HashSet<Long> ids = idsParam;
+	if(ids==null)ids =  new HashSet<Long>();
+	List<ForumCategory> subcategories =  category.getCategories();
+	for (ForumCategory c: subcategories){
+		if (ids.contains(c.getId()))continue;
+		ids.add(c.getId());
+		tree.addLast(c);;
+	}
+	for (ForumCategory subCategoryTmp : subcategories){
+		ForumCategory subCategory =forumCategoryRepository.findOne(subCategoryTmp.getId());
+		LinkedList<ForumCategory> subSubs = getAllSubCategories(subCategory,ids);
+		if (subSubs==null)return tree;
+		for (ForumCategory subSub : subSubs){
+			if (ids.contains(subSub.getId()))continue;
+			tree.addLast(subSub);
+			ids.add(subSub.getId());
+		}
+	}
+	return tree;
+}
+public HashSet<Long> getAllSubCategoriesIds(ForumCategory category,HashSet<Long> idsParam){
+	if (category==null || !category.isCategoriesContainer())return null;
+	HashSet<Long> ids = idsParam;
+	if(ids==null)ids =  new HashSet<Long>();
+	List<ForumCategory> subcategories = category.getCategories();
+	for (ForumCategory c: subcategories){
+		if (ids.contains(c.getId()))continue;
+		ids.add(c.getId());
+	}
+	for (ForumCategory subCategoryTmp : subcategories){
+		ForumCategory subCategory =forumCategoryRepository.findOne(subCategoryTmp.getId());
+		LinkedList<ForumCategory> subSubs = getAllSubCategories(subCategory,ids);
+		if (subSubs==null) return ids;
+		for (ForumCategory subSub : subSubs){
+			if (ids.contains(subSub.getId()))continue;
+			ids.add(subSub.getId());
+		}
+	}
+	return ids;
+}
+
 public LinkedList<ForumTreeNode> getCategoriesTree(ForumTopic topic){
 	if (topic==null)return null;
 	LinkedList<ForumTreeNode> tree = getCategoriesTree(topic.getCategory());
@@ -169,6 +214,21 @@ public boolean checkCategoryAccessToUser(Authentication  authentication,Long cat
 		return true;
 	}
 	return false;
+}
+public void removeAllAutogeneratedCategoriesAndTopics(){
+	
+}
+public ForumTopic getLastTopic(Long categoryId){
+	ForumCategory category = forumCategoryRepository.findOne(categoryId);
+	if (category==null) return null;
+	HashSet<Long> categoriesIds = getAllSubCategoriesIds(category,null);
+	if (categoriesIds==null){
+		categoriesIds = new HashSet<Long>();
+		categoriesIds.add(category.getId());
+	}
+	ForumTopic lastTopic = forumCategoryRepository.getLastTopic(categoriesIds);
+	return lastTopic;
+
 }
 
 }

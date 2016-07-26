@@ -1,19 +1,13 @@
 package com.intita.forum.config;
-import java.io.IOException;
-import java.net.InterfaceAddress;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,20 +15,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.intita.forum.services.RedisService;
 import com.intita.forum.util.SerializedPhpParser;
-import com.intita.forum.util.SerializedPhpParser.PhpObject;
-
-import java.security.Principal;
 /**
  * 
  * @author Nicolas Haiduchok
@@ -87,6 +74,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+									throw new UsernameNotFoundException(redisId);
+							
 								}
 							}
 							break;
@@ -98,6 +87,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				}
 				catch(NumberFormatException e){
 				log.info(e.getMessage());
+				throw new UsernameNotFoundException(IntitaIdStr);
 				}
 					Object obj_s = session.getAttribute("forumId");
 

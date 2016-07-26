@@ -59,7 +59,7 @@
 					  	<div class="topics-table-cell four"> Останній пост </div>
 				  	</div>
 
-				  	<div class="topics-table-row" th:each="category : ${categories}">
+				  	<div class="topics-table-row" th:each="category,status  : ${categories}">
 					  	<div class="topics-table-cell one"> 
 					  		<p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
 					  		 Назва розділу
@@ -67,10 +67,13 @@
 					  		<p th:text="${category.description}"> 
 					  		</p>
 					  	 </div>
-					  	<div class="topics-table-cell four"> 
+					  	<div th:if="${lastTopics[status.index]!=null}" class="topics-table-cell four"> 
 							<p> Вчора, 21:44 </p>
-							<p> <b>Тема: </b> якась назва теми </p>
-							<p> <b>Автор: </b> ім'я даного user </p>
+							<p> <b>Тема: </b> <span th:text="${lastTopics[status.index].name}"></span> </p>
+							<p ><b>Автор</b><span th:text="${lastTopics[status.index].author.login}"></span></p>
+					  	</div>
+					  	<div th:unless="${lastTopics[status.index]!=null}" class="topics-table-cell four"> 
+							<p><b>Топіки відсутні</b></p>
 					  	</div>
 				  	</div>
 			  	</div>		  	

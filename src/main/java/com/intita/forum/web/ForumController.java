@@ -198,8 +198,13 @@ public class ForumController {
 		ModelAndView result = new ModelAndView("index");
 		IntitaUser intitaUser = intitaUserService.getIntitaUser(auth);
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
+		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
+		for (ForumCategory category : categories){
+			lastTopics.add(forumCategoryService.getLastTopic(category.getId()));
+		}
 		result.addObject("username",intitaUser.getNickName());
 		result.addObject("categories",categories);
+		result.addObject("lastTopics",lastTopics);
 		int pagesCount = categories.getTotalPages();
 		if(pagesCount<1)pagesCount=1;
 		result.addObject("pagesCount",pagesCount);
@@ -211,7 +216,12 @@ public class ForumController {
 	public ModelAndView getAllCategories(@RequestParam int page){
 		ModelAndView model = new ModelAndView("categories_list");
 		Page<ForumCategory> categoriesPage = forumCategoryService.getMainCategories(page-1);
+		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
+		for (ForumCategory category : categoriesPage){
+			lastTopics.add(forumCategoryService.getLastTopic(category.getId()));
+		}
 		model.addObject("categories",categoriesPage);
+		model.addObject("lastTopics",lastTopics);
 		int pagesCount = categoriesPage.getTotalPages();
 		if(pagesCount<1)pagesCount=1;
 		model.addObject("pagesCount",pagesCount);
@@ -242,12 +252,23 @@ public class ForumController {
 			if(pagesCount<1)pagesCount=1;
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("categories",categories);
+			ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
+			for (ForumCategory c : categories){
+				lastTopics.add(forumCategoryService.getLastTopic(c.getId()));
+			}
+			model.addObject("lastTopics",lastTopics);
 			model.setViewName("categories_list");
 		}
 		else{
 			Page<ForumTopic> topics = forumTopicService.getAllTopics(categoryId, page-1);
 			int pagesCount = topics.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
+			ArrayList<TopicMessage> lastMessages = new ArrayList<TopicMessage>();
+			for (ForumTopic t : topics){
+				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
+				lastMessages.add(lastMessage);
+			}
+			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
 			model.setViewName("topics_list");

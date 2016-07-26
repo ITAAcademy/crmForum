@@ -1,0 +1,13 @@
+<html>
+<head>
+	  <link type="text/css" th:href="@{/css/errors.css}" rel="stylesheet" />	
+</head>
+<body>
+	<div class="error_item_wrapper">
+	<div class="error_item">
+	<div class="error_title">Помилка</div>
+	<div class="error_description" th:text="${exception}"></div>
+	</div>
+	</div>
+</body>
+</html>
