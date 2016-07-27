@@ -432,3 +432,32 @@ margin-left: 5px;
 	    font-weight: bold;
     font-size: 16px;
 }
+.filled_star{
+	content:"";
+	width:32px;
+	height:30px;
+	background-image:url("../images/blue_star_filled_small.png");
+	display:inline-block;
+}
+.unfilled_star{
+	content:"";
+	width:32px;
+	height:30px;
+	background-image:url("../images/blue_star_unfilled_small.png");
+	display:inline-block;
+}
+.link_button {
+  background: none;
+  border: none;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1em;
+  font-family: serif;
+}
+.link-button:focus {
+  outline: none;
+}
+.inline {
+  display: inline;
+}

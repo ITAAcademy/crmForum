@@ -34,6 +34,14 @@ public class ForumTopicService {
 		return forumTopicRepository.findOne(topicId);
 	}
 	@Transactional
+	public boolean toggleTopicPin(Long topicId){
+		ForumTopic topic = forumTopicRepository.findOne(topicId);
+		if (topic==null) return false;
+		boolean isPinned = topic.isPinned();
+		topic.setPinned(!isPinned);
+		return true;
+	}
+	@Transactional
 	public ForumTopic addTopic(ForumTopic topic){
 		return forumTopicRepository.save(topic);
 	}

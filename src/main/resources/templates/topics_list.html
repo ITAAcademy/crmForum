@@ -23,7 +23,26 @@
 				  	</div>
 
 				  	<div class="topics-table-row" th:each="topic,status : ${topics}">
-					  	<div class="topics-table-cell one"> 
+					  	<div class="topics-table-cell one">
+					  	<!--For admin -->
+					  	<th:block th:if="${isAdmin}">
+					  		<form method="post" th:action="@{/operations/topic/__${topic.id}__/toggle_pin}" class="inline">
+					  		
+					  		<button class="link_button" type="submit" th:if="${topic.pinned}"><span class="filled_star"></span></button>
+					  		<button class="link_button" type="submit" th:unless="${topic.pinned}"><span class="unfilled_star" ></span></button>
+					  		</form>
+					  		</th:block>
+					  	<!--///For admin -->
+					  	<!--For regular user -->
+					  	 	<th:block th:unless="${isAdmin}">
+					<span class="filled_star" th:if="${topic.pinned}">
+					  			
+					  		</span>
+					  		<span class="unfilled_star" th:unless="${topic.pinned}">
+					  			
+					  		</span>
+					  		</th:block>
+					  	<!--/For regular user -->
 					  		<p><a class="topic_name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
 					  		 Назва розділу
 					  		 </a></p>

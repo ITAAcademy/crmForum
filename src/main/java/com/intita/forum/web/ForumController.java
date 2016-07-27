@@ -235,7 +235,7 @@ public class ForumController {
 	}
 	
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page){
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page,Principal principal){
 		ModelAndView model = new ModelAndView();
 		
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
@@ -268,9 +268,11 @@ public class ForumController {
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
 			}
+			IntitaUser user = intitaUserService.getIntitaUser(principal);
 			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
+			model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
 			model.setViewName("topics_list");
 		}
 		
@@ -278,8 +280,8 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId){
-		return viewCategoryById(categoryId,1);
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId,Principal principal){
+		return viewCategoryById(categoryId,1,principal);
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
@@ -321,6 +323,17 @@ public class ForumController {
 		ForumTopic topic = forumTopicService.addTopic(topicName,category,author);
 		if (topic == null) return "redirect:"+referer;
 		return "redirect:"+"/view/topic/"+topic.getId();
+	}
+	@RequestMapping(value="/operations/topic/{topicId}/toggle_pin",method = RequestMethod.POST)
+	public String togglePinTopic(@PathVariable Long topicId,Principal principal,HttpServletRequest request){
+		 String referer = request.getHeader("Referer");
+		IntitaUser user  = intitaUserService.getIntitaUser(principal);
+		if (intitaUserService.isAdmin(user.getId())){
+			if(!forumTopicService.toggleTopicPin(topicId)){
+				return "redirect:"+referer;
+			}
+		}
+		return "redirect:"+referer;
 	}
 
 	

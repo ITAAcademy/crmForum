@@ -51,6 +51,8 @@ public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 	@Column(unique = false)
 	@JsonView(Views.Public.class)
 	private String name;
+	//Pined topics showed at top
+	private boolean pinned;
 
 	@NotNull
 	@JsonView(Views.Public.class)
@@ -174,5 +176,13 @@ public class ForumTopic implements Serializable,Comparable<ForumTopic> {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public boolean isPinned() {
+		return pinned;
+	}
+
+	public void setPinned(boolean isPinned) {
+		this.pinned = isPinned;
 	}
 }
