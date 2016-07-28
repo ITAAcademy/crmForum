@@ -1,12 +1,15 @@
 package com.intita.forum.services;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,19 @@ public class ForumTopicService {
 	@Transactional
 	public Page<ForumTopic> getAllTopics(Long categoryId,int page){
 		return forumTopicRepository.findByCategoryId(categoryId,new PageRequest(page,topicsCountForPage)); 
+	}
+	@Transactional
+	public Page<ForumTopic> getAllTopicsSortedByPin(Long categoryId,int page){
+		  PageRequest pageable = new PageRequest(page, topicsCountForPage);
+		  List<ForumTopic> unPinnedTopics = forumTopicRepository.findByCateogryIdAndSortByPin(categoryId,false);
+		  List<ForumTopic> pinnedTopics = forumTopicRepository.findByCateogryIdAndSortByPin(categoryId,true);
+		  List<ForumTopic> allTopics = new ArrayList<ForumTopic>();
+		  allTopics.addAll(pinnedTopics);
+		  allTopics.addAll(unPinnedTopics);		 
+		  int max = (topicsCountForPage*(page+1)>allTopics.size())? allTopics.size(): topicsCountForPage*(page+1);
+		  Page<ForumTopic> pageObj = new PageImpl<ForumTopic>(allTopics.subList(page*topicsCountForPage, max),pageable,allTopics.size());
+		
+		return pageObj;
 	}
 	@Transactional
 	public ForumTopic getTopic(Long topicId){

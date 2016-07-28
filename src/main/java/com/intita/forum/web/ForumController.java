@@ -260,7 +260,7 @@ public class ForumController {
 			model.setViewName("categories_list");
 		}
 		else{
-			Page<ForumTopic> topics = forumTopicService.getAllTopics(categoryId, page-1);
+			Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, page-1);
 			int pagesCount = topics.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
 			ArrayList<TopicMessage> lastMessages = new ArrayList<TopicMessage>();
