@@ -26,9 +26,9 @@
 		}
 	} );
 
-	var bbcodeMap = { b: 'strong', u: 'u', i: 'em', color: 'span', size: 'span', quote: 'blockquote', code: 'code', url: 'a', email: 'span', img: 'span', '*': 'li', list: 'ol' },
+	var bbcodeMap = { b: 'strong', u: 'u', i: 'em', color: 'span', size: 'span', quote: 'blockquote', code: 'code', url: 'a', email: 'span', img: 'span', '*': 'li', list: 'ol',spoiler:'spoiler' },
 		convertMap = { strong: 'b', b: 'b', u: 'u', em: 'i', i: 'i', code: 'code', li: '*' },
-		tagnameMap = { strong: 'b', em: 'i', u: 'u', li: '*', ul: 'list', ol: 'list', code: 'code', a: 'link', img: 'img', blockquote: 'quote' },
+		tagnameMap = { strong: 'b', em: 'i', u: 'u', li: '*', ul: 'list', ol: 'list', code: 'code', a: 'link', img: 'img', blockquote: 'quote',spoiler: 'spoiler' },
 		stylesMap = { color: 'color', size: 'font-size' },
 		attributesMap = { url: 'href', email: 'mailhref', quote: 'cite', list: 'listType' };
 
@@ -641,6 +641,10 @@
 							title: description,
 							alt: description
 						};
+					},
+					spoiler: function(element){
+						element.name = 'spoiler';
+						
 					}
 				}
 			} );

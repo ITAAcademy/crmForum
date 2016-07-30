@@ -3,8 +3,9 @@ var initCkEditor = function(){
 	CKEDITOR.replace( 'ckeditor', {
 		height: 280,
 		// Add plugins providing functionality popular in BBCode environment.
-		extraPlugins: 'bbcode,smiley,font,colorbutton,save',
+		extraPlugins: 'bbcode,smiley,font,colorbutton,save,spoiler',
 		// Remove unused plugins.
+		//removePlugins: 'filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
 		removePlugins: 'filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
 		// Remove unused buttons.
 		removeButtons: 'Anchor,BGColor,Font,Strike,Subscript,Superscript',
