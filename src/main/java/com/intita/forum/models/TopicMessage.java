@@ -62,7 +62,7 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	//@NotFound(action=NotFoundAction.IGNORE)
 	private ForumTopic topic;
 	
-	@Size(max=64000)
+	@Size(max=5000)
 	@Column
 	@JsonView(Views.Public.class)
 	private String body;
