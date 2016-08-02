@@ -30,7 +30,7 @@
 		convertMap = { strong: 'b', b: 'b', u: 'u', em: 'i', i: 'i', code: 'code', li: '*' },
 		tagnameMap = { strong: 'b', em: 'i', u: 'u', li: '*', ul: 'list', ol: 'list', code: 'code', a: 'link', img: 'img', blockquote: 'quote',spoiler: 'spoiler' },
 		stylesMap = { color: 'color', size: 'font-size' },
-		attributesMap = { url: 'href', email: 'mailhref', quote: 'cite', list: 'listType' };
+		attributesMap = { url: 'href', email: 'mailhref', quote: 'cite', list: 'listType',spoiler:'title' };
 
 	// List of block-like tags.
 	var dtd = CKEDITOR.dtd,
@@ -581,7 +581,8 @@
 					writer = new CKEDITOR.htmlParser.basicWriter();
 
 				fragment.writeHtml( writer, bbcodeFilter );
-				return writer.getHtml( true );
+				var html = writer.getHtml( true );
+				return html;
 			}
 
 			var bbcodeFilter = new CKEDITOR.htmlParser.filter();
@@ -643,8 +644,33 @@
 						};
 					},
 					spoiler: function(element){
-						element.name = 'spoiler';
-						
+						element.name = 'div';
+						element.addClass('spoiler');
+						var spoilerTitle = new CKEDITOR.htmlParser.element('div');
+						spoilerTitle.addClass('spoiler-title');
+						var spoilerToggle = new CKEDITOR.htmlParser.element('div');
+						spoilerToggle.addClass('spoiler-toggle hide-icon');
+						var titleText = element.attributes.title || ' ';
+						var spoilerTitleText =  new CKEDITOR.htmlParser.text(titleText);
+						var spoilerContent = new CKEDITOR.htmlParser.element('div');
+						spoilerContent.addClass('spoiler-content');
+						var contentText = " ";
+						if (element.children.length>0)contentText = element.children[ 0 ].value || ' ';
+						var spoilerContentParagraphText =  new CKEDITOR.htmlParser.text(contentText);
+						var spoilerContentParagraph = new CKEDITOR.htmlParser.element('p');
+						//relation between elements
+						element.children=[spoilerTitle,spoilerContent];
+						spoilerTitle.children=[spoilerToggle,spoilerTitleText];
+						spoilerContent.children=[spoilerContentParagraph];
+						spoilerContentParagraph.children=[spoilerContentParagraphText];
+						delete element.attributes.title;
+						//setting test data <--TO REMOVE
+					
+
+
+
+					
+						//ZIGZAG TODO ADD ELEMENT CLASS
 					}
 				}
 			} );
@@ -725,6 +751,40 @@
 								return new CKEDITOR.htmlParser.text( smileyMap[ alt ] );
 							else
 								element.children = [ new CKEDITOR.htmlParser.text( src ) ];
+						}
+						else if (tagName == 'div'){
+							//TODO ZIGZAG
+							if (element.attributes && element.attributes.class=='spoiler'){
+								tagName = 'spoiler';
+							var newElement = new CKEDITOR.htmlParser.element('spoiler');
+							newElement.attributes=[];
+						
+							if (element.children)
+							for (var i = 0; i < element.children.length; i++){
+								if (element.children[i].attributes && element.children[i].attributes.class=='spoiler-title'){
+									var htmlText = element.children[i].children[1];
+									if (htmlText != null && htmlText.type == 3) {
+											value = htmlText.value;
+									}
+								}
+								if (element.children[i].attributes.class=='spoiler-content'){
+									var htmlP = element.children[i].children[0];
+									if (htmlP == null || htmlP.name != 'p') break;
+									var htmlText = htmlP.children[0];
+									//if null or not text 
+									if (htmlText == null || htmlText.type != 3) break;
+									var text = htmlText.value;
+									var textElm = new CKEDITOR.htmlParser.text(text);
+									newElement.children.push(textElm);
+									break;
+								}
+							}
+							value = value || ' ';
+							element.children=newElement.children;
+							tagName='spoiler';
+							//element = newElement;
+							//return element;
+						}
 						}
 
 						element.name = tagName;
