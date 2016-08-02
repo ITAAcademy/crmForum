@@ -105,6 +105,22 @@ var XBBCODE = (function() {
             This tag does nothing and is here mostly to be used as a classification for
             the bbcode input when evaluating parent-child tag relationships
         */
+        "spoiler" : {
+        openTag: function(params,content) {
+                return '<div class="spoiler">\
+                        <div class="spoiler-title">\
+                        <div class="spoiler-toggle show-icon"></div>';
+                        
+
+            },
+            closeTag: function(params,content) {
+                var title = '';
+                if (params!=null)title=params.substr(1);
+                return '{0}</div>\
+                        <div class="spoiler-content closed_spoiler_content"><p>{1}</p></div>\
+                        </div>'.format(title,content);
+            }
+        },
         "bbcode": {
             openTag: function(params,content) {
                 return '';

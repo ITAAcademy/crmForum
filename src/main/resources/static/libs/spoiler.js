@@ -6,6 +6,6 @@ $(function() {
 			.toggleClass('show-icon')
 			.toggleClass('hide-icon');
 		$(this)
-			.parent().children().last().toggle();
+			.parent().children().last().toggleClass('closed_spoiler_content');
 	});
 });

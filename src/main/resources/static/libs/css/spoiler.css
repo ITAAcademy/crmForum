@@ -49,6 +49,12 @@ div.spoiler div.spoiler-title div.hide-icon {
 div.spoiler div.spoiler-title div.show-icon {
 	background: url('../images/plus.png') no-repeat scroll left center transparent;
 }
+.topics-table-cell div.spoiler div.spoiler-title div.hide-icon {
+background: url('../../modules/ckeditor/plugins/spoiler/images/minus.png') no-repeat scroll left center transparent;
+}
+.topics-table-cell div.spoiler div.spoiler-title div.show-icon{
+background: url('../../modules/ckeditor/plugins/spoiler/images/plus.png') no-repeat scroll left center transparent;
+}
 
 div.spoiler div.spoiler-content {
 	font-size: 13px;
@@ -59,4 +65,8 @@ div.spoiler div.spoiler-content {
 	border-radius: 3px;
 	background: none repeat scroll 0 0 #F5F5F5;
 	padding: 4px 10px;
+}
+
+div.closed_spoiler_content{
+	display:none;
 }
