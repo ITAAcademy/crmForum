@@ -199,6 +199,13 @@
 display:table-cell;
 
 }
+.topics-table-cell .avatar{
+min-width:80px;
+display: inline-block;
+}
+.topics-table-cell.one{
+	text-align:center;
+}
 
 .topics-table-cell .topic-path-a {
 	color: black;
@@ -215,17 +222,20 @@ display:table-cell;
 	border: none;
 	text-align: center;
 }
-/*
+
 .topics-table-cell.one {
-	width: 65%;
+	width: 15%;
 }
 
 .topics-table-cell.four {
-	width: 35%;
-}*/
+	width: 85%;
+}
 
 .topics-table-cell  p {
 	margin: 0;
+}
+.topics-table-cell img{
+	max-height:100px;
 }
 
 

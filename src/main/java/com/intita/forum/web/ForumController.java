@@ -2,11 +2,13 @@ package com.intita.forum.web;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,7 @@ import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.SessionProfanity;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
+import com.intita.forum.models.ConfigParam;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
@@ -79,6 +82,8 @@ public class ForumController {
 	@Autowired private ForumCategoryService forumCategoryService;
 	@Autowired private ForumTopicService forumTopicService;
 	@Autowired private TopicMessageService topicMessageService;
+	
+	HashMap<String,String> configMap = new HashMap<String,String>();
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -296,6 +301,7 @@ public class ForumController {
 		model.addObject("currentPage",page);
 		model.addObject("topic",topic); 
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
+		model.addObject("config",configMap);
 		return model;
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
@@ -334,6 +340,16 @@ public class ForumController {
 			}
 		}
 		return "redirect:"+referer;
+	}
+	@RequestMapping(value="/operations/config/update",method = RequestMethod.POST)
+	public void refreshConfigParameters()
+	{
+		List<ConfigParam> config =  configParamService.getParams();
+		configMap = ConfigParam.listAsMap(config);
+	}
+	@PostConstruct
+	public void initController(){
+		refreshConfigParameters();
 	}
 
 	
