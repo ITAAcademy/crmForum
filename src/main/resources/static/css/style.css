@@ -201,10 +201,12 @@ display:table-cell;
 }
 .topics-table-cell .avatar{
 min-width:80px;
+max-height:120px;
 display: inline-block;
 }
 .topics-table-cell.one{
 	text-align:center;
+	vertical-align:top;
 }
 
 .topics-table-cell .topic-path-a {
@@ -229,6 +231,10 @@ display: inline-block;
 
 .topics-table-cell.four {
 	width: 85%;
+	max-width:400px;
+}
+.topics-table-cell.four span{
+word-wrap: break-word; /* Перенос слов */ 
 }
 
 .topics-table-cell  p {
