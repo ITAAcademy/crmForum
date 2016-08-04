@@ -1,72 +1,76 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>CrmForum</title>
-	
-	 <div th:include="includes">...</div>
+    <title>CrmForum</title>
+    <div th:include="includes">...</div>
 </head>
 
-	<body>
-		<div id="forumcontainer" class="container"  >
-		 	<div class="wraper topics">
-		 		<div class="topic-path" >
-		 		<div class="glyphicon glyphicon-play topic-path-arrow"></div>
-		 		<a class = "topic-path-a" th:href="@{/}">Корінь</a>
-		 		<th:block th:each="category,itrStat : ${categoriesTree}">
-					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
-		 		</th:block>
-		 		</div>
-			     		
-				<div class="topics-table">
-				 	<div class="topics-table-row first-row">
-					  	<div class="topics-table-cell one"> Розділи </div>
-					  	<div class="topics-table-cell four"> Останній пост </div>
-				  	</div>
-
-				  	<div class="topics-table-row" th:each="category,status  : ${categories}">
-					  	<div class="topics-table-cell one"> 
-					  		<p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
+<body>
+    <div id="forumcontainer" class="container">
+        <div class="wraper topics row">
+            <nav>
+                <div class="nav-wrapper blue darken-4">
+                    <div class="col s12">
+                        <a th:href="@{/}" class="brand-logo"><i class="material-icons">cloud</i>Logo</a>
+                        <span style="position: absolute; left: 10em; border-left-style: solid; border-left-width: 3px; border-left-color: rgba(255, 252, 252, 0.37); padding-left: 15px;">
+                        <a class="breadcrumb" th:href="@{/}">Корінь</a>
+                        <th:block th:each="category,itrStat : ${categoriesTree}">
+                            <a class="breadcrumb" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}"></a>
+                        </th:block>
+                        </span>
+                    </div>
+                </div>
+            </nav>
+            <div class="topics-table">
+                <div class="topics-table-row first-row">
+                    <div class="topics-table-cell one"> Розділи </div>
+                    <div class="topics-table-cell four"> Останній пост </div>
+                </div>
+                <div class="topics-table-row" th:each="category,status  : ${categories}">
+                    <div class="topics-table-cell one">
+                        <p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
 					  		 Назва розділу
 					  		 </a></p>
-					  		<p th:text="${category.description}"> 
-					  		</p>
-					  	 </div>
-					  	<div th:if="${lastTopics[status.index]!=null}" class="topics-table-cell four"> 
-							<p> <span th:text="${#dates.format(lastTopics[status.index].date,'dd/MMM/yyyy HH:mm')}"></span></p>
-							<p> <b>Тема: </b> <span th:text="${lastTopics[status.index].name}"></span> </p>
-							<p ><b>Автор</b><span th:text="${lastTopics[status.index].author.login}"></span></p>
-					  	</div>
-					  	<div th:unless="${lastTopics[status.index]!=null}" class="topics-table-cell four"> 
-							<p><b>Топіки відсутні</b></p>
-					  	</div>
-				  	</div>
-			  	</div>		  	
-		  	</div>
+                        <p th:text="${category.description}">
+                        </p>
+                    </div>
+                    <div th:if="${lastTopics[status.index]!=null}" class="topics-table-cell four">
+                        <p> <span th:text="${#dates.format(lastTopics[status.index].date,'dd/MMM/yyyy HH:mm')}"></span></p>
+                        <p> <b>Тема: </b> <span th:text="${lastTopics[status.index].name}"></span> </p>
+                        <p><b>Автор</b><span th:text="${lastTopics[status.index].author.login}"></span></p>
+                    </div>
+                    <div th:unless="${lastTopics[status.index]!=null}" class="topics-table-cell four">
+                        <p><b>Топіки відсутні</b></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="  page-list">
+            <ul class="pagination">
+                <li>
+                    <a href="#" aria-label="Previous">
+                        <span aria-hidden="true">«</span>
+                    </a>
+                </li>
+                <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+                    <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
+                        <span th:text="${page}"></span>
+                    </a>
+                </li>
+                <li th:if="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+                    <a href="#" th:href="@{/categories_list/?page=__${page}__}">
+                        <span th:text="${page}"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">»</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
 
-			<div class="  page-list">
-				 <ul class="pagination">
-				    <li>
-				      <a href="#" aria-label="Previous">
-				        <span aria-hidden="true">«</span>
-				      </a>
-				    </li>
-				    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-				      <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
-				        <span th:text="${page}"></span>
-				      </a>
-				    </li>
-				       <li th:if="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-				      <a href="#" th:href="@{/categories_list/?page=__${page}__}">
-				        <span th:text="${page}"></span>
-				      </a>
-				    </li>
-				    <li>
-				      <a href="#" aria-label="Next">
-				        <span aria-hidden="true">»</span>
-				      </a>
-				    </li>
-				  </ul>
-			</div>
-		</div>
-	</body>
 </html>

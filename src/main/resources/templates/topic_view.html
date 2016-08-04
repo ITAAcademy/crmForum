@@ -1,79 +1,77 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>CrmForum</title>
-	
-	 <div th:include="includes">...</div>
-	 <script th:src="@{/libs/xbbcode.js}"></script>
-	<script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
-	<link type="text/css" th:href="@{/libs/css/xbbcode.css}" rel="stylesheet" />
-	<link type="text/css" th:href="@{/libs/css/spoiler.css}" rel="stylesheet" />		
-	<script th:src="@{/js/topic.js}"></script>
-		<script th:src="@{/libs/spoiler.js}"></script>
+    <title>CrmForum</title>
+    <div th:include="includes">...</div>
+    <script th:src="@{/libs/xbbcode.js}"></script>
+    <script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
+    <link type="text/css" th:href="@{/libs/css/xbbcode.css}" rel="stylesheet" />
+    <link type="text/css" th:href="@{/libs/css/spoiler.css}" rel="stylesheet" />
+    <script th:src="@{/js/topic.js}"></script>
+    <script th:src="@{/libs/spoiler.js}"></script>
 </head>
 
-	<body>
-		<div id="forumcontainer" class="container"  >
+<body>
+    <div id="forumcontainer" class="container">
+        <div class="wraper topics row">
+            <nav>
+                <div class="nav-wrapper blue darken-4">
+                    <div class="col s12">
+                        <a class="breadcrumb" th:href="@{/}">Корінь</a>
+                        <th:block th:each="category,itrStat : ${categoriesTree}">
+                            <a class="breadcrumb" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}"></a>
+                        </th:block>
+                    </div>
+                </div>
+            </nav>
+            <!-- Topic info -->
+            <div class="topic_info">
+                <h1 th:text="${topic.name}"></h1>
+                <h2 th:text="${topic.author.email}"></h2>
+            </div>
+            <!-- /Topic info -->
+            <div class="topics-table">
+                <div class="topics-table-row first-row">
+                    <div class="topics-table-cell one"> Автор </div>
+                    <div class="topics-table-cell four"> Пост </div>
+                </div>
+                <div class="topics-table-row" th:each="message : ${messages}">
+                    <div class="topics-table-cell one">
+                        <p class="topic_message_author" th:text="${message.author.email}">
+                        </p>
+                        <img class="avatar" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
+                    </div>
+                    <div class="topics-table-cell four">
+                        <p class="topic_message_text" th:text="${message.body}">message.body</p>
+                    </div>
+                </div>
+            </div>
+            <form th:action="@{/messages/add/__${topic.id}__}" method="POST">
+                <textarea cols="80" id="ckeditor" name="text" rows="10">
+                </textarea>
+            </form>
+        </div>
+        <div class="  page-list">
+            <ul class="pagination">
+                <li>
+                    <a href="#" aria-label="Previous">
+                        <span aria-hidden="true">«</span>
+                    </a>
+                </li>
+                <li th:unless="${topicId==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
+                    <a href="#" th:href="@{/view/topic/__${topicId}__/__${page}__}">
+                        <span th:text="${page}"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">»</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
 
-		 	<div class="wraper topics">
-		 		<div class="topic-path" >
-		 		<div class="glyphicon glyphicon-play topic-path-arrow"></div>
-		 		<a class = "topic-path-a" th:href="@{/}">Корінь</a>
-		 		<div class="glyphicon glyphicon-play topic-path-arrow"></div>
-		 		<th:block th:each="category,itrStat : ${categoriesTree}">
-					<a th:if="${category.id}!=null"  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
-					<span th:if="${category.id}==null"  class="topic-path-a" th:text="${category.name}" ></span>
-		 		</th:block>
-		 		</div>
-			     
-			     			<!-- Topic info -->
-					<div class="topic_info">
-				<h1 th:text="${topic.name}"></h1>
-				<h2 th:text="${topic.author.email}"></h2>
-				</div>
-				<!-- /Topic info -->		
-				<div class="topics-table">
-				 	<div class="topics-table-row first-row">
-					  	<div class="topics-table-cell one"> Автор </div>
-					  	<div class="topics-table-cell four"> Пост </div>
-				  	</div>
-
-				  	<div class="topics-table-row" th:each="message : ${messages}">
-					  	<div class="topics-table-cell one"> 
-					  		<p class="topic_message_author"  th:text="${message.author.email}"> 
-					  		</p>
-					  		<img class="avatar" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt=""/>
-					  	 </div>
-					  	<div class="topics-table-cell four"> 
-							<p class="topic_message_text" th:text="${message.body}">message.body</p>
-					  	</div>
-				  	</div>
-			  	</div>
-			<form th:action="@{/messages/add/__${topic.id}__}" method="POST">
-<textarea cols="80" id="ckeditor" name="text" rows="10">		
-	</textarea>
-</form>
-		  	</div>
-
-			<div class="  page-list">
-				 <ul class="pagination">
-				    <li>
-				      <a href="#" aria-label="Previous">
-				        <span aria-hidden="true">«</span>
-				      </a>
-				    </li>
-				      <li th:unless="${topicId==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-		      <a href="#" th:href="@{/view/topic/__${topicId}__/__${page}__}">
-		        <span th:text="${page}"></span>
-		      </a>
-		    </li>
-				    <li>
-				      <a href="#" aria-label="Next">
-				        <span aria-hidden="true">»</span>
-				      </a>
-				    </li>
-				  </ul>
-			</div>
-		</div>
-	</body>
 </html>

@@ -8,13 +8,17 @@
 
 	<body>
 		<div id="forumcontainer" class="container"  >
-		 	<div class="wraper topics">
-		 		<div class="topic-path" >
-		 		<th:block th:each="category,itrStat : ${categoriesTree}">
-		 		<div th:if="${itrStat.index}==0" class="glyphicon glyphicon-play topic-path-arrow"></div>
-					<a  class="topic-path-a" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}" ></a>
-		 		</th:block>
-		 		</div>
+		 	<div class="wraper topics row">
+		 		            <nav>
+                <div class="nav-wrapper blue darken-4">
+                    <div class="col s12">
+                        <a class="breadcrumb" th:href="@{/}">Корінь</a>
+                        <th:block th:each="category,itrStat : ${categoriesTree}">
+                            <a class="breadcrumb" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}"></a>
+                        </th:block>
+                    </div>
+                </div>
+            </nav>
 			     		
 				<div class="topics-table">
 				 	<div class="topics-table-row first-row">
