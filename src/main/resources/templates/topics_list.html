@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="page-list row">
-            <span th:unless="${currentCategory==null}" th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topicId}__/'">...</span>
+            <span th:unless="${currentCategory==null}" th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/category/__${currentCategory.id}__/'">...</span>
         </div>
     </div>
     <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">

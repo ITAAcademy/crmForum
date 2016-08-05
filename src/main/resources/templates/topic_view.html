@@ -21,23 +21,18 @@
                 <h4 th:text="${topic.name}"></h4>
                 <h5 th:text="${topic.author.email}"></h5>
             </div>
-            <!-- /Topic info -->
-            <div class="topics-table">
-                <div class="topics-table-row first-row">
-                    <div class="topics-table-cell one"> Автор </div>
-                    <div class="topics-table-cell four"> Пост </div>
-                </div>
-                <div class="topics-table-row" th:each="message : ${messages}">
-                    <div class="topics-table-cell one">
-                        <p class="topic_message_author" th:text="${message.author.email}">
-                        </p>
-                        <img class="avatar" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
-                    </div>
-                    <div class="topics-table-cell four">
-                        <p class="topic_message_text" th:text="${message.body}">message.body</p>
-                    </div>
-                </div>
-            </div>
+            <ul class="collection">
+                <li class="collection-item avatar" th:each="message : ${messages}">
+                    <img class="circle" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
+                    <span class="title" th:text="${message.author.email}" style=" font-weight: bold; text-decoration: underline;">Who</span>
+                    <p style="text-align: left; padding-left: 20px; font-size: 18px;">
+                        <span class="topic_message_text" th:text="${message.body}"></span>
+                        <br/>
+                    </p>
+                    <p style="text-align: right; padding-right: 20px; font-size: 18px;">15:11 10.20.15</p>
+                    <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                </li>
+            </ul>
             <ul class="collapsible" data-collapsible="accordion">
                 <li>
                     <div class="collapsible-header"><i class="material-icons">add</i>Додати запис</div>
@@ -50,24 +45,8 @@
                 </li>
             </ul>
         </div>
-        <div class="  page-list">
-            <ul class="pagination">
-                <li>
-                    <a href="#" aria-label="Previous">
-                        <span aria-hidden="true">«</span>
-                    </a>
-                </li>
-                <li th:unless="${topicId==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-                    <a href="#" th:href="@{/view/topic/__${topicId}__/__${page}__}">
-                        <span th:text="${page}"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" aria-label="Next">
-                        <span aria-hidden="true">»</span>
-                    </a>
-                </li>
-            </ul>
+        <div class="page-list row">
+            <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topicId}__/'">...</span>
         </div>
     </div>
 </body>
