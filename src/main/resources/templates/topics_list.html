@@ -1,93 +1,76 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>CrmForum</title>
-	
-	 <div th:include="includes">...</div>
+    <title>CrmForum</title>
+    <div th:include="includes">...</div>
 </head>
 
-	<body>
-		<div id="forumcontainer" class="container"  >
-		 	<div class="wraper topics row">
-		 		            <nav>
-                <div class="nav-wrapper blue darken-4">
-                    <div class="col s12">
-                        <a class="breadcrumb" th:href="@{/}">Корінь</a>
-                        <th:block th:each="category,itrStat : ${categoriesTree}">
-                            <a class="breadcrumb" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}"></a>
-                        </th:block>
-                    </div>
+<body>
+    <div id="forumcontainer" class="container">
+        <div class="wraper topics row">
+            <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
+            <div class="topics-table">
+                <div class="topics-table-row first-row">
+                    <div class="topics-table-cell one"> Топіки </div>
+                    <div class="topics-table-cell four"> Останній пост </div>
                 </div>
-            </nav>
-			     		
-				<div class="topics-table">
-				 	<div class="topics-table-row first-row">
-					  	<div class="topics-table-cell one"> Топіки </div>
-					  	<div class="topics-table-cell four"> Останній пост </div>
-				  	</div>
-
-				  	<div class="topics-table-row" th:each="topic,status : ${topics}">
-					  	<div class="topics-table-cell one">
-					  	<!--For admin -->
-					  	<th:block th:if="${isAdmin}">
-					  		<form method="post" th:action="@{/operations/topic/__${topic.id}__/toggle_pin}" class="inline">
-					  		
-					  		<button class="link_button" type="submit" th:if="${topic.pinned}"><span class="filled_star"></span></button>
-					  		<button class="link_button" type="submit" th:unless="${topic.pinned}"><span class="unfilled_star" ></span></button>
-					  		</form>
-					  		</th:block>
-					  	<!--///For admin -->
-					  	<!--For regular user -->
-					  	 	<th:block th:unless="${isAdmin}">
-					<span class="filled_star" th:if="${topic.pinned}">
+                <div class="topics-table-row" th:each="topic,status : ${topics}">
+                    <div class="topics-table-cell one">
+                        <!--For admin -->
+                        <th:block th:if="${isAdmin}">
+                            <form method="post" th:action="@{/operations/topic/__${topic.id}__/toggle_pin}" class="inline">
+                                <button class="link_button" type="submit" th:if="${topic.pinned}"><span class="filled_star"></span></button>
+                                <button class="link_button" type="submit" th:unless="${topic.pinned}"><span class="unfilled_star"></span></button>
+                            </form>
+                        </th:block>
+                        <!--///For admin -->
+                        <!--For regular user -->
+                        <th:block th:unless="${isAdmin}">
+                            <span class="filled_star" th:if="${topic.pinned}">
 					  			
 					  		</span>
-					  		<span class="unfilled_star" th:unless="${topic.pinned}">
+                            <span class="unfilled_star" th:unless="${topic.pinned}">
 					  			
 					  		</span>
-					  		</th:block>
-					  	<!--/For regular user -->
-					  		<p><a class="topic_name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
+                        </th:block>
+                        <!--/For regular user -->
+                        <p><a class="topic_name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
 					  		 Назва розділу
 					  		 </a></p>
-					  		<p th:text="${topic.author.email}"> 
-					  		</p>
-					  	 </div>
-					  	<div th:if="${lastMessages[status.index]!=null}" class="topics-table-cell four"> 
-							<p> <span th:text="${#dates.format(lastMessages[status.index].date,'dd/MMM/yyyy HH:mm')}"></span> </p>
-							<p> <b>Повідомлення: </b> <span th:text="${lastMessages[status.index].body}"></span></p>
-							<p> <b>Автор: </b> <span th:text="${lastMessages[status.index].author.login}"></span> </p>
-					  	</div>
-					  		<div th:unless="${lastMessages[status.index]!=null}" class="topics-table-cell four"> 
-							<p><b>Повідомлення відсутні</b></p>
-					  	</div>
-				  	</div>
-			  	</div>
-			<form method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
-				<input type="text" name="topic_name"/>
-				<input type="submit" value="Додати"/>
-			</form>
-		  	</div>
+                        <p th:text="${topic.author.email}">
+                        </p>
+                    </div>
+                    <div th:if="${lastMessages[status.index]!=null}" class="topics-table-cell four">
+                        <p> <span th:text="${#dates.format(lastMessages[status.index].date,'dd/MMM/yyyy HH:mm')}"></span> </p>
+                        <p> <b>Повідомлення: </b> <span th:text="${lastMessages[status.index].body}"></span></p>
+                        <p> <b>Автор: </b> <span th:text="${lastMessages[status.index].author.login}"></span> </p>
+                    </div>
+                    <div th:unless="${lastMessages[status.index]!=null}" class="topics-table-cell four">
+                        <p><b>Повідомлення відсутні</b></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-list row">
+            <span th:unless="${currentCategory==null}" th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topicId}__/'">...</span>
+        </div>
+    </div>
+    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+        <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
+    </div>
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal bottom-sheet">
+        <form method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
+            <div class="modal-content">
+                <h4>Створити новий топік</h4>
+                <input type="text" name="topic_name" />
+            </div>
+            <div class="modal-footer">
+                <input class=" modal-action modal-close waves-effect waves-green btn-flat" type="submit" value="Додати" />
+            </div>
+        </form>
+    </div>
+</body>
 
-			<div class="  page-list">
-				 <ul class="pagination">
-				    <li>
-				      <a href="#" aria-label="Previous">
-				        <span aria-hidden="true">«</span>
-				      </a>
-				    </li>
-				    <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-				      <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
-				        <span th:text="${page}"></span>
-				      </a>
-				    </li>
-				    <li>
-				      <a href="#" aria-label="Next">
-				        <span aria-hidden="true">»</span>
-				      </a>
-				    </li>
-				  </ul>
-			</div>
-		</div>
-	</body>
 </html>

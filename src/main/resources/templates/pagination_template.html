@@ -1,0 +1,14 @@
+<!-- <ul class="pagination" th:with="ddd='\'/view/category/__${currentCategory.id}__/\' + ${page}'"> -->
+
+<ul class="pagination">
+    <li class="waves-effect" th:class="1 == ${currentPage} ? 'disabled'"><a th:href="1 != ${currentPage} ? @{__${link}____${currentPage - 1}__} : '#!'"><i class="material-icons">chevron_left</i></a></li>
+    <li class="waves-effect" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:classappend="${page} == ${currentPage} ? 'active blue darken-3'">
+        <a th:if="${currentCategory==null}" href="#" th:href="@{/categories_list/?page=__${page}__}">
+            <span th:text="${page}"></span>
+        </a>
+        <a href="#" th:href="@{__${link}____${page}__}">
+            <span th:text="${page}"></span>
+        </a>
+    </li>
+    <li th:class="${pagesCount} == ${currentPage} ? 'disabled'" class="waves-effect"><a th:href="${pagesCount} != ${currentPage} ? @{__${link}____${currentPage + 1}__} : '#!'"><i class="material-icons">chevron_right</i></a></li>
+</ul>

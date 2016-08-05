@@ -8,20 +8,8 @@
 
 <body>
     <div id="forumcontainer" class="container">
-        <div class="wraper topics row">
-            <nav>
-                <div class="nav-wrapper blue darken-4">
-                    <div class="col s12">
-                        <a th:href="@{/}" class="brand-logo"><i class="material-icons">cloud</i>Logo</a>
-                        <span style="position: absolute; left: 10em; border-left-style: solid; border-left-width: 3px; border-left-color: rgba(255, 252, 252, 0.37); padding-left: 15px;">
-                        <a class="breadcrumb" th:href="@{/}">Корінь</a>
-                        <th:block th:each="category,itrStat : ${categoriesTree}">
-                            <a class="breadcrumb" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}"></a>
-                        </th:block>
-                        </span>
-                    </div>
-                </div>
-            </nav>
+        <div class="row">
+            <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <div class="topics-table">
                 <div class="topics-table-row first-row">
                     <div class="topics-table-cell one"> Розділи </div>
@@ -46,29 +34,8 @@
                 </div>
             </div>
         </div>
-        <div class="  page-list">
-            <ul class="pagination">
-                <li>
-                    <a href="#" aria-label="Previous">
-                        <span aria-hidden="true">«</span>
-                    </a>
-                </li>
-                <li th:unless="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-                    <a href="#" th:href="@{/view/category/__${currentCategory.id}__/__${page}__}">
-                        <span th:text="${page}"></span>
-                    </a>
-                </li>
-                <li th:if="${currentCategory==null}" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:class="${page} == ${currentPage} ? 'active'">
-                    <a href="#" th:href="@{/categories_list/?page=__${page}__}">
-                        <span th:text="${page}"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" aria-label="Next">
-                        <span aria-hidden="true">»</span>
-                    </a>
-                </li>
-            </ul>
+        <div class="page-list row">
+            <span th:unless="${currentCategory==null}" th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/category/__${currentCategory.id}__/'">...</span>
         </div>
     </div>
 </body>
