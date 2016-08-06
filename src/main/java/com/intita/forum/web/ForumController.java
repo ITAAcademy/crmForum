@@ -323,7 +323,7 @@ public class ForumController {
 		    return "redirect:"+ referer;
 	}
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
-	public String addTopic(@RequestParam("topic_name") String topicName,@PathVariable Long categoryId,Principal principal,HttpServletRequest request){
+	public String addTopic(@RequestParam("topic_name") String topicName,@RequestParam("topic_text") String topicText,@PathVariable Long categoryId,Principal principal,HttpServletRequest request){
 		 String referer = request.getHeader("Referer");
 		IntitaUser author  = intitaUserService.getIntitaUser(principal);
 		if (author == null) return "redirect:"+referer;
@@ -331,6 +331,7 @@ public class ForumController {
 		if (author == null) return "redirect:"+referer;
 		ForumTopic topic = forumTopicService.addTopic(topicName,category,author);
 		if (topic == null) return "redirect:"+referer;
+		addNewMessage(topicText, topic.getId(), request);
 		return "redirect:"+"/view/topic/"+topic.getId();
 	}
 	@RequestMapping(value="/operations/topic/{topicId}/toggle_pin",method = RequestMethod.POST)
