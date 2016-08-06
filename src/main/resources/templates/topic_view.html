@@ -37,8 +37,8 @@
                     <div class="collapsible-header"><i class="material-icons">add</i>Додати запис</div>
                     <div class="collapsible-body">
                         <form th:action="@{/messages/add/__${topic.id}__}" method="POST">
-                            <textarea cols="80" id="ckeditor" name="text" rows="10">
-                            </textarea>
+                            <textarea cols="80" id="ckeditor" name="text" rows="10"></textarea>
+                            <input id="submitcke" type="submit">Submit</input>
                         </form>
                     </div>
                 </li>
