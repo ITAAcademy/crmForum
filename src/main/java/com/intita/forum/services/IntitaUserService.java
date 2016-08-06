@@ -42,6 +42,7 @@ public class IntitaUserService {
 	}
 	@Transactional
 	public IntitaUser getIntitaUser(Principal principal){
+		if (principal==null) return null;
 		String intitaUserIdStr = principal.getName();
 		Long intitaUserId = 0L;
 				try{
@@ -185,8 +186,15 @@ public class IntitaUserService {
 	}
 	
 	public IntitaUser getCurrentIntitaUser() {
+		if (SecurityContextHolder.getContext().getAuthentication()==null) return null;
 		String idStr =  (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Long id = Long.parseLong(idStr);
+		Long id = null;
+		try{
+		id = Long.parseLong(idStr);
+		}
+		catch(NumberFormatException e){
+			return null;
+		}
 		IntitaUser user = usersRepo.findOne(id);
 		return user;
 	}
