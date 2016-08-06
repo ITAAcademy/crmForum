@@ -329,7 +329,7 @@ public class ForumController {
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
 		topicMessageService.addMessage(message);
-		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 1);
+		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 0);
 		   // return "redirect:"+ referer;
 		return "redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last
 	}
