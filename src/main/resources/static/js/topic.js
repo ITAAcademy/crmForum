@@ -1,6 +1,6 @@
 
 var initCkEditor = function(){
-	CKEDITOR.replace( 'ckeditor', {
+	var editor = CKEDITOR.replace( 'ckeditor', {
 		height: '100%',
 		//resize_enabled : false,
 		// Add plugins providing functionality popular in BBCode environment.
@@ -23,7 +23,17 @@ var initCkEditor = function(){
 		smiley_descriptions: [
 			'smiley', 'sad', 'wink', 'laugh', 'cheeky', 'blush', 'surprise',
 			'indecision', 'angel', 'cool', 'crying', 'kiss'
-		]
+		],
+		 on: {
+        change: function( evt ) {
+            var sumbitButton = $('#submitcke');
+            	if(evt.editor.getData() === '')
+    sumbitButton.hide();
+  else 
+    sumbitButton.show();
+            //CKEDITOR.dom.element.createFromHtml( '<p style="color:red">Editor contents changed!</p>' ).appendTo( CKEDITOR.document.getBody() );
+        }
+    }
 	});
 }
 var initMessages = function(){
@@ -41,5 +51,7 @@ var initMessages = function(){
 $(document).ready(function(){
 	initMessages();
 	initCkEditor();
+	var sumbitButton = $('#submitcke');
+	sumbitButton.hide();
 });
 		

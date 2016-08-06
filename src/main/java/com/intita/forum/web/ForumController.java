@@ -315,11 +315,12 @@ public class ForumController {
 	
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
 	public String addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request){
+		 String referer = request.getHeader("Referer");
+		if (postText.length()==0)   return "redirect:"+ referer; 
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
-		topicMessageService.addMessage(message);
-		 String referer = request.getHeader("Referer");
+		topicMessageService.addMessage(message);		
 		    return "redirect:"+ referer;
 	}
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
