@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -102,6 +103,29 @@ public class TopicMessageService {
 	@Transactional(readOnly=true)
 	public ArrayList<TopicMessage> getMessagesByDate(Date date) {
 		return topicMessageRepository.findAllByDateAfter(date);
+	}
+	@Transactional
+	public Page<TopicMessage> getAllMessagesAndPinFirst(Long topicId,int page){
+		  PageRequest pageable = new PageRequest(page, messagesCountPerPage);
+		  ForumTopic topic = forumTopicService.getTopic(topicId);
+		  TopicMessage firstMessage = topicMessageRepository.findFirstByTopicOrderByDateAsc(topic);
+		  if (firstMessage==null)return null;
+		  List<TopicMessage> otherMessages =topicMessageRepository.findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(topic.getId(),firstMessage.getId());
+		  List<TopicMessage> allMessages = new ArrayList<TopicMessage>();
+		  if (firstMessage!=null)
+		  allMessages.add(firstMessage);
+		  if (otherMessages!=null)
+		  allMessages.addAll(otherMessages);		 
+		  int max = (messagesCountPerPage*(page+1)>allMessages.size())? allMessages.size(): messagesCountPerPage*(page+1);
+		  List<TopicMessage> sublist = allMessages.subList(page*messagesCountPerPage, max);
+		  if (page>0){
+			//remove last and put author initial message firstly
+			//  sublist.remove(sublist.size()-1);
+			  sublist.add(0,firstMessage);
+		  }
+		  Page<TopicMessage> pageObj = new PageImpl<TopicMessage>(sublist,pageable,allMessages.size());
+		
+		return pageObj;
 	}
 
 }

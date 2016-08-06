@@ -8,7 +8,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
@@ -18,6 +20,9 @@ import com.intita.forum.models.TopicMessage;
 public interface TopicMessageRepository  extends CrudRepository<TopicMessage, Long>{
 	  TopicMessage findById(Long id);
 	  Page<TopicMessage> findAll(Pageable pageable);
+	  
+	  @Query(value = "SELECT m FROM topic_message m WHERE m.id <> (:messageId) and topic.id = (:topicId) order by date asc")
+	  ArrayList<TopicMessage> findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(@Param(value = "topicId")Long topicId,@Param(value = "messageId")Long messageid);
 	  ArrayList<TopicMessage> findByAuthor(IntitaUser author);
 	  Page<TopicMessage> findByTopic(ForumTopic topic,Pageable page);
 	  Page<TopicMessage> findByTopicId(Long topicId,Pageable page);
@@ -32,4 +37,5 @@ public interface TopicMessageRepository  extends CrudRepository<TopicMessage, Lo
 	  Set<TopicMessage> findAllByAuthorNot(IntitaUser user);
 	  ArrayList<TopicMessage> findAllByDateAfter(Date date);
 	  TopicMessage findFirstByTopicOrderByDateDesc(ForumTopic topic);
+	  TopicMessage findFirstByTopicOrderByDateAsc(ForumTopic topic);
 }
