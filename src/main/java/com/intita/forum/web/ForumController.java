@@ -328,8 +328,10 @@ public class ForumController {
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
-		topicMessageService.addMessage(message);		
-		    return "redirect:"+ referer;
+		topicMessageService.addMessage(message);
+		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 1);
+		   // return "redirect:"+ referer;
+		return "redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last
 	}
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
 	public String addTopic(@RequestParam("topic_name") String topicName,@RequestParam("topic_text") String topicText,@PathVariable Long categoryId,Principal principal,HttpServletRequest request){
