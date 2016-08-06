@@ -4,6 +4,12 @@
 <head>
     <title>CrmForum</title>
     <div th:include="includes">...</div>
+    <script th:src="@{/libs/xbbcode.js}"></script>
+    <script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
+    <link type="text/css" th:href="@{/libs/css/xbbcode.css}" rel="stylesheet" />
+    <link type="text/css" th:href="@{/libs/css/spoiler.css}" rel="stylesheet" />
+    <script th:src="@{/js/topic.js}"></script>
+    <script th:src="@{/libs/spoiler.js}"></script>
 </head>
 
 <body>
@@ -60,14 +66,23 @@
         <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
     </div>
     <!-- Modal Structure -->
-    <div id="modal1" class="modal bottom-sheet">
+    <div id="modal1" class="modal bottom-sheet modal-fixed-footer" style="min-height: 90%;overflow: hidden">
         <form method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
             <div class="modal-content">
                 <h4>Створити новий топік</h4>
-                <input type="text" name="topic_name" />
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="topic_name" name="topic_name" type="text" class="validate" />
+                        <label for="topic_name">Заголовок</label>
+                    </div>
+                    <div class="input-field col s12" style="postition: absolute; min-height: 70%;overflow: hidden">
+                        <textarea cols="20" id="ckeditor" name="topic_text" rows="10">
+                            </textarea>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <input class=" modal-action modal-close waves-effect waves-green btn-flat" type="submit" value="Додати" />
+                <input style="" class=" modal-action modal-close waves-effect waves-green btn-flat" type="submit" value="Додати" />
             </div>
         </form>
     </div>

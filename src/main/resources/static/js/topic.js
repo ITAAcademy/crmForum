@@ -1,12 +1,13 @@
 
 var initCkEditor = function(){
 	CKEDITOR.replace( 'ckeditor', {
-		height: 280,
+		height: '100%',
+		//resize_enabled : false,
 		// Add plugins providing functionality popular in BBCode environment.
-		extraPlugins: 'bbcode,smiley,font,colorbutton,save,spoiler',
+		extraPlugins: 'bbcode,autogrow,smiley,font,colorbutton,save,spoiler',
 		// Remove unused plugins.
 		//removePlugins: 'filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
-		removePlugins: 'filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
+		removePlugins: 'resize,filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
 		// Remove unused buttons.
 		removeButtons: 'Anchor,BGColor,Font,Strike,Subscript,Superscript',
 		// Width and height are not supported in the BBCode format, so object resizing is disabled.
