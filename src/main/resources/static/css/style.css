@@ -426,12 +426,17 @@ margin-left: 5px;
 	margin-top: -2px;
 }
 .topic_info{
+	text-align: center;
 	background-color: #4582DE ;
 	margin:0 0;
 	display:inline-block;
 	width:100%;
 	color:white;
 }
+.nav-wrapper .breadcrumb:before{
+	margin: 0px;
+}
+
 .topic_message_author{
 	color: black;
 	text-decoration: underline;

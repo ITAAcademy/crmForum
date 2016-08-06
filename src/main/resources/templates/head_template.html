@@ -2,11 +2,9 @@
     <div class="nav-wrapper blue darken-2">
         <div class="col s12">
             <a th:href="@{/}" class="brand-logo"><i class="material-icons">cloud</i>FORUM</a>
-            <span style="position: absolute; left: 12em; border-left-style: solid; border-left-width: 3px; border-left-color: rgba(255, 252, 252, 0.37); padding-left: 15px;">
+            <span style="position: relative; left: 12em; border-left-style: solid; border-left-width: 3px; border-left-color: rgba(255, 252, 252, 0.37); padding-left: 15px;">
                         <a class="breadcrumb" th:href="@{/}">Корінь</a>
-                        <th:block th:each="category,itrStat : ${categoriesTree}">
-                            <a class="breadcrumb" th:text="${category.name}" th:href="${category.id}!=null ? @{/view/category/__${category.id}__} : '#!'"></a>
-                        </th:block>
+                            <a th:each="category,itrStat : ${categoriesTree}" class="breadcrumb" th:text="${category.name}" th:href="${category.id}!=null ? @{/view/category/__${category.id}__} : '#!'"></a>
                         </span>
         </div>
     </div>

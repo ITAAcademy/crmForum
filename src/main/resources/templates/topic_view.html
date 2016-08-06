@@ -19,7 +19,6 @@
             <!-- Topic info -->
             <div class="topic_info">
                 <h4 th:text="${topic.name}"></h4>
-                <h5 th:text="${topic.author.email}"></h5>
             </div>
             <ul class="collection">
                 <li class="collection-item avatar" th:each="message : ${messages}">
@@ -29,7 +28,7 @@
                         <span class="topic_message_text" th:text="${message.body}"></span>
                         <br/>
                     </p>
-                    <p style="text-align: right; padding-right: 20px; font-size: 18px;">15:11 10.20.15</p>
+                    <p style="text-align: right; padding-right: 20px; font-size: 18px;" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
                     <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
                 </li>
             </ul>
