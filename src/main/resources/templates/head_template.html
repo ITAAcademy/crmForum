@@ -5,7 +5,7 @@
             <span style="position: absolute; left: 12em; border-left-style: solid; border-left-width: 3px; border-left-color: rgba(255, 252, 252, 0.37); padding-left: 15px;">
                         <a class="breadcrumb" th:href="@{/}">Корінь</a>
                         <th:block th:each="category,itrStat : ${categoriesTree}">
-                            <a class="breadcrumb" th:text="${category.name}" th:href="@{/view/category/__${category.id}__}"></a>
+                            <a class="breadcrumb" th:text="${category.name}" th:href="${category.id}!=null ? @{/view/category/__${category.id}__} : '#!'"></a>
                         </th:block>
                         </span>
         </div>
