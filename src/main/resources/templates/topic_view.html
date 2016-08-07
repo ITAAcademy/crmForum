@@ -19,7 +19,6 @@
             <!-- Topic info -->
             <div class="topic_info">
                 <h4 th:text="${topic.name}"></h4>
-                <h5 th:text="${topic.author.email}"></h5>
             </div>
             <ul class="collection">
                 <li class="collection-item avatar" th:each="message : ${messages}">
@@ -29,21 +28,16 @@
                         <span class="topic_message_text" th:text="${message.body}"></span>
                         <br/>
                     </p>
-                    <p style="text-align: right; padding-right: 20px; font-size: 18px;">15:11 10.20.15</p>
+                    <p style="text-align: right; padding-right: 20px; font-size: 18px;" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
                     <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
                 </li>
             </ul>
-            <ul class="collapsible" data-collapsible="accordion">
-                <li>
-                    <div class="collapsible-header"><i class="material-icons">add</i>Додати запис</div>
-                    <div class="collapsible-body">
-                        <form th:action="@{/messages/add/__${topic.id}__}" method="POST">
-                            <textarea cols="80" id="ckeditor" name="text" rows="10"></textarea>
-                            <input id="submitcke" type="submit">Submit</input>
-                        </form>
-                    </div>
-                </li>
-            </ul>
+            <form th:action="@{/messages/add/__${topic.id}__}" method="POST">
+                <textarea cols="80" id="ckeditor" name="text" rows="10"></textarea>
+                <button id="submitcke" class="waves-effect waves-light btn" style="background-color: rgb(43, 87, 154);width: 100%;border-radius: 0px;box-shadow: none;" type="submit" name="action">Submit
+                    <i class="material-icons right">send</i>
+                </button>
+            </form>
         </div>
         <div class="page-list row">
             <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topicId}__/'">...</span>

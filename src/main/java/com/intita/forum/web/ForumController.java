@@ -2,9 +2,11 @@ package com.intita.forum.web;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +55,7 @@ import com.intita.forum.services.ForumTopicService;
 import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.services.LectureService;
 import com.intita.forum.services.TopicMessageService;
+import com.intita.forum.util.CustomPrettyTime;
 import com.intita.forum.util.ProfanityChecker;
 
 /**
@@ -302,7 +306,11 @@ public class ForumController {
 		if(pagesCount<1)pagesCount=1;
 		model.addObject("pagesCount",pagesCount);
 		model.addObject("currentPage",page);
-		model.addObject("topic",topic); 
+		model.addObject("topic",topic);
+		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
+		model.addObject("prettyTime",p);
+		
+      //  System.out.println(p.format(new Date()));
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
 		model.addObject("config",configMap);
 		return model;
@@ -320,8 +328,10 @@ public class ForumController {
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
-		topicMessageService.addMessage(message);		
-		    return "redirect:"+ referer;
+		topicMessageService.addMessage(message);
+		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 0);
+		   // return "redirect:"+ referer;
+		return "redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last
 	}
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
 	public String addTopic(@RequestParam("topic_name") String topicName,@RequestParam("topic_text") String topicText,@PathVariable Long categoryId,Principal principal,HttpServletRequest request){

@@ -88,6 +88,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				catch(NumberFormatException e){
 				log.info(e.getMessage());
 				throw new UsernameNotFoundException(IntitaIdStr);
+				///return new UsernamePasswordAuthenticationToken("", token.getCredentials(), authorities);
 				}
 					Object obj_s = session.getAttribute("forumId");
 

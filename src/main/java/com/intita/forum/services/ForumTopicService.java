@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
@@ -28,6 +29,8 @@ public class ForumTopicService {
 	private int topicsCountForPage;
 	@Autowired ForumCategoryService forumCategoryService;
 	@Autowired IntitaUserService intitaUserService;
+	@Autowired private CustomAuthenticationProvider authenticationProvider;
+	
 	@Transactional
 	public Page<ForumTopic> getAllTopics(Long categoryId,int page){
 		return forumTopicRepository.findByCategoryId(categoryId,new PageRequest(page,topicsCountForPage)); 
@@ -89,11 +92,10 @@ public class ForumTopicService {
 		return roles;
 	}
 	public boolean checkTopicAccessToUser(Authentication  authentication,Long topicId){
-
-		
 		ForumTopic topic = getTopic(topicId);
 		if (topic==null) return false;
 		LinkedList<Set<IntitaUserRoles>> demandsList = getDemandsForTopic(topicId);
+		//authentication = authenticationProvider.autorization(authenticationProvider);
 		String id =  (String)authentication.getPrincipal();
 		Long longId = Long.parseLong(id);
 		IntitaUser currentUser = intitaUserService.getUser(longId);
