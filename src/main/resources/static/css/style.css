@@ -63,6 +63,9 @@
 .topics {
 	margin: 5px;
 }
+.topics .collection-item.avatar{
+min-height:150px;
+}
 
 .navigate-menu-ul {
 	list-style-type:none;
