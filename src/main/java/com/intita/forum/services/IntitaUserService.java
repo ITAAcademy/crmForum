@@ -13,6 +13,7 @@ import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,10 +41,12 @@ public class IntitaUserService {
 		return usersRepo.findAll(new PageRequest(page-1, pageSize)); 
 
 	}
+	
 	@Transactional
 	public IntitaUser getIntitaUser(Principal principal){
 		if (principal==null) return null;
-		String intitaUserIdStr = principal.getName();
+		IntitaUser u = (IntitaUser)principal;
+		String intitaUserIdStr = ((IntitaUser)principal).getId().toString();
 		Long intitaUserId = 0L;
 				try{
 					intitaUserId = Long.parseLong(intitaUserIdStr);
@@ -93,10 +96,10 @@ public class IntitaUserService {
 	}
 
 	@Transactional(readOnly = false)
-	public void register(String login, String email, String pass) {
+	public void register(String login, String pass) {
 		String passHash = new BCryptPasswordEncoder().encode(pass);
 		//String passHash = pass;
-		IntitaUser u = new IntitaUser(login, email.toLowerCase(), passHash);
+		IntitaUser u = new IntitaUser(login.toLowerCase(), passHash);
 
 		usersRepo.save(u);
 	}

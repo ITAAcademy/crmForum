@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.intita.forum.models.IntitaUser;
+import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.services.RedisService;
 import com.intita.forum.util.SerializedPhpParser;
 /**
@@ -28,10 +30,11 @@ import com.intita.forum.util.SerializedPhpParser;
  */
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider{
-	@Autowired
-	RedisService redisService; 
+	@Autowired	RedisService redisService;
+	@Autowired IntitaUserService userService;
 
 	private	SerializedPhpParser serializedPhpParser;
+	
 
 	@Value("${redis.id}")
 	private String redisId;
@@ -47,7 +50,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				Cookie[] array = attr.getRequest().getCookies();
 				HttpSession session = attr.getRequest().getSession();
 				RequestContextHolder.currentRequestAttributes().getSessionId();				//session.getServletContext().getSessionCookieConfig().setName("CHAT_SESSION");
-				session.setMaxInactiveInterval(3600*12);
+				//session.setMaxInactiveInterval(3600*12);
+				session.setMaxInactiveInterval(120);
 				
 				String value = null;
 				String IntitaLg = "ua";
@@ -87,13 +91,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				}
 				catch(NumberFormatException e){
 				log.info(e.getMessage());
-				throw new UsernameNotFoundException(IntitaIdStr);
+				//throw new UsernameNotFoundException(IntitaIdStr);
+				session.setMaxInactiveInterval(10);
+				return new UsernamePasswordAuthenticationToken(new IntitaUser("anonymousUser", ""), token.getCredentials(), authorities);
 				///return new UsernamePasswordAuthenticationToken("", token.getCredentials(), authorities);
 				}
 					Object obj_s = session.getAttribute("forumId");
 
 				session.setAttribute("chatLg", IntitaLg);
-				Authentication auth = new UsernamePasswordAuthenticationToken(intitaIdLong.toString(), token.getCredentials(), authorities);
+				Authentication auth = new UsernamePasswordAuthenticationToken(userService.getById(intitaIdLong), token.getCredentials(), authorities);
 				//	auth.setAuthenticated(true);
 				return auth;
 	}
@@ -115,7 +121,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 			System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
 			//if(!SecurityContextHolder.getContext().getAuthentication().isAuthenticated())
 			Authentication auth = authenticationProvider.authenticate(SecurityContextHolder.getContext().getAuthentication());
+			
 			SecurityContextHolder.getContext().setAuthentication(auth);
+			//SecurityContextHolder.clearContext();
+			
 			
 			return auth;
 		}

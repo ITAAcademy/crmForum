@@ -80,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		//.addFilterAfter(authenticationTokenFilter, BasicAuthenticationFilter.class)
 		//.addFilterBefore( authenticationTokenFilter, SecurityContextPersistenceFilter.class)
 		.formLogin()
-		.loginPage("/")
+		.loginPage("/login")
 		.successHandler(successHandler())
 		.passwordParameter("password")
 		//.defaultSuccessUrl("/chatFrame.html")
@@ -92,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.and()
 		.authorizeRequests()
 		//.antMatchers("/view/category/{categoryId}/**").access("@forumCategoryService.checkCategoryAccessToUser(authentication,request)")
-		.antMatchers("/","/test","/categories_list").permitAll()
+		.antMatchers("/","/login").permitAll()
 		.anyRequest().authenticated();
 
 		/*

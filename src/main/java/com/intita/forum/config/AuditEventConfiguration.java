@@ -22,7 +22,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Component(value = "customAuthenticationEntryPoint")
 public class AuditEventConfiguration implements AuthenticationEntryPoint {
 
-	private String loginPageUrl = "/";
+	private String loginPageUrl = "/login";
 
 	private boolean returnParameterEnabled = true;
 

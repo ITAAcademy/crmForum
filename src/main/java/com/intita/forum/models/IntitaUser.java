@@ -147,11 +147,11 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 	public static boolean isAnonymous() {
 		// Method SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
 		// do nothing because anonimus user is considered authorized too
-		return "anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getName());
+		return "anonymousUser".equals(((IntitaUser)(SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
 	}
 
-	public IntitaUser(String login, String email, String password) {
-		this.login = login;
+	public IntitaUser(String email_login, String password) {
+		this.login = email_login;
 		//this.email = email;
 		this.password = password;
 	}

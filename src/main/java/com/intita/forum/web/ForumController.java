@@ -193,8 +193,21 @@ public class ForumController {
 			return "ua";
 		return lg;
 	}
+	
+	@RequestMapping(value="/login", method = RequestMethod.GET)
+	public ModelAndView  getLoginPage(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Principal principal) {
+		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
+		
+		//chatLangService.updateDataFromDatabase();
+		if(before != null)
+		{
+			 return new ModelAndView("redirect:"+ before);
+		}
+		return new ModelAndView("redirect:/");
+	}
+		
 	@RequestMapping(value="/", method = RequestMethod.GET)
-	public ModelAndView  getIndex(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Principal principal) {
+	public ModelAndView  getIndex(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
 		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
 		
 		//chatLangService.updateDataFromDatabase();
@@ -205,7 +218,7 @@ public class ForumController {
 		//if(auth != null)
 			//addLocolization(model, forumUsersService.getForumUser(auth));
 		ModelAndView result = new ModelAndView("index");
-		IntitaUser intitaUser = intitaUserService.getIntitaUser(auth);
+		IntitaUser intitaUser = (IntitaUser) auth.getPrincipal();
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
 		for (ForumCategory category : categories){
@@ -244,7 +257,7 @@ public class ForumController {
 	}
 	
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page,Principal principal){
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page,Authentication principal){
 		ModelAndView model = new ModelAndView();
 		
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
@@ -277,7 +290,7 @@ public class ForumController {
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
 			}
-			IntitaUser user = intitaUserService.getIntitaUser(principal);
+			IntitaUser user = (IntitaUser) principal.getPrincipal();;
 			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
@@ -289,12 +302,12 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId,Principal principal){
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId,Authentication principal){
 		return viewCategoryById(categoryId,1,principal);
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page){
+	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page, Authentication auth){
 		ModelAndView model = new ModelAndView("topic_view");
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
@@ -307,6 +320,7 @@ public class ForumController {
 		model.addObject("pagesCount",pagesCount);
 		model.addObject("currentPage",page);
 		model.addObject("topic",topic);
+		model.addObject("user", (IntitaUser)auth.getPrincipal());
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
 		
@@ -317,8 +331,8 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(@PathVariable Long topicId){	
-		return viewTopicById(topicId,1);
+	public ModelAndView viewTopicById(@PathVariable Long topicId, Authentication auth){	
+		return viewTopicById(topicId, 1, auth);
 	}
 	
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)

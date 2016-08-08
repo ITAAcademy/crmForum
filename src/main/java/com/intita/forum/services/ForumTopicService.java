@@ -96,9 +96,7 @@ public class ForumTopicService {
 		if (topic==null) return false;
 		LinkedList<Set<IntitaUserRoles>> demandsList = getDemandsForTopic(topicId);
 		//authentication = authenticationProvider.autorization(authenticationProvider);
-		String id =  (String)authentication.getPrincipal();
-		Long longId = Long.parseLong(id);
-		IntitaUser currentUser = intitaUserService.getUser(longId);
+		IntitaUser currentUser = (IntitaUser) authentication.getPrincipal();
 		if(intitaUserService.hasAllRolesSets(currentUser.getId(),demandsList)){
 			return true;
 		}

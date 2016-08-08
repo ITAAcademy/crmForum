@@ -217,9 +217,7 @@ public boolean checkCategoryAccessToUser(Authentication  authentication,Long cat
 	ForumCategory category = getCategoryById(categoryId);
 	if (category==null) return false;
 	LinkedList<Set<IntitaUserRoles>> demandedRoles = getDemandsForCategory(categoryId);
-	String id =  (String)authentication.getPrincipal();
-	Long longId = Long.parseLong(id);
-	IntitaUser currentUser = intitaUserService.getUser(longId);
+	IntitaUser currentUser =  (IntitaUser) authentication.getPrincipal();
 	if(intitaUserService.hasAllRolesSets(currentUser.getId(),demandedRoles)){
 		return true;
 	}
