@@ -211,6 +211,7 @@ public class ForumController {
 		for (ForumCategory category : categories){
 			lastTopics.add(forumCategoryService.getLastTopic(category.getId()));
 		}
+		if (intitaUser!=null)
 		result.addObject("username",intitaUser.getNickName());
 		result.addObject("categories",categories);
 		result.addObject("lastTopics",lastTopics);
