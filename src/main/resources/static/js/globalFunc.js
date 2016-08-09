@@ -327,3 +327,13 @@ function parseBoolean(value) {
 function Color(val){
     this.val = val;
 }
+function onDivLinkClick(event,url){
+ var isLink = event.target.nodeName == "a";
+        if (!isLink) { //skip redirection to chatroom from block onclick event
+            //if click occured in <a> element
+           GoToUrl(url);
+        }
+}
+function GoToUrl(url){
+window.location.href = url;
+}

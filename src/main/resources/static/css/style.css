@@ -171,16 +171,17 @@ min-height:150px;
 }
 
 .topics-table-row {
-	/*background-color: yellow;*/
 	width: auto;
 	min-height 20px;
 	position: relative;
 	display:table-row;
+	color:black;
+	cursor:pointer;
 }
 
 .topics-table-row:hover {
 	background-color: #EFF6FF;
-
+	
 }
 
 .topics-table-row.first-row {

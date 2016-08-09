@@ -219,6 +219,8 @@ public class ForumController {
 		if(pagesCount<1)pagesCount=1;
 		result.addObject("pagesCount",pagesCount);
 		result.addObject("currentPage",1);
+		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
+		result.addObject("prettyTime",p);
 		return result;
 	}
 	//@author zinhcuk roman
@@ -236,6 +238,8 @@ public class ForumController {
 		if(pagesCount<1)pagesCount=1;
 		model.addObject("pagesCount",pagesCount);
 		model.addObject("currentPage",page);
+		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
+		model.addObject("prettyTime",p);
 		return model;
 	}
 	@RequestMapping(value="/test",method = RequestMethod.GET)
@@ -255,6 +259,8 @@ public class ForumController {
 		model.addObject("currentCategory",category);
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
 		model.addObject("isCategoriesContainer",category.isCategoriesContainer());
+		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
+		model.addObject("prettyTime",p);
 		if (category.isCategoriesContainer())
 		{
 			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
