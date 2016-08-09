@@ -177,11 +177,11 @@ min-height:150px;
 }
 
 .topics-table-row:hover {
-	background-color: #EFF6FF;
+	background-color: #e1f5fe  ;
 }
 
 .topics-table-row.first-row {
-    background-color: #4597DE;
+    background-color: #0277bd ;
     /*  #97CBF4;*/
     color: white;
     height: 40px;
@@ -192,7 +192,7 @@ min-height:150px;
     /*border: 1px solid blue;*/
     display: inline-block;
     padding: 10px;
-    border: 2px solid #4597DE;
+    border: 2px solid #0277bd ;
     margin: 0;
     margin-right: -5px;
     /*align-items: stretch;*/
@@ -422,7 +422,7 @@ min-height:150px;
 
 .topic_info {
     text-align: center;
-    background-color: #4582DE;
+    background-color: #0277bd;
     margin: 0 0;
     display: inline-block;
     width: 100%;

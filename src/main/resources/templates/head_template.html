@@ -1,9 +1,9 @@
 <div class="row menu">
-    <div class="col l1 m12 s12" style="text-align: center;background-color:#1976D2;line-height: 64px;margin: auto;height: auto;font-size: 19px;">
+    <div class="col l1 m12 s12" style="text-align: center;background-color:#01579b ;line-height: 64px;margin: auto;height: auto;font-size: 19px;">
         <a th:href="@{/}" class="brand-logo"><i class="material-icons"></i>Forum</a>
     </div>
     <div class="col l11 m12 s12">
-        <nav class="blue darken-2" style="max-height:64px;    overflow: hidden; box-shadow:none">
+        <nav class="light-blue darken-4" style="max-height:64px;    overflow: hidden; box-shadow:none">
             <span class="breadcrumb-container" style="position: relative; padding-left: 15px;">
                         <a class="breadcrumb" th:href="@{/}"><div>Корінь</div></a>
                             <a th:each="category,itrStat : ${categoriesTree}" data-position="bottom" data-delay="50" th:attr="data-tooltip=${category.name}" class="breadcrumb tooltipped"  th:href="${category.id}!=null ? @{/view/category/__${category.id}__} : '#!'"><div th:text="${category.name}"></div></a>
