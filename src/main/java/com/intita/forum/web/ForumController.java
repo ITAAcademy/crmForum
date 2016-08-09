@@ -347,12 +347,14 @@ public class ForumController {
 		 String referer = request.getHeader("Referer");
 		if (postText.length()==0)   return "redirect:"+ referer; 
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
+		if(currentUser.isAnonymous())
+			return "redirect:"+ referer;
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
 		topicMessageService.addMessage(message);
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 0);
-		   // return "redirect:"+ referer;
-		return "redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last
+		return "redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last		
+		
 	}
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
 	public String addTopic(@RequestParam("topic_name") String topicName,@RequestParam("topic_text") String topicText,@PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
@@ -377,6 +379,31 @@ public class ForumController {
 		}
 		return "redirect:"+referer;
 	}
+	@ResponseBody
+	@RequestMapping(value="/operations/message/{messageId}/get",method = RequestMethod.POST)
+	public String getMsg(@PathVariable("messageId") Long msgID, Authentication auth,HttpServletRequest request){
+		IntitaUser user = (IntitaUser) auth.getPrincipal();
+		if(user.isAnonymous())
+			return "null";//need return code
+		TopicMessage msg = topicMessageService.getMessage(msgID);
+		if(msg == null /*|| !msg.getAuthor().equals(user)*/)
+			return "null";//need return code
+		return msg.getBody();
+	}
+	@ResponseBody
+	@RequestMapping(value="/operations/message/{messageId}/update",method = RequestMethod.POST)
+	public String getMsg(@PathVariable("messageId") Long msgID,@RequestParam("msg_body") String body,Authentication auth,HttpServletRequest request){
+		IntitaUser user = (IntitaUser) auth.getPrincipal();
+		if(user.isAnonymous())
+			return "null";//need return code
+		TopicMessage msg = topicMessageService.getMessage(msgID);
+		if(msg == null /*|| !msg.getAuthor().equals(user)*/)
+			return "null";//need return code
+		msg.setBody(body);
+		topicMessageService.addMessage(msg);
+		return "true";
+	}
+	
 	@RequestMapping(value="/operations/config/update",method = RequestMethod.POST)
 	public void refreshConfigParameters()
 	{

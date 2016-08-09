@@ -12,8 +12,6 @@
     <script th:src="@{/libs/spoiler.js}"></script>
     <script th:src="@{/libs/spoiler.js}"></script>
     <script th:src="@{/modules/ckeditor/plugins/bbcode/plugin.js}"></script>
-    
-
 </head>
 
 <body>
@@ -31,9 +29,9 @@
                         <div class="col s12">
                             <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" th:text="${message.author.getNickName()}" style="  ">Who</a>
                             <ul class="user-contact">
-                                <li><a th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
-                                <li><a th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating yellow darken-1 tooltipped"><i class="material-icons">format_quote</i></a></li>
-                                <li><a th:classappend="${user.isAnonymous()} ? disabled" class="btn-floating green"><i class="material-icons">email</i></a></li>
+                                <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
+                                <li><a th:classappend="${user.isAnonymous()} ? disabled" class="btn-floating yellow"><i class="material-icons">format_quote</i></a></li>
+                                <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
                             </ul>
                         </div>
                     </div>
@@ -57,8 +55,8 @@
                             <i class="large material-icons">menu</i>
                         </a>
                         <ul>
-                            <li><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
-                            <li><a href="#edit" class="btn-floating green modal-trigger"><i class="material-icons">mode_edit</i></a></li>
+                            <li th:if="${message.author.equals(user)}"><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
+                            <li th:if="${message.author.equals(user)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
                             <li><a class="btn-floating blue"><i class="material-icons">email</i></a></li>
                         </ul>
                     </div>
@@ -81,9 +79,10 @@
 </body>
 <!-- Edit modal window -->
 <div id="edit" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
-    <form method="post" th:action="@{/operations/category/__${topic.id}__/add_topic}">
+    <form id="edit_form" method="post">
         <div class="modal-content">
             <h4>Редагування посту</h4>
+            <h5 id="edir_err" style="color:red"></h5>
             <div class="row">
                 <div class="input-field col s12" style="postition: absolute; min-height: 70%;overflow: hidden">
                     <textarea cols="20" id="ckeditor_edit" name="topic_text" rows="10">
@@ -92,7 +91,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <input style="" class=" modal-action modal-close waves-effect waves-green btn-flat" type="submit" value="Внести зміни" />
+            <a style="" class="waves-effect waves-green btn-flat" onclick="runUpdatePost()">Внести зміни</a>
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Відмінити</a>
         </div>
     </form>
 </div>

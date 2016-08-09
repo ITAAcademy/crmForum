@@ -59,14 +59,33 @@ function getHtmlFrommBBCode(code) {
     fragment.writeHtml(writer, CKEDITOR.createBBcodeFilter);
     return writer.getHtml();
 }
+
+function runEditPost(idPost) {
+    $.post(URL_PREFIX + "operations/message/" + idPost + "/get", function(data) {
+            CKEDITOR.instances["ckeditor_edit"].setData(data);
+            $("#edit_form").attr("action", URL_PREFIX + "operations/message/" + idPost + "/update");
+            $("#edit").openModal();
+        })
+        .fail(function() {
+
+        });
+}
+
+function runUpdatePost() {
+    $.post($("#edit_form").attr("action"), { msg_body: CKEDITOR.instances["ckeditor_edit"].getData() }, function(data) {
+            // $("#edit").closeModal();
+            location.reload();
+        })
+        .fail(function() {
+            $("#edir_err").html("Сталася помилка!!!");
+        });
+}
+
 $(document).ready(function() {
     var instance = initCkEditor("ckeditor_edit", 280);
     if (instance != null) {
         instance.on("instanceReady", function() {
-            // insert code to run after editor is ready
-            // alert("ckEditor is ready");
             config = instance.config;
-            debugger;
             initMessages();
         });
     }

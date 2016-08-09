@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -44,7 +45,6 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 		this.body = body;
 		this.date= new Date();
 		}
-	
 	@Id
 	@GeneratedValue
 	@JsonView(Views.Public.class)
@@ -115,6 +115,11 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	}
 	public void setAttachedFiles(ArrayList<String> attachedFiles) {
 		this.attachedFiles = attachedFiles;
+	}
+	@Transactional
+	public boolean isMyAuthor(IntitaUser user)
+	{
+		return user.equals(getAuthor());
 	}
 	
 	
