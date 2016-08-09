@@ -335,8 +335,9 @@ jQuery.fn.calcTextSize = function() {
         .css("font-size", this.css("font-size"))
         .css("font-weight", this.css("font-weight")).appendTo('body');
     res = cont.width();
-    if(res > this.css("max-width"))
-        res = this.css("max-width");
+     var size = 160//parseInt(this.css("max-width"), 10);
+    if(res > size)
+        res = size;
     cont.remove();
     return res;
 }
@@ -348,7 +349,7 @@ jQuery.fn.hasOverflown = function() {
         .css("font-family", this.css("font-family"))
         .css("font-size", this.css("font-size"))
         .css("font-weight", this.css("font-weight")).appendTo('body');
-    var size = parseInt(this.css("max-width"), 10);
+    var size = 160//parseInt(this.css("max-width"), 10);
     res = (cont.width() > size);
     var q = cont.text();
     var q1 = cont.width();
@@ -403,7 +404,7 @@ var menu_upate = function(event) {
                 sum += size;
             }
         }
-        $('.tooltipped').tooltip({ delay: 50 });
+        $('.tooltipped').tooltip();
     }, 500)
 
 

@@ -629,3 +629,7 @@
     left: 4px;
     bottom: 34px;
 }
+
+.back-to-top {
+    display: none;
+}
