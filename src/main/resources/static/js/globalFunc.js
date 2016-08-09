@@ -327,10 +327,61 @@ function Color(val) {
 }
 
 var globalTimeOut;
+jQuery.fn.calcTextSize = function() {
+    var res;
+    var cont = $('<div>' + this.text() + '</div>').css("display", "table")
+        .css("z-index", "-1").css("position", "absolute")
+        .css("font-family", this.css("font-family"))
+        .css("font-size", this.css("font-size"))
+        .css("font-weight", this.css("font-weight")).appendTo('body');
+    res = cont.width();
+    if(res > this.css("max-width"))
+        res = this.css("max-width");
+    cont.remove();
+    return res;
+}
 
-$(window).on('resize', function(event) {
+jQuery.fn.hasOverflown = function() {
+    var res;
+    var cont = $('<div>' + this.text() + '</div>').css("display", "table")
+        .css("z-index", "-1").css("position", "absolute")
+        .css("font-family", this.css("font-family"))
+        .css("font-size", this.css("font-size"))
+        .css("font-weight", this.css("font-weight")).appendTo('body');
+    var size = parseInt(this.css("max-width"), 10);
+    res = (cont.width() > size);
+    var q = cont.text();
+    var q1 = cont.width();
+    var q2 = size;
+
+    cont.remove();
+    return res;
+}
+
+function autoDisableToolTips($element) {
+    /* var $c = $element.find('div')
+         .clone()
+         .css({ display: 'inline', 'max-width': 'auto', visibility: 'hidden' })
+         .appendTo('body');
+         var l = $c.width();
+         var k = $element.find('div').width();
+     if ($c.width() > $element.find('div').width()) {
+         $element.addClass("tooltipped");
+     } else
+         $element.removeClass("tooltipped");
+
+     $c.remove();*/
+
+    if ($element.find('div').hasOverflown())
+        $element.addClass("tooltipped");
+    else
+        $element.removeClass("tooltipped");
+}
+
+var menu_upate = function(event) {
     clearTimeout(globalTimeOut);
     globalTimeOut = setTimeout(function() {
+        $('.tooltipped').tooltip('remove');
         var win = $(this); //this = window
         if (win.height() >= 820) { /* ... */ }
         if (win.width() >= 1280) { /* ... */ }
@@ -340,7 +391,7 @@ $(window).on('resize', function(event) {
         var max = $(".breadcrumb-container").parent().width();
         var i = ellipses.length - 1;
         for (; i >= 0; i--) {
-            var size = $(ellipses[i]).width();
+            var size = $(ellipses[i]).calcTextSize() + 25;
             if (size + sum > (max - 15)) {
                 for (var j = 0; j <= i; j++) {
                     $(ellipses[j]).addClass("hide-me");
@@ -348,10 +399,13 @@ $(window).on('resize', function(event) {
                 break;
             } else {
                 $(ellipses[i]).removeClass("hide-me");
+                autoDisableToolTips($(ellipses[i]));
                 sum += size;
             }
         }
+        $('.tooltipped').tooltip({ delay: 50 });
     }, 500)
 
 
-});
+}
+$(window).on('resize', menu_upate);

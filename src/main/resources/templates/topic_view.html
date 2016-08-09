@@ -20,15 +20,19 @@
             <div class="topic_info">
                 <h4 th:text="${topic.name}"></h4>
             </div>
-            <ul class="collection ">
-                <li class="row" th:each="message : ${messages}">
-                    <div class="col s12 m2 l2" style="    text-align: center;">
-                        <img class="circle sp col s4 m12 l12" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
-                        <div class="col s8 m12 l12">
-                            <span class=" col s12 m12 l12" th:text="${message.author.email}" style=" font-size: 19px;font-weight: 300; text-decoration: underline;">Who</span>
-                            <span class="col s12 m12 l12" th:text="${message.author.email}" style=" font-size: 19px;font-weight: 300; text-decoration: underline;">Who</span>
+            <ul class="topic-content">
+                <li class="card-panel row" th:each="message : ${messages}">
+                    <div class="user-panel col s12 m2 l2" style="">
+                        <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
+                        <div class="col s12">
+                            <a class="user-name" th:href="${message.author.id}" th:text="${message.author.getNickName()}" style="  ">Who</a>
+                            <ul class="user-contact">
+                                <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
+                                <li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
+                                <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
+                                <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
+                            </ul>
                         </div>
-                        
                     </div>
                     <div class="s12 m10 l10">
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
@@ -43,7 +47,7 @@
             </ul>
             <form th:if="${!user.isAnonymous()}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
                 <textarea cols="80" id="ckeditor" name="text" rows="10"></textarea>
-                <button id="submitcke" class="waves-effect waves-light btn" style="background-color: rgb(43, 87, 154);width: 100%;border-radius: 0px;box-shadow: none;" type="submit" name="action">Submit
+                <button id="submitcke" class="waves-effect waves-light btn" style="background-color: rgb(43, 87, 154);width: 100%;border-radius: 0px;box-shadow: none;" type="submit" name="action">Відправити
                     <i class="material-icons right">send</i>
                 </button>
             </form>

@@ -70,7 +70,7 @@ dependencies {
 	compile("org.json:json:20090211")
 
 	compile("org.springframework.boot:spring-boot-starter")
-  	compile("redis.clients:jedis:2.7.2")
+  	compile("redis.clients:jedis:2.9.0")
  	
     compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework:spring-messaging")    
