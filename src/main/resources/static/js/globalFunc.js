@@ -1,8 +1,6 @@
 function toArray(object) {
-  return angular.isArray(object) 
-    ? object 
-    : Object.keys(object).map(function(key) {
-      return object[key];
+    return angular.isArray(object) ? object : Object.keys(object).map(function(key) {
+        return object[key];
     });
 }
 MAX_UPLOAD_FILE_SIZE_BYTES = 100 * 1000 * 1024;
@@ -301,7 +299,7 @@ function getKeyByValue(value, object) {
 }
 
 var isDate = function(date) {
-    return  (date instanceof Date) ;//&& (!Number.isInteger(parseInt(date)) && ((new Date(date) !== "Invalid Date" && !isNaN(new Date(date)) )));
+    return (date instanceof Date); //&& (!Number.isInteger(parseInt(date)) && ((new Date(date) !== "Invalid Date" && !isNaN(new Date(date)) )));
 }
 
 function getType(value) {
@@ -311,7 +309,7 @@ function getType(value) {
     if (Array.isArray(value))
         return "array";
 
-    if(isDate(value))
+    if (isDate(value))
         return "date";
 
     return "string";
@@ -324,6 +322,36 @@ function parseBoolean(value) {
         return false;
 }
 
-function Color(val){
+function Color(val) {
     this.val = val;
 }
+
+var globalTimeOut;
+
+$(window).on('resize', function(event) {
+    clearTimeout(globalTimeOut);
+    globalTimeOut = setTimeout(function() {
+        var win = $(this); //this = window
+        if (win.height() >= 820) { /* ... */ }
+        if (win.width() >= 1280) { /* ... */ }
+        ellipses = $(".breadcrumb-container")[0].children;
+        //
+        var sum = 0;
+        var max = $(".breadcrumb-container").parent().width();
+        var i = ellipses.length - 1;
+        for (; i >= 0; i--) {
+            var size = $(ellipses[i]).width();
+            if (size + sum > (max - 15)) {
+                for (var j = 0; j <= i; j++) {
+                    $(ellipses[j]).addClass("hide-me");
+                }
+                break;
+            } else {
+                $(ellipses[i]).removeClass("hide-me");
+                sum += size;
+            }
+        }
+    }, 500)
+
+
+});

@@ -190,16 +190,7 @@ public class IntitaUserService {
 	
 	public IntitaUser getCurrentIntitaUser() {
 		if (SecurityContextHolder.getContext().getAuthentication()==null) return null;
-		String idStr =  (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Long id = null;
-		try{
-		id = Long.parseLong(idStr);
-		}
-		catch(NumberFormatException e){
-			return null;
-		}
-		IntitaUser user = usersRepo.findOne(id);
-		return user;
+		return (IntitaUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 
 	public static Long getCurrentIntitaUserId() {

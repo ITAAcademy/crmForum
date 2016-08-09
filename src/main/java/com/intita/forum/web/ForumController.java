@@ -1,6 +1,5 @@
 package com.intita.forum.web;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -116,7 +115,7 @@ public class ForumController {
 	 *******************/
 	@RequestMapping(value = "/chat/users", method = RequestMethod.POST)
 	@ResponseBody
-	public String getUsers(Principal principal) throws JsonProcessingException {
+	public String getUsers(Authentication principal) throws JsonProcessingException {
 
 		Page<IntitaUser> pageUsers = intitaUserService.getIntitaUsers(1, 15);
 		Set<LoginEvent> userList = new HashSet<>();
@@ -195,7 +194,7 @@ public class ForumController {
 	}
 	
 	@RequestMapping(value="/login", method = RequestMethod.GET)
-	public ModelAndView  getLoginPage(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Principal principal) {
+	public ModelAndView  getLoginPage(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
 		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
 		
 		//chatLangService.updateDataFromDatabase();
@@ -257,7 +256,7 @@ public class ForumController {
 	}
 	
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page,Authentication principal){
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page,Authentication auth){
 		ModelAndView model = new ModelAndView();
 		
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
@@ -290,10 +289,11 @@ public class ForumController {
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
 			}
-			IntitaUser user = (IntitaUser) principal.getPrincipal();;
+			IntitaUser user = (IntitaUser) auth.getPrincipal();
 			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
+			model.addObject("user", (IntitaUser)auth.getPrincipal());
 			model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
 			model.setViewName("topics_list");
 		}
@@ -336,7 +336,7 @@ public class ForumController {
 	}
 	
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
-	public String addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request){
+	public String addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request, Authentication auth){
 		 String referer = request.getHeader("Referer");
 		if (postText.length()==0)   return "redirect:"+ referer; 
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
@@ -348,21 +348,21 @@ public class ForumController {
 		return "redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last
 	}
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
-	public String addTopic(@RequestParam("topic_name") String topicName,@RequestParam("topic_text") String topicText,@PathVariable Long categoryId,Principal principal,HttpServletRequest request){
+	public String addTopic(@RequestParam("topic_name") String topicName,@RequestParam("topic_text") String topicText,@PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
 		 String referer = request.getHeader("Referer");
-		IntitaUser author  = intitaUserService.getIntitaUser(principal);
-		if (author == null) return "redirect:"+referer;
+		IntitaUser author  = (IntitaUser) auth.getPrincipal();
+		if (author == null || author.isAnonymous()) return "redirect:"+referer;
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		if (author == null) return "redirect:"+referer;
 		ForumTopic topic = forumTopicService.addTopic(topicName,category,author);
 		if (topic == null) return "redirect:"+referer;
-		addNewMessage(topicText, topic.getId(), request);
+		addNewMessage(topicText, topic.getId(), request, auth);
 		return "redirect:"+"/view/topic/"+topic.getId();
 	}
 	@RequestMapping(value="/operations/topic/{topicId}/toggle_pin",method = RequestMethod.POST)
-	public String togglePinTopic(@PathVariable Long topicId,Principal principal,HttpServletRequest request){
+	public String togglePinTopic(@PathVariable Long topicId,Authentication auth,HttpServletRequest request){
 		 String referer = request.getHeader("Referer");
-		IntitaUser user  = intitaUserService.getIntitaUser(principal);
+		IntitaUser user  = (IntitaUser) auth.getPrincipal();
 		if (intitaUserService.isAdmin(user.getId())){
 			if(!forumTopicService.toggleTopicPin(topicId)){
 				return "redirect:"+referer;

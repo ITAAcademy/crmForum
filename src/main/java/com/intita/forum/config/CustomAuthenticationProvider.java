@@ -92,7 +92,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				catch(NumberFormatException e){
 				log.info(e.getMessage());
 				//throw new UsernameNotFoundException(IntitaIdStr);
-				session.setMaxInactiveInterval(10);
+				session.setMaxInactiveInterval(5);
 				return new UsernamePasswordAuthenticationToken(new IntitaUser("anonymousUser", ""), token.getCredentials(), authorities);
 				///return new UsernamePasswordAuthenticationToken("", token.getCredentials(), authorities);
 				}

@@ -62,7 +62,7 @@
             <span th:unless="${currentCategory==null}" th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/category/__${currentCategory.id}__/'">...</span>
         </div>
     </div>
-    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+    <div th:if="${!user.isAnonymous()}" class="fixed-action-btn" style="bottom: 45px; right: 24px;">
         <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
     </div>
     <!-- Modal Structure -->

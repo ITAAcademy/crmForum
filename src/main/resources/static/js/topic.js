@@ -54,5 +54,6 @@ $(document).ready(function(){
 	var sumbitButton = $('#submitcke');
 	if(sumbitButton.val().length == 0)
 		sumbitButton.hide();
+	 $('.tooltipped').tooltip({delay: 50});
 });
 		

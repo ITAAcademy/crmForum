@@ -20,16 +20,25 @@
             <div class="topic_info">
                 <h4 th:text="${topic.name}"></h4>
             </div>
-            <ul class="collection">
-                <li class="collection-item avatar" th:each="message : ${messages}">
-                    <img class="circle" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
-                    <span class="title" th:text="${message.author.email}" style=" font-weight: bold; text-decoration: underline;">Who</span>
-                    <p style="text-align: left; padding-left: 20px; font-size: 18px;">
-                        <span class="topic_message_text" th:text="${message.body}"></span>
-                        <br/>
-                    </p>
-                    <p style="text-align: right; padding-right: 20px; font-size: 18px;" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
-                    <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+            <ul class="collection ">
+                <li class="row" th:each="message : ${messages}">
+                    <div class="col s12 m2 l2" style="    text-align: center;">
+                        <img class="circle sp col s4 m12 l12" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
+                        <div class="col s8 m12 l12">
+                            <span class=" col s12 m12 l12" th:text="${message.author.email}" style=" font-size: 19px;font-weight: 300; text-decoration: underline;">Who</span>
+                            <span class="col s12 m12 l12" th:text="${message.author.email}" style=" font-size: 19px;font-weight: 300; text-decoration: underline;">Who</span>
+                        </div>
+                        
+                    </div>
+                    <div class="s12 m10 l10">
+                        <p style="text-align: left; padding-left: 20px; font-size: 18px;">
+                            <span class="topic_message_text" th:text="${message.body}"></span>
+                            <br/>
+                        </p>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <p class="topic-time" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
+                    <a href="#!" style="position: absolute; bottom: 14px; left: 6px;"><i class="material-icons">grade</i></a>
                 </li>
             </ul>
             <form th:if="${!user.isAnonymous()}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
