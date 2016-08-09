@@ -21,7 +21,7 @@
                 <h4 th:text="${topic.name}"></h4>
             </div>
             <ul class="topic-content">
-                <li class="card-panel row" th:each="message : ${messages}">
+                <li class="card-panel row" th:each="message,iterationStatus : ${messages}">
                     <div class="user-panel col s12 m2 l2" style="">
                         <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
                         <div class="col s12">
@@ -41,7 +41,10 @@
                     </div>
                     <div style="clear:both;"></div>
                     <p class="topic-time" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
-                    <a href="#!" style="position: absolute;bottom: 35px;left: 26px;"><i class="material-icons">grade</i></a>
+                    <a href="#!" style="position: absolute;bottom: 35px;left: 26px;">
+                        <i class="material-icons">grade</i>
+                        <i th:text="    №__${iterationStatus.count+((currentPage-1)*10)}__"></i>
+                    </a>
                 </li>
             </ul>
             <form th:if="${!user.isAnonymous()}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
