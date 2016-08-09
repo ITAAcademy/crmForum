@@ -548,44 +548,10 @@
 	} );
 
 	var writer = new BBCodeWriter();
-
-	CKEDITOR.plugins.add( 'bbcode', {
-		requires: 'entities',
-
-		// Adapt some critical editor configuration for better support
-		// of BBCode environment.
-		beforeInit: function( editor ) {
-			var config = editor.config;
-
-			CKEDITOR.tools.extend( config, {
-				// This one is for backwards compatibility only as
-				// editor#enterMode is already set at this stage (#11202).
-				enterMode: CKEDITOR.ENTER_BR,
-				basicEntities: false,
-				entities: false,
-				fillEmptyBlocks: false
-			}, true );
-
-			editor.filter.disable();
-
-			// Since CKEditor 4.3, editor#(active)enterMode is set before
-			// beforeInit. Properties got to be updated (#11202).
-			editor.activeEnterMode = editor.enterMode = CKEDITOR.ENTER_BR;
-		},
-
-		init: function( editor ) {
-			var config = editor.config;
-
-			function BBCodeToHtml( code ) {
-				var fragment = CKEDITOR.htmlParser.fragment.fromBBCode( code ),
-					writer = new CKEDITOR.htmlParser.basicWriter();
-
-				fragment.writeHtml( writer, bbcodeFilter );
-				var html = writer.getHtml( true );
-				return html;
-			}
-
-			var bbcodeFilter = new CKEDITOR.htmlParser.filter();
+	
+	
+	var bbcodeFilter = new CKEDITOR.htmlParser.filter();
+	CKEDITOR.createBBcodeFilter = bbcodeFilter;
 			bbcodeFilter.addRules( {
 				elements: {
 					blockquote: function( element ) {
@@ -674,6 +640,44 @@
 					}
 				}
 			} );
+			
+	CKEDITOR.plugins.add( 'bbcode', {
+		requires: 'entities',
+
+		// Adapt some critical editor configuration for better support
+		// of BBCode environment.
+		beforeInit: function( editor ) {
+			var config = editor.config;
+
+			CKEDITOR.tools.extend( config, {
+				// This one is for backwards compatibility only as
+				// editor#enterMode is already set at this stage (#11202).
+				enterMode: CKEDITOR.ENTER_BR,
+				basicEntities: false,
+				entities: false,
+				fillEmptyBlocks: false
+			}, true );
+
+			editor.filter.disable();
+
+			// Since CKEditor 4.3, editor#(active)enterMode is set before
+			// beforeInit. Properties got to be updated (#11202).
+			editor.activeEnterMode = editor.enterMode = CKEDITOR.ENTER_BR;
+		},
+
+		init: function( editor ) {
+			var config = editor.config;
+
+			function BBCodeToHtml( code ) {
+				var fragment = CKEDITOR.htmlParser.fragment.fromBBCode( code ),
+					writer = new CKEDITOR.htmlParser.basicWriter();
+
+				fragment.writeHtml( writer, bbcodeFilter );
+				var html = writer.getHtml( true );
+				return html;
+			}
+
+			
 
 			editor.dataProcessor.htmlFilter.addRules( {
 				elements: {

@@ -1,4 +1,6 @@
 var initCkEditor = function(id, iheight) {
+    if ($('#' + id).length == 0)
+        return null;
     var editor = CKEDITOR.replace(id, {
         height: iheight,
         //resize_enabled : false,
@@ -34,24 +36,44 @@ var initCkEditor = function(id, iheight) {
             }
         }
     });
+    return editor;
 }
+var config = null;
 var initMessages = function() {
     var messagesSpans = $(".topic_message_text");
     messagesSpans.each(function(index) {
         var bbCodedText = $(this).text();
-        var htmlCodedTextObj = XBBCODE.process({
+        /*var htmlCodedTextObj = XBBCODE.process({
             text: bbCodedText,
             removeMisalignedTags: false,
             addInLineBreaks: false
         });
-        $(this).replaceWith('<span>' + htmlCodedTextObj.html + '</span>');
+        $(this).replaceWith('<span>' + htmlCodedTextObj.html + '</span>');*/
+        $(this).html(getHtmlFrommBBCode(bbCodedText));
     });
 }
+
+function getHtmlFrommBBCode(code) {
+    var fragment = CKEDITOR.htmlParser.fragment.fromBBCode(code);
+    var writer = new CKEDITOR.htmlParser.basicWriter();
+    fragment.writeHtml(writer, CKEDITOR.createBBcodeFilter);
+    return writer.getHtml();
+}
 $(document).ready(function() {
-    initMessages();
-    initCkEditor("ckeditor", 280);
-    initCkEditor("ckeditor_edit", 400);
+    var instance = initCkEditor("ckeditor_edit", 280);
+    if (instance != null) {
+        instance.on("instanceReady", function() {
+            // insert code to run after editor is ready
+            // alert("ckEditor is ready");
+            config = instance.config;
+            debugger;
+            initMessages();
+        });
+    }
+
+    initCkEditor("ckeditor", 200);
     var sumbitButton = $('#submitcke');
     if (typeof sumbitButton.val() != 'undefined' && sumbitButton.val().length == 0)
         sumbitButton.hide();
+
 });
