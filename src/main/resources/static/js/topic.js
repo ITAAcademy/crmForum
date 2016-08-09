@@ -52,7 +52,7 @@ $(document).ready(function(){
 	initMessages();
 	initCkEditor();
 	var sumbitButton = $('#submitcke');
-	if(sumbitButton.val().length == 0)
+	if(typeof sumbitButton.val()!='undefined' && sumbitButton.val().length == 0)
 		sumbitButton.hide();
 });
 		

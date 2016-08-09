@@ -15,16 +15,16 @@
                     <div class="topics-table-cell one"> Розділи </div>
                     <div class="topics-table-cell four"> Останній пост </div>
                 </div>
-                <div class="topics-table-row" th:each="category,status  : ${categories}">
+                <div th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" class="topics-table-row" th:each="category,status  : ${categories}">
                     <div class="topics-table-cell one">
                         <p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
-					  		 Назва розділу
-					  		 </a></p>
+                            Назва розділу
+                        </a></p>
                         <p th:text="${category.description}">
                         </p>
-                    </div>
+                    </div> 
                     <div th:if="${lastTopics[status.index]!=null}" class="topics-table-cell four">
-                        <p> <span th:text="${#dates.format(lastTopics[status.index].date,'dd/MMM/yyyy HH:mm')}"></span></p>
+                        <p> <span th:text="${prettyTime.format(lastTopics[status.index].date)}"></span></p>
                         <p> <b>Тема: </b> <span th:text="${lastTopics[status.index].name}"></span> </p>
                         <p><b>Автор</b><span th:text="${lastTopics[status.index].author.login}"></span></p>
                     </div>
