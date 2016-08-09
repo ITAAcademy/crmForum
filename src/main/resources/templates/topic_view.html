@@ -25,7 +25,7 @@
                     <div class="user-panel col s12 m2 l2" style="">
                         <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
                         <div class="col s12">
-                            <a class="user-name" th:href="${message.author.id}" th:text="${message.author.getNickName()}" style="  ">Who</a>
+                            <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" th:text="${message.author.getNickName()}" style="  ">Who</a>
                             <ul class="user-contact">
                                 <li><a th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
                                 <li><a th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating yellow darken-1 tooltipped"><i class="material-icons">format_quote</i></a></li>

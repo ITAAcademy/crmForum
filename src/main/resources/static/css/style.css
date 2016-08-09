@@ -451,7 +451,7 @@ min-height:150px;
     content: "";
     width: 32px;
     height: 30px;
-    background-image: url("../images/blue_star_filled_smmax-width.png");
+    background-image: url("../images/blue_star_filled_small.png");
     display: inline-block;
 }
 
@@ -459,7 +459,7 @@ min-height:150px;
     content: "";
     width: 32px;
     height: 30px;
-    background-image: url("../images/blue_star_unfilled_smmax-width.png");
+    background-image: url("../images/blue_star_unfilled_small.png");
     display: inline-block;
 }
 

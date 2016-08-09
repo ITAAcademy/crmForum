@@ -26,7 +26,7 @@
                     <div th:if="${lastTopics[status.index]!=null}" class="topics-table-cell four">
                         <p> <span th:text="${prettyTime.format(lastTopics[status.index].date)}"></span></p>
                         <p> <b>Тема: </b> <span th:text="${lastTopics[status.index].name}"></span> </p>
-                        <p><b>Автор</b><span th:text="${lastTopics[status.index].author.login}"></span></p>
+                        <p><b>Автор:</b><span th:text="${lastTopics[status.index].author.login}"></span></p>
                     </div>
                     <div th:unless="${lastTopics[status.index]!=null}" class="topics-table-cell four">
                         <p><b>Топіки відсутні</b></p>
