@@ -29,7 +29,7 @@
                             <ul class="user-contact">
                                 <li><a th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
                                 <li><a th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating yellow darken-1 tooltipped"><i class="material-icons">format_quote</i></a></li>
-                                <li><a th:classappend="${user.isAnonymous()} ? disabled" class="btn-floating green"><i class="material-icons">publish</i></a></li>
+                                <li><a th:classappend="${user.isAnonymous()} ? disabled" class="btn-floating green"><i class="material-icons">email</i></a></li>
                             </ul>
                         </div>
                     </div>
@@ -40,11 +40,24 @@
                         </p>
                     </div>
                     <div style="clear:both;"></div>
+                    <!-- Post prety time -->
                     <p class="topic-time" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
+                    <!-- Counter -->
                     <a href="#!" style="position: absolute;bottom: 35px;left: 26px;">
                         <i class="material-icons">grade</i>
                         <i th:text="    №__${iterationStatus.count+((currentPage-1)*10)}__"></i>
                     </a>
+                    <!-- Post controll btn -->
+                    <div th:if="${!user.isAnonymous()}" class="fixed-action-btn horizontal post-controll">
+                        <a class="btn-floating btn-middle red">
+                            <i class="large material-icons">menu</i>
+                        </a>
+                        <ul>
+                            <li><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
+                            <li><a href="#edit" class="btn-floating green modal-trigger"><i class="material-icons">mode_edit</i></a></li>
+                            <li><a class="btn-floating blue"><i class="material-icons">email</i></a></li>
+                        </ul>
+                    </div>
                 </li>
             </ul>
             <form th:if="${!user.isAnonymous()}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
@@ -58,10 +71,37 @@
             <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topicId}__/'">...</span>
         </div>
     </div>
-        <div th:if="${!user.isAnonymous()}" class="fixed-action-btn  back-to-top" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large waves-effect waves-light blue darken-2"><i class="material-icons">navigation</i></a>
+    <div th:if="${!user.isAnonymous()}" class="fixed-action-btn  back-to-top" style="bottom: 45px; right: 24px;">
+        <a class="btn-floating btn-large waves-effect waves-light blue darken-2"><i class="material-icons">navigation</i></a>
     </div>
-    
 </body>
+<!-- Edit modal window -->
+<div id="edit" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
+    <form method="post" th:action="@{/operations/category/__${topic.id}__/add_topic}">
+        <div class="modal-content">
+            <h4>Редагування посту</h4>
+            <div class="row">
+                <div class="input-field col s12" style="postition: absolute; min-height: 70%;overflow: hidden">
+                    <textarea cols="20" id="ckeditor_edit" name="topic_text" rows="10">
+                    </textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input style="" class=" modal-action modal-close waves-effect waves-green btn-flat" type="submit" value="Внести зміни" />
+        </div>
+    </form>
+</div>
+<!-- Remove modal window -->
+<div id="remove" class="modal">
+    <div class="modal-content">
+        <h4>Видалення запису</h4>
+        <p>Ви точно хочите видалити запис?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Так</a>
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Ні</a>
+    </div>
+</div>
 
 </html>
