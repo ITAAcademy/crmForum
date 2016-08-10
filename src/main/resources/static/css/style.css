@@ -450,16 +450,16 @@
 
 .filled_star {
     content: "";
-    width: 32px;
-    height: 30px;
+    width: 16px;
+    height: 15px;
     background-image: url("../images/blue_star_filled_small.png");
     display: inline-block;
 }
 
 .unfilled_star {
     content: "";
-    width: 32px;
-    height: 30px;
+    width: 16px;
+    height: 15px;
     background-image: url("../images/blue_star_unfilled_small.png");
     display: inline-block;
 }

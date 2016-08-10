@@ -34,16 +34,18 @@
                         </th:block>
                         <!--///For admin -->
                         <!--For regular user -->
+                       
+                        <!--/For regular user -->
+                        <p>
                         <th:block th:unless="${isAdmin}">
                             <span class="filled_star" th:if="${topic.pinned}">
-					  			
-					  		</span>
+                                
+                            </span>
                             <span class="unfilled_star" th:unless="${topic.pinned}">
-					  			
-					  		</span>
+                                
+                            </span>
                         </th:block>
-                        <!--/For regular user -->
-                        <p><a class="topic_name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
+                        <a class="topic_name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
 					  		 Назва розділу
 					  		 </a></p>
                         <p th:text="${topic.author.email}">
