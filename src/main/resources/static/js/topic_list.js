@@ -1,8 +1,20 @@
+function checkSubmitAvailable(){
+       var submitButton = $('#addTopicButton');
+if ( CKEDITOR.instances.ckeditor.getData() ==='' ||  $('#topic_name').val()==='')
+    submitButton.hide();
+else submitButton.show();
+}
+
 $(document).ready(function() {
-    initCkEditor("ckeditor", 200);
-    var sumbitButtonCke = $('#submitcke');
-        if (typeof sumbitButtonCke.val() != 'undefined' && sumbitButtonCke.val().length == 0)
-        sumbitButtonCke.hide();
+    var cke = initCkEditor("ckeditor", 200);
+    checkSubmitAvailable();
+
+        CKEDITOR.instances.ckeditor.on('change', function(evt) { 
+ checkSubmitAvailable();
+});
+        $('#topic_name').bind('textchange', function (event, previousText) {
+    checkSubmitAvailable();
+});
    
     /*var submitButton = $('#addTopicButton');
     if (typeof sumbitButton.val() != 'undefined' && sumbitButton.val().length == 0)
