@@ -1,3 +1,4 @@
+
 var initCkEditor = function(id, iheight) {
     if ($('#' + id).length == 0)
         return null;
@@ -38,30 +39,6 @@ var initCkEditor = function(id, iheight) {
     });
     return editor;
 }
-var config = null;
-var initMessages = function() {
-	var topicContent = $(".card-panel");
-	topicContent.each(function(index) {
-		var contentElement = $(this);
-		  var messageSpan = contentElement.find('.topic_message_text');
-    messageSpan.each(function(index,spanElement) {
-    	var spanElement = $(this);
-        var bbCodedText = spanElement.text();
-        spanElement.removeClass('white-text');
-        /*var htmlCodedTextObj = XBBCODE.process({
-            text: bbCodedText,
-            removeMisalignedTags: false,
-            addInLineBreaks: false
-        });
-        $(this).replaceWith('<span>' + htmlCodedTextObj.html + '</span>');*/
-       spanElement.html(getHtmlFrommBBCode(bbCodedText));
-       
-    });
-        	var preloader = contentElement.find(".preloader-wrapper");
-        	 preloader.remove();
-	});
-  
-}
 
 function getHtmlFrommBBCode(code) {
     var fragment = CKEDITOR.htmlParser.fragment.fromBBCode(code);
@@ -69,40 +46,3 @@ function getHtmlFrommBBCode(code) {
     fragment.writeHtml(writer, CKEDITOR.createBBcodeFilter);
     return writer.getHtml();
 }
-
-function runEditPost(idPost) {
-    $.post(URL_PREFIX + "operations/message/" + idPost + "/get", function(data) {
-            CKEDITOR.instances["ckeditor_edit"].setData(data);
-            $("#edit_form").attr("action", URL_PREFIX + "operations/message/" + idPost + "/update");
-            $("#edit").openModal();
-        })
-        .fail(function() {
-
-        });
-}
-
-function runUpdatePost() {
-    $.post($("#edit_form").attr("action"), { msg_body: CKEDITOR.instances["ckeditor_edit"].getData() }, function(data) {
-            // $("#edit").closeModal();
-            location.reload();
-        })
-        .fail(function() {
-            $("#edir_err").html("Сталася помилка!!!");
-        });
-}
-
-$(document).ready(function() {
-    var instance = initCkEditor("ckeditor_edit", 280);
-    if (instance != null) {
-        instance.on("instanceReady", function() {
-            config = instance.config;
-            initMessages();
-        });
-    }
-
-    initCkEditor("ckeditor", 200);
-    var sumbitButton = $('#submitcke');
-    if (typeof sumbitButton.val() != 'undefined' && sumbitButton.val().length == 0)
-        sumbitButton.hide();
-
-});
