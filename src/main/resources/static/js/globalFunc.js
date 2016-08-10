@@ -412,7 +412,7 @@ var menu_upate = function(event) {
 $(window).on('resize', menu_upate);
 
 function onDivLinkClick(event,url){
- var isLink = event.target.nodeName == "a";
+ var isLink = event.target.nodeName == "a" || event.target.nodeName == "A";
         if (!isLink) { //skip redirection to chatroom from block onclick event
             //if click occured in <a> element
            GoToUrl(url);
@@ -421,3 +421,4 @@ function onDivLinkClick(event,url){
 function GoToUrl(url){
 window.location.href = url;
 }
+menu_upate();

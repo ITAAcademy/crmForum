@@ -556,6 +556,14 @@
     /* box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); */
 }
 
+.topic_message_text ul li{
+    list-style: initial outside;
+}
+
+.topic_message_text ol li{
+    list-style: decimal outside;
+}
+
 .user-panel {
     text-align: center;
     display: inline-table;
@@ -563,7 +571,7 @@
     border-bottom: 2px #eee solid;
     border-right: 2px #eee solid;
     padding-right: 10px;
-    margin-right: 10px;
+    margin-right: 20px;
     margin-bottom: 10px !important;
     padding-bottom: 10px !important;
     border-radius: 18px;
@@ -667,6 +675,7 @@
 .fixed-action-btn.horizontal.post-controll ul li {
     margin-top: 0;
 }
-.white-text{
-	color:white;
+
+.white-text {
+    color: white;
 }

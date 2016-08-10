@@ -1,26 +1,21 @@
 var config = null;
-var initMessages = function() {
+var initMessages = function(editor) {
     var topicContent = $(".card-panel");
     topicContent.each(function(index) {
         var contentElement = $(this);
-          var messageSpan = contentElement.find('.topic_message_text');
-    messageSpan.each(function(index,spanElement) {
-        var spanElement = $(this);
-        var bbCodedText = spanElement.text();
-        spanElement.removeClass('white-text');
-        /*var htmlCodedTextObj = XBBCODE.process({
-            text: bbCodedText,
-            removeMisalignedTags: false,
-            addInLineBreaks: false
+        var messageSpan = contentElement.find('.topic_message_text');
+        messageSpan.each(function(index, spanElement) {
+            var spanElement = $(this);
+            var bbCodedText = spanElement.text();
+            spanElement.removeClass('white-text');
+            spanElement.html(getHtmlFrommBBCode(bbCodedText));
+
         });
-        $(this).replaceWith('<span>' + htmlCodedTextObj.html + '</span>');*/
-       spanElement.html(getHtmlFrommBBCode(bbCodedText));
-       
+        var preloader = contentElement.find(".preloader-wrapper");
+        preloader.remove();
+        initSpoilers();
     });
-            var preloader = contentElement.find(".preloader-wrapper");
-             preloader.remove();
-    });
-  
+
 }
 
 function runEditPost(idPost) {
@@ -49,7 +44,25 @@ $(document).ready(function() {
     if (instance != null) {
         instance.on("instanceReady", function() {
             config = instance.config;
-            initMessages();
+            initMessages(instance);
         });
     }
+    initCkEditor("ckeditor", 200);
+
+    var offset = 220;
+    var duration = 500;
+    jQuery(window).scroll(function() {
+        if (jQuery(this).scrollTop() > offset) {
+            jQuery('.back-to-top').fadeIn(duration);
+        } else {
+            jQuery('.back-to-top').fadeOut(duration);
+        }
+    });
+
+    jQuery('.back-to-top').click(function(event) {
+        event.preventDefault();
+        jQuery('html, body').animate({ scrollTop: 0 }, duration);
+        return false;
+    })
+
 });

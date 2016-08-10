@@ -27,8 +27,8 @@ div.spoiler {
 
 @media(min-width:1200px) {
 	    div.spoiler {
-        width: calc(100% - 200px);
-        margin-left: 200px;
+        width: calc(100% - 210px);
+        margin-left: 210px;
     }
 }
 
