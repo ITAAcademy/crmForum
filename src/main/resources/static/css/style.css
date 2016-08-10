@@ -557,7 +557,7 @@
 }
 
 .topic_message_text ul li{
-    list-style: initial outside;
+    list-style: initial;
 }
 
 .topic_message_text ol li{
