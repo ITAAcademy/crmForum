@@ -6,7 +6,7 @@ var initCkEditor = function(id, iheight) {
         height: iheight,
         //resize_enabled : false,
         // Add plugins providing functionality popular in BBCode environment.
-        extraPlugins: 'bbcode,autogrow,smiley,font,colorbutton,save,spoiler',
+        extraPlugins: 'bbcode,autogrow,smiley,font,colorbutton,spoiler',
         // Remove unused plugins.
         //removePlugins: 'filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
         removePlugins: 'resize,filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',

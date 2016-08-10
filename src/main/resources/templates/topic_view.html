@@ -8,7 +8,7 @@
     <script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
     <link type="text/css" th:href="@{/libs/css/xbbcode.css}" rel="stylesheet" />
     <link type="text/css" th:href="@{/libs/css/spoiler.css}" rel="stylesheet" />
-      <script th:src="@{/js/ckeditor_config.js}"></script>
+    <script th:src="@{/js/ckeditor_config.js}"></script>
     <script th:src="@{/js/topic_view.js}"></script>
     <script th:src="@{/libs/spoiler.js}"></script>
     <script th:src="@{/modules/ckeditor/plugins/bbcode/plugin.js}"></script>
@@ -30,7 +30,6 @@
                             <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" th:text="${message.author.getNickName()}" style="  ">Who</a>
                             <ul class="user-contact">
                                 <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
-                                <li><a th:classappend="${user.isAnonymous()} ? disabled" class="btn-floating yellow"><i class="material-icons">format_quote</i></a></li>
                                 <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
                             </ul>
                         </div>
@@ -38,18 +37,20 @@
                     <div class="s12 m10 l10">
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
                             <!--preloader -->
-                     <div class="preloader-wrapper big active">
-    <div class="spinner-layer spinner-blue-only">
-      <div class="circle-clipper left">
-        <div class="circle"></div>
-      </div><div class="gap-patch">
-        <div class="circle"></div>
-      </div><div class="circle-clipper right">
-        <div class="circle"></div>
-      </div>
-    </div>
-  </div>
-       <!--/preloader -->
+                            <div class="preloader-wrapper big active">
+                                <div class="spinner-layer spinner-blue-only">
+                                    <div class="circle-clipper left">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="gap-patch">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="circle-clipper right">
+                                        <div class="circle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/preloader -->
                             <span class="topic_message_text white-text " th:text="${message.body}"></span>
                             <br/>
                         </p>
