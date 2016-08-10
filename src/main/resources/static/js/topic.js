@@ -40,17 +40,27 @@ var initCkEditor = function(id, iheight) {
 }
 var config = null;
 var initMessages = function() {
-    var messagesSpans = $(".topic_message_text");
-    messagesSpans.each(function(index) {
-        var bbCodedText = $(this).text();
+	var topicContent = $(".card-panel");
+	topicContent.each(function(index) {
+		var contentElement = $(this);
+		  var messageSpan = contentElement.find('.topic_message_text');
+    messageSpan.each(function(index,spanElement) {
+    	var spanElement = $(this);
+        var bbCodedText = spanElement.text();
+        spanElement.removeClass('white-text');
         /*var htmlCodedTextObj = XBBCODE.process({
             text: bbCodedText,
             removeMisalignedTags: false,
             addInLineBreaks: false
         });
         $(this).replaceWith('<span>' + htmlCodedTextObj.html + '</span>');*/
-        $(this).html(getHtmlFrommBBCode(bbCodedText));
+       spanElement.html(getHtmlFrommBBCode(bbCodedText));
+       
     });
+        	var preloader = contentElement.find(".preloader-wrapper");
+        	 preloader.remove();
+	});
+  
 }
 
 function getHtmlFrommBBCode(code) {

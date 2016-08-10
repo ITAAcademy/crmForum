@@ -37,7 +37,20 @@
                     </div>
                     <div class="s12 m10 l10">
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
-                            <span class="topic_message_text" th:text="${message.body}"></span>
+                            <!--preloader -->
+                     <div class="preloader-wrapper big active">
+    <div class="spinner-layer spinner-blue-only">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div><div class="gap-patch">
+        <div class="circle"></div>
+      </div><div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+    </div>
+  </div>
+       <!--/preloader -->
+                            <span class="topic_message_text white-text " th:text="${message.body}"></span>
                             <br/>
                         </p>
                     </div>
