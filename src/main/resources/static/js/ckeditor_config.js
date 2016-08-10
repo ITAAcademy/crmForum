@@ -26,6 +26,7 @@ var initCkEditor = function(id, iheight) {
             'smiley', 'sad', 'wink', 'laugh', 'cheeky', 'blush', 'surprise',
             'indecision', 'angel', 'cool', 'crying', 'kiss'
         ],
+        //startupMode :'source',
         on: {
             change: function(evt) {
                 var sumbitButton = $('#submitcke');

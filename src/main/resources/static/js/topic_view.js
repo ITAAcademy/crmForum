@@ -20,9 +20,16 @@ var initMessages = function(editor) {
 
 function runEditPost(idPost) {
     $.post(URL_PREFIX + "operations/message/" + idPost + "/get", function(data) {
-            CKEDITOR.instances["ckeditor_edit"].setData(data);
+            CKEDITOR.instances["ckeditor_edit"].setData(data, {
+                callback: function() {
+                    CKEDITOR.instances.ckeditor_edit.setMode('source');
+                    // Switch to "wysiwyg" view and be notified on completion.
+                    CKEDITOR.instances.ckeditor_edit.setMode('wysiwyg');
+                }
+            });
             $("#edit_form").attr("action", URL_PREFIX + "operations/message/" + idPost + "/update");
             $("#edit").openModal();
+            //CKEDITOR.instances["ckeditor_edit"].outdent.exec();
         })
         .fail(function() {
 
@@ -40,7 +47,7 @@ function runUpdatePost() {
 }
 
 $(document).ready(function() {
-	  initCkEditor("ckeditor", 200);
+    initCkEditor("ckeditor", 200);
     var instance = initCkEditor("ckeditor_edit", 280);
     if (instance != null) {
         instance.on("instanceReady", function() {
