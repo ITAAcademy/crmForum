@@ -1,21 +1,14 @@
 var config = null;
 var initMessages = function(editor) {
-    var topicContent = $(".card-panel");
-    topicContent.each(function(index) {
-        var contentElement = $(this);
-        var messageSpan = contentElement.find('.topic_message_text');
-        messageSpan.each(function(index, spanElement) {
-            var spanElement = $(this);
-            var bbCodedText = spanElement.text();
-            spanElement.removeClass('white-text');
-            spanElement.html(getHtmlFrommBBCode(bbCodedText));
+    var messageSpan = $('.topic_message_text');
+    messageSpan.each(function(index, spanElement) {
+        $(this).html(getHtmlFrommBBCode($(this).text()));
 
-        });
-        var preloader = contentElement.find(".preloader-wrapper");
-        preloader.remove();
-        initSpoilers();
     });
-
+    messageSpan.removeClass('white-text');
+    var preloader = $(".preloader-wrapper");
+    preloader.remove();
+    setTimeout(initSpoilers, 100);
 }
 
 function runEditPost(idPost) {
@@ -29,7 +22,7 @@ function runEditPost(idPost) {
             });
             $("#edit_form").attr("action", URL_PREFIX + "operations/message/" + idPost + "/update");
             $("#edit").openModal();
-            //CKEDITOR.instances["ckeditor_edit"].outdent.exec();
+            CKEDITOR.instances["ckeditor_edit"].outdent.exec();
         })
         .fail(function() {
 
@@ -45,19 +38,18 @@ function runUpdatePost() {
             $("#edir_err").html("Сталася помилка!!!");
         });
 }
-var processSubmitButtonAvailability = function(text){
-	 var sumbitButton = $('#submitcke');
-                if (sumbitButton!=null){
-                if (text === '')
-                    sumbitButton.hide();
-                else
-                    sumbitButton.show();
-            }
+var processSubmitButtonAvailability = function(text) {
+    var sumbitButton = $('#submitcke');
+    if (sumbitButton != null) {
+        if (text === '')
+            sumbitButton.hide();
+        else
+            sumbitButton.show();
+    }
 }
 
 $(document).ready(function() {
-    initCkEditor("ckeditor", 200);
-	 processSubmitButtonAvailability('');
+    processSubmitButtonAvailability('');
 
     var instance = initCkEditor("ckeditor_edit", 280);
     if (instance != null) {
@@ -66,13 +58,13 @@ $(document).ready(function() {
             initMessages(instance);
         });
     }
-   var ckEditor = initCkEditor("ckeditor", 200);
-      CKEDITOR.instances.ckeditor.on('change', function(evt) { 
-      	processSubmitButtonAvailability(evt.editor.getData());
+    var ckEditor = initCkEditor("ckeditor ", 200).on('change', function(evt) {
+            processSubmitButtonAvailability(evt.editor.getData());
 
-});
+        });;
 
-        
+
+
 
     var offset = 220;
     var duration = 500;

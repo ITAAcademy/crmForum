@@ -2,6 +2,9 @@
 var initCkEditor = function(id, iheight) {
     if ($('#' + id).length == 0)
         return null;
+    if(CKEDITOR.instances[id] != undefined)
+        return null;
+    
     var editor = CKEDITOR.replace(id, {
         height: iheight,
         //resize_enabled : false,
