@@ -38,9 +38,19 @@ function runUpdatePost() {
             $("#edir_err").html("Сталася помилка!!!");
         });
 }
+var processSubmitButtonAvailability = function(text){
+	 var sumbitButton = $('#submitcke');
+                if (sumbitButton!=null){
+                if (text === '')
+                    sumbitButton.hide();
+                else
+                    sumbitButton.show();
+            }
+}
 
 $(document).ready(function() {
-	  initCkEditor("ckeditor", 200);
+	 // initCkEditor("ckeditor", 200);
+	 processSubmitButtonAvailability('');
     var instance = initCkEditor("ckeditor_edit", 280);
     if (instance != null) {
         instance.on("instanceReady", function() {
@@ -48,7 +58,13 @@ $(document).ready(function() {
             initMessages(instance);
         });
     }
-    initCkEditor("ckeditor", 200);
+   var ckEditor = initCkEditor("ckeditor", 200);
+      CKEDITOR.instances.ckeditor.on('change', function(evt) { 
+      	processSubmitButtonAvailability(evt.editor.getData());
+
+});
+
+        
 
     var offset = 220;
     var duration = 500;
