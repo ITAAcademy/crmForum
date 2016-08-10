@@ -29,10 +29,13 @@ var initCkEditor = function(id, iheight) {
         on: {
             change: function(evt) {
                 var sumbitButton = $('#submitcke');
+                if (sumbitButton!=null){
                 if (evt.editor.getData() === '')
                     sumbitButton.hide();
                 else
                     sumbitButton.show();
+            }
+
                 //CKEDITOR.dom.element.createFromHtml( '<p style="color:red">Editor contents changed!</p>' ).appendTo( CKEDITOR.document.getBody() );
             }
         }

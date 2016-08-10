@@ -40,6 +40,7 @@ function runUpdatePost() {
 }
 
 $(document).ready(function() {
+	  initCkEditor("ckeditor", 200);
     var instance = initCkEditor("ckeditor_edit", 280);
     if (instance != null) {
         instance.on("instanceReady", function() {
