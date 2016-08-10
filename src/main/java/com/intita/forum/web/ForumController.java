@@ -233,6 +233,7 @@ public class ForumController {
 		result.addObject("currentPage",1);
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		result.addObject("prettyTime",p);
+		result.addObject("config",configMap);
 		return result;
 	}
 	//@author zinhcuk roman
@@ -273,6 +274,7 @@ public class ForumController {
 		model.addObject("isCategoriesContainer",category.isCategoriesContainer());
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
+		model.addObject("config",configMap);
 		if (category.isCategoriesContainer())
 		{
 			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
