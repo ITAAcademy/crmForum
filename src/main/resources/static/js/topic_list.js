@@ -22,3 +22,14 @@ $(document).ready(function() {
 
 
 });
+function topicAdditionSuccess(topicId){
+  Materialize.toast('Тему успішно додано', 4000,'green-toast') // 4000 is the duration of the toast
+  GoToUrl(serverPrefix+'/view/topic/'+topicId);
+}
+function topicAdditionFail(){
+ Materialize.toast('Не вдалось додати тему', 4000,'red-toast') // 4000 is the duration of the toast
+}
+function addTopic(event,url){
+    event.preventDefault();
+submitForm('#addTopicForm',url,topicAdditionSuccess,topicAdditionFail);
+}

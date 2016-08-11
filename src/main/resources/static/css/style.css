@@ -679,3 +679,13 @@
 .white-text {
     color: white;
 }
+.red-toast{
+    background-color: red;
+    color: white;
+    border-radius: 25px;
+}
+.green-toast{
+    background-color: green;
+    color: white;
+    border-radius: 25px;
+}

@@ -265,7 +265,7 @@ var Operations = Object.freeze({
     "add_room_on_login": "ADD_ROOM_ON_LOGIN"
 });
 
-var serverPrefix = "/crmChat";
+var serverPrefix = "/crmForum";
 var DEFAULT_FILE_PREFIX_LENGTH = 15;
 
 var substringMatcher = function(strs) {
@@ -422,3 +422,15 @@ function GoToUrl(url){
 window.location.href = url;
 }
 menu_upate();
+
+function submitForm(formId,url,successCallback,failCallback){
+    var serialized = $(formId).serialize();
+      $.ajax({
+        url:url,
+        type:'post',
+        data:serialized,
+        success:successCallback,
+        error:failCallback
+
+    });
+}

@@ -1,7 +1,6 @@
 package com.intita.forum.web;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,18 +10,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
-import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -343,32 +345,34 @@ public class ForumController {
 	public ModelAndView viewTopicById(@PathVariable Long topicId, Authentication auth){	
 		return viewTopicById(topicId, 1, auth);
 	}
-	
+	@ResponseBody
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
-	public String addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request, Authentication auth){
+	public ResponseEntity<Long> addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request, Authentication auth){
 		 String referer = request.getHeader("Referer");
-		if (postText.length()==0)   return "redirect:"+ referer; 
+		if (postText.length()==0)
+			return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
 		if(currentUser.isAnonymous())
-			return "redirect:"+ referer;
+			return new ResponseEntity<Long>(HttpStatus.UNAUTHORIZED);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
 		topicMessageService.addMessage(message);
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 0);
-		return "redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last		
-		
+		return new ResponseEntity<Long>(topicId,HttpStatus.OK);//"redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last				
 	}
+	@ResponseBody
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
-	public String addTopic(@RequestParam("topic_name") String topicName,@RequestParam("topic_text") String topicText,@PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
-		 String referer = request.getHeader("Referer");
+	public ResponseEntity<Long> addTopic(@RequestParam(value = "topic_name") String topicName,@RequestParam(value = "topic_text") String topicText,@PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
+		if (topicName==null || topicName.length()<=0 || topicText==null || topicText.length()<=0) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
+		String referer = request.getHeader("Referer");
 		IntitaUser author  = (IntitaUser) auth.getPrincipal();
-		if (author == null || author.isAnonymous()) return "redirect:"+referer;
+		if (author == null || author.isAnonymous()) return new ResponseEntity<Long>(HttpStatus.UNAUTHORIZED);
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-		if (author == null) return "redirect:"+referer;
+		if (category == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		ForumTopic topic = forumTopicService.addTopic(topicName,category,author);
-		if (topic == null) return "redirect:"+referer;
+		if (topic == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		addNewMessage(topicText, topic.getId(), request, auth);
-		return "redirect:"+"/view/topic/"+topic.getId();
+		 return new ResponseEntity<Long>(topic.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
 	}
 	@RequestMapping(value="/operations/topic/{topicId}/toggle_pin",method = RequestMethod.POST)
 	public String togglePinTopic(@PathVariable Long topicId,Authentication auth,HttpServletRequest request){
