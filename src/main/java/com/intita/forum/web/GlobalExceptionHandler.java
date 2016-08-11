@@ -30,12 +30,13 @@ public class GlobalExceptionHandler {
     public void handleConflict(NumberFormatException e) {
         log.info(e.getMessage());
     }
+	@ResponseStatus(HttpStatus.CONFLICT)  // 409
 	@ExceptionHandler(JpaObjectRetrievalFailureException.class)
 	public void handleConflict(ObjectRetrievalFailureException  e) {
 		log.info(e.getMessage());
 	}
 
-
+	@ResponseStatus(HttpStatus.BAD_REQUEST)  // 409
     @ExceptionHandler(value = {Exception.class, RuntimeException.class})
     public ModelAndView defaultErrorHandler(HttpServletRequest request, Exception e) {
             ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);      
@@ -47,6 +48,8 @@ public class GlobalExceptionHandler {
         log.error(exceptionAsString);
         return mav;
     }
+	
+	@ResponseStatus(HttpStatus.UNAUTHORIZED) 
     @ExceptionHandler(value = {UsernameNotFoundException.class})
     public ModelAndView usernameNotFoundExceptionErrorHandler(HttpServletRequest request, UsernameNotFoundException e) {
             ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
