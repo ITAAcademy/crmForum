@@ -76,9 +76,9 @@
                     </div>
                 </li>
             </ul>
-            <form th:if="${!user.isAnonymous()}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
+            <form id="addMessageForm" th:if="${!user.isAnonymous()}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
                 <textarea cols="80" id="ckeditor" name="text" rows="10"></textarea>
-                <button id="submitcke" class="waves-effect waves-light btn" style="background-color: rgb(43, 87, 154);width: 100%;border-radius: 0px;box-shadow: none;" type="submit" name="action">Відправити
+                <button id="submitcke" class="waves-effect waves-light btn" style="background-color: rgb(43, 87, 154);width: 100%;border-radius: 0px;box-shadow: none;" th:onclick="@{'javascript:addMessage(event,\'__${#httpServletRequest.getContextPath()}__/messages/add/__${topic.id}__\')'}" name="action">Відправити
                     <i class="material-icons right">send</i>
                 </button>
             </form>

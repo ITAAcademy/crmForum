@@ -382,7 +382,9 @@ function autoDisableToolTips($element) {
 var menu_upate = function(event) {
     clearTimeout(globalTimeOut);
     globalTimeOut = setTimeout(function() {
-        $('.tooltipped').tooltip('remove');
+        var tooltipped = $('.tooltipped');
+        if (typeof tooltipped != 'undefined')
+        tooltipped.tooltip('remove');
         var win = $(this); //this = window
         if (win.height() >= 820) { /* ... */ }
         if (win.width() >= 1280) { /* ... */ }

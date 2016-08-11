@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -347,18 +348,22 @@ public class ForumController {
 	}
 	@ResponseBody
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
-	public ResponseEntity<Long> addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request, Authentication auth){
+	public ResponseEntity<Map<String,String>> addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request, Authentication auth){
 		 String referer = request.getHeader("Referer");
 		if (postText.length()==0)
-			return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String,String>>(HttpStatus.BAD_REQUEST);
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
 		if(currentUser.isAnonymous())
-			return new ResponseEntity<Long>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<Map<String,String>>(HttpStatus.UNAUTHORIZED);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
 		topicMessageService.addMessage(message);
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 0);
-		return new ResponseEntity<Long>(topicId,HttpStatus.OK);//"redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last				
+		HashMap<String,String> messageMap = new HashMap<String,String>();
+		messageMap.put("id", topicId.toString());
+		messageMap.put("page", ""+messages.getTotalPages());
+		messageMap.put("topic", topicId.toString());
+		return new ResponseEntity<Map<String,String>>(messageMap,HttpStatus.OK);//"redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last				
 	}
 	@ResponseBody
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
