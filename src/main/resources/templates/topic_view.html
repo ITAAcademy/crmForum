@@ -20,7 +20,7 @@
                 <h4 th:text="${topic.name}"></h4>
             </div>
             <ul class="topic-content">
-                <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="idCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2}" th:id="@{'topicMessage__${message.id}__'}">
+                <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2}" th:id="@{'msg__${message.id}__'}">
                     <div class="user-panel col s12 m2 l2" style="">
                         <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
                         <div class="col s6 m12 l12">
@@ -49,7 +49,7 @@
                                 <div class="sk-circle12 sk-child"></div>
                             </div>
                             <!--/preloader -->
-                            <span class="topic_message_text white-text" th:text="${message.body}" th:name="@{'topicMessage__${idCurrentMsg}__'}"></span>
+                            <span class="topic_message_text white-text" th:text="${message.body}" th:id  ="@{'topicMessage__${indexCurrentMsg}__'}"></span>
                             <br/>
                         </p>
                     </div>
@@ -59,7 +59,7 @@
                     <!-- Counter -->
                     <a href="#!" style="position: absolute;bottom: 35px;left: 26px;">
                         <i class="material-icons">grade</i>
-                        <i th:text="    №__${idCurrentMsg}__"></i>
+                        <i th:text="    №__${indexCurrentMsg}__"></i>
                     </a>
                     <!-- Post controll btn -->
                     <div th:if="${!user.isAnonymous()}" class="fixed-action-btn horizontal post-controll">
@@ -69,7 +69,7 @@
                         <ul>
                             <li th:if="${message.author.equals(user)}"><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
                             <li th:if="${message.author.equals(user)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
-                            <li><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${iterationStatus.index}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
+                            <li><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>
                     </div>
                 </li>
