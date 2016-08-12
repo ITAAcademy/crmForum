@@ -97,3 +97,13 @@ function addMessage(event,url){
     CKEDITOR.instances[instance].updateElement();
 submitForm('#addMessageForm',url,messageAdditionSuccess,messageAdditionFail);
 }
+function quotation(messageIndex,messageAuthorName){
+var msgElmSpanName = '#topicMessage'+messageIndex;
+var elm = $(msgElmSpanName);
+alert('Ви цитуєте:'+elm.html());
+//CKEDITOR.instances.ckeditor.setData('');
+var prefix = "<blockquote><b>{0}:</b><br/>".format(messageAuthorName);
+var suffix = "</blockquote> "//need space to make wrap on new line;
+var htmlCode = prefix +elm.html()+ suffix;
+CKEDITOR.instances.ckeditor.insertHtml(htmlCode);
+}
