@@ -5,7 +5,7 @@ div.spoiler {
     line-height: 1.6;
     width: 100%;
 }
-
+/*
 @media(max-width:600px) {
     div.spoiler {
         float: left;
@@ -30,7 +30,7 @@ div.spoiler {
         width: calc(100% - 210px);
         margin-left: 210px;
     }
-}
+}*/
 
 div.spoiler div.spoiler-title {
     color: #000000;

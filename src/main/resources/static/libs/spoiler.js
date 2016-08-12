@@ -1,5 +1,10 @@
-var initSpoilers = function() {
-    $('div.spoiler-title').click(function() {
+var initSpoilers = function(el) {
+    if(el == undefined || el == null)
+        el = $('div.spoiler-title');
+    else
+        el = $(el).find('div.spoiler-title');
+    
+    el.click(function() {
         $(this)
             .children()
             .first()

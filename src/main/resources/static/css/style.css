@@ -4,7 +4,7 @@
 }
 
 .main-container {
-    /*background-color: #E6E6E6;	*/
+    /*background-color: #E6E6E6;    */
     /*min-height: 500px;*/
     margin: 5px;
 }
@@ -556,12 +556,8 @@
     /* box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); */
 }
 
-.topic_message_text ul li{
-    list-style: initial;
-}
-
-.topic_message_text ol li{
-    list-style: decimal outside;
+.user-panel.col {
+    float: none;
 }
 
 .user-panel {
@@ -600,10 +596,13 @@
     display: inline-block;
 }
 
+.user-msg {}
+
 .topic-content .card-panel {
     margin-left: 0px !important;
     margin-right: 0px !important;
     position: relative;
+    min-height: 330px;
 }
 
 .topic-content .card-panel:hover .fixed-action-btn.horizontal.post-controll {
@@ -611,11 +610,27 @@
 }
 
 .circle.sp {
-    width: 60px;
+    width: 86px;
     height: auto;
     position: static;
 }
 
+@media(min-width:601px) {
+    .user-panel {
+        display: block;
+        position: absolute;
+        bottom: 67px;
+        top: 30px;
+        max-width: 160px;
+        min-width: 160px;
+    }
+    .user-msg {
+        margin-left: 175px;
+    }
+}
+
+
+/*
 @media(max-width:767px) {}
 
 @media(min-width:768px) {}
@@ -628,13 +643,14 @@
     }
 }
 
-@media(min-width:1200px) {}
+@media(min-width:1200px) {}*/
 
 .topic-time {
     text-align: right;
     padding-right: 20px;
     font-size: 18px;
-    width: auto;
+    width: calc(100% - 44px);
+    /* left: 20px; */
     /* float: right; */
     border: 2px #ccc solid;
     border-right: none;
@@ -642,9 +658,9 @@
     border-radius: 100px;
     /* margin-left: -52px; */
     margin-top: 3px;
-    /* position: absolute; */
-    left: 4px;
-    bottom: 34px;
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
 }
 
 .back-to-top {
@@ -679,12 +695,14 @@
 .white-text {
     color: white;
 }
-.red-toast{
+
+.red-toast {
     background-color: red;
     color: white;
     border-radius: 25px;
 }
-.green-toast{
+
+.green-toast {
     background-color: green;
     color: white;
     border-radius: 25px;

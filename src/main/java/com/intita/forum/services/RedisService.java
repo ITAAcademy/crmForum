@@ -26,11 +26,11 @@ public class RedisService {
 		
 		
 		JedisPoolConfig poolConfig = new JedisPoolConfig();
-		poolConfig.setMaxTotal(5);
+		poolConfig.setMaxTotal(50);
 		poolConfig.setTestOnBorrow(true);
 		poolConfig.setTestOnReturn(true);
 		// this(poolConfig, host, port, timeout, password, Protocol.DEFAULT_DATABASE, null);
-		pool = new JedisPool(poolConfig, "localhost", 6379, Protocol.DEFAULT_TIMEOUT, "1234567");
+		pool = new JedisPool(poolConfig, "localhost", 6379, 5000, "1234567");
 		try {
 			jedis = pool.getResource();
 			System.out.println("@@@_REDIS_OK@@@");
@@ -42,6 +42,12 @@ public class RedisService {
 
 
 	public String getKeyValue(String key) {
+		if(!jedis.isConnected())
+		{
+			jedis.close();
+			jedis.connect();
+			return new String();
+		}
 		if(jedis != null)
 			return  jedis.get(key);
 		else

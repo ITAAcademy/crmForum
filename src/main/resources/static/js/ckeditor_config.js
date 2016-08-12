@@ -29,6 +29,7 @@ var initCkEditor = function(id, iheight) {
             'smiley', 'sad', 'wink', 'laugh', 'cheeky', 'blush', 'surprise',
             'indecision', 'angel', 'cool', 'crying', 'kiss'
         ],
+        contentsCss: URL_PREFIX + "/css/forum.css",
         //startupMode :'source',
         on: {
             change: function(evt) {

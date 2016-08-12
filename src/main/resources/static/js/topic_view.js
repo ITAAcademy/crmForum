@@ -3,12 +3,11 @@ var initMessages = function(editor) {
     var messageSpan = $('.topic_message_text');
     messageSpan.each(function(index, spanElement) {
         $(this).html(getHtmlFrommBBCode($(this).text()));
-
     });
     messageSpan.removeClass('white-text');
     var preloader = $(".preloader-wrapper");
-    preloader.remove();
-    setTimeout(initSpoilers, 100);
+    preloader.fadeOut(500);
+    initSpoilers();
 }
 
 function runEditPost(idPost) {
@@ -23,7 +22,7 @@ function runEditPost(idPost) {
             $("#edit_form").attr("action", URL_PREFIX + "operations/message/" + idPost + "/update");
             $("#edit").openModal();
             if (typeof CKEDITOR.instances["ckeditor_edit"].outdent != 'undefined')
-            CKEDITOR.instances["ckeditor_edit"].outdent.exec();
+                CKEDITOR.instances["ckeditor_edit"].outdent.exec();
         })
         .fail(function() {
 
@@ -48,7 +47,6 @@ var processSubmitButtonAvailability = function(text) {
             sumbitButton.show();
     }
 }
-
 $(document).ready(function() {
     processSubmitButtonAvailability('');
 
@@ -57,43 +55,47 @@ $(document).ready(function() {
         instance.on("instanceReady", function() {
             config = instance.config;
             initMessages(instance);
+
+            setTimeout(function() {
+            var ckEditor = initCkEditor("ckeditor", 200).on('change', function(evt) {
+                processSubmitButtonAvailability(evt.editor.getData());
+
+            });;
+            var offset = 220;
+            var duration = 500;
+            jQuery(window).scroll(function() {
+                if (jQuery(this).scrollTop() > offset) {
+                    jQuery('.back-to-top').fadeIn(duration);
+                } else {
+                    jQuery('.back-to-top').fadeOut(duration);
+                }
+            });
+
+            jQuery('.back-to-top').click(function(event) {
+                event.preventDefault();
+                jQuery('html, body').animate({ scrollTop: 0 }, duration);
+                return false;
+            })
+        }, 300);
+
         });
     }
-    var ckEditor = initCkEditor("ckeditor", 200).on('change', function(evt) {
-            processSubmitButtonAvailability(evt.editor.getData());
 
-        });;
-
-
-
-
-    var offset = 220;
-    var duration = 500;
-    jQuery(window).scroll(function() {
-        if (jQuery(this).scrollTop() > offset) {
-            jQuery('.back-to-top').fadeIn(duration);
-        } else {
-            jQuery('.back-to-top').fadeOut(duration);
-        }
-    });
-
-    jQuery('.back-to-top').click(function(event) {
-        event.preventDefault();
-        jQuery('html, body').animate({ scrollTop: 0 }, duration);
-        return false;
-    })
-
+    
 });
-function messageAdditionSuccess(message){
-  Materialize.toast('Повідомлення успішно додано', 4000,'green-toast') // 4000 is the duration of the toast
-  GoToUrl(serverPrefix+'/view/topic/{0}/{1}'.format(message.topic,message.page));
+
+function messageAdditionSuccess(message) {
+    Materialize.toast('Повідомлення успішно додано', 4000, 'green-toast') // 4000 is the duration of the toast
+    GoToUrl(serverPrefix + '/view/topic/{0}/{1}'.format(message.topic, message.page));
 }
-function messageAdditionFail(){
- Materialize.toast('Не вдалось додати повідомлення', 4000,'red-toast') // 4000 is the duration of the toast
+
+function messageAdditionFail() {
+    Materialize.toast('Не вдалось додати повідомлення', 4000, 'red-toast') // 4000 is the duration of the toast
 }
-function addMessage(event,url){
+
+function addMessage(event, url) {
     event.preventDefault();
-    for ( instance in CKEDITOR.instances )
-    CKEDITOR.instances[instance].updateElement();
-submitForm('#addMessageForm',url,messageAdditionSuccess,messageAdditionFail);
+    for (instance in CKEDITOR.instances)
+        CKEDITOR.instances[instance].updateElement();
+    submitForm('#addMessageForm', url, messageAdditionSuccess, messageAdditionFail);
 }
