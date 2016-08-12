@@ -57,31 +57,31 @@ $(document).ready(function() {
             initMessages(instance);
 
             setTimeout(function() {
-            var ckEditor = initCkEditor("ckeditor", 200).on('change', function(evt) {
-                processSubmitButtonAvailability(evt.editor.getData());
+                var ckEditor = initCkEditor("ckeditor", 200).on('change', function(evt) {
+                    processSubmitButtonAvailability(evt.editor.getData());
 
-            });;
-            var offset = 220;
-            var duration = 500;
-            jQuery(window).scroll(function() {
-                if (jQuery(this).scrollTop() > offset) {
-                    jQuery('.back-to-top').fadeIn(duration);
-                } else {
-                    jQuery('.back-to-top').fadeOut(duration);
-                }
-            });
+                });;
+                var offset = 220;
+                var duration = 500;
+                jQuery(window).scroll(function() {
+                    if (jQuery(this).scrollTop() > offset) {
+                        jQuery('.back-to-top').fadeIn(duration);
+                    } else {
+                        jQuery('.back-to-top').fadeOut(duration);
+                    }
+                });
 
-            jQuery('.back-to-top').click(function(event) {
-                event.preventDefault();
-                jQuery('html, body').animate({ scrollTop: 0 }, duration);
-                return false;
-            })
-        }, 300);
+                jQuery('.back-to-top').click(function(event) {
+                    event.preventDefault();
+                    jQuery('html, body').animate({ scrollTop: 0 }, duration);
+                    return false;
+                })
+            }, 300);
 
         });
     }
 
-    
+
 });
 
 function messageAdditionSuccess(message) {
@@ -98,4 +98,14 @@ function addMessage(event, url) {
     for (instance in CKEDITOR.instances)
         CKEDITOR.instances[instance].updateElement();
     submitForm('#addMessageForm', url, messageAdditionSuccess, messageAdditionFail);
+}
+
+function quotation(messageIndex, messageAuthorName) {
+    var msgElmSpanName = '#topicMessage' + messageIndex;
+    var elm = $(msgElmSpanName);
+    //CKEDITOR.instances.ckeditor.setData('');
+    var prefix = "<blockquote><b>{0}:</b><br/>".format(messageAuthorName);
+    var suffix = "</blockquote> " //need space to make wrap on new line;
+    var htmlCode = prefix + elm.html() + suffix;
+    CKEDITOR.instances.ckeditor.insertHtml(htmlCode);
 }
