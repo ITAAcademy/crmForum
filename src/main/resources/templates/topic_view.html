@@ -20,7 +20,7 @@
                 <h4 th:text="${topic.name}"></h4>
             </div>
             <ul class="topic-content">
-                <li class="card-panel row" th:each="message,iterationStatus : ${messages}">
+                <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="idCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2}" th:id="@{'topicMessage__${message.id}__'}">
                     <div class="user-panel col s12 m2 l2" style="">
                         <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
                         <div class="col s6 m12 l12">
@@ -31,7 +31,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="s12 m10 l10 user-msg">
+                    <div class="s12 m10 l10 user-msg" >
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
                             <!--preloader -->
                             <div class="preloader-wrapper sk-circle">
@@ -49,7 +49,7 @@
                                 <div class="sk-circle12 sk-child"></div>
                             </div>
                             <!--/preloader -->
-                            <span class="topic_message_text white-text " th:text="${message.body}" th:id="@{'topicMessage__${iterationStatus.index}__'}"></span>
+                            <span class="topic_message_text white-text" th:text="${message.body}" th:name="@{'topicMessage__${idCurrentMsg}__'}"></span>
                             <br/>
                         </p>
                     </div>
@@ -59,7 +59,7 @@
                     <!-- Counter -->
                     <a href="#!" style="position: absolute;bottom: 35px;left: 26px;">
                         <i class="material-icons">grade</i>
-                        <i th:text="    №__${iterationStatus.count+((currentPage-1)*10)}__"></i>
+                        <i th:text="    №__${idCurrentMsg}__"></i>
                     </a>
                     <!-- Post controll btn -->
                     <div th:if="${!user.isAnonymous()}" class="fixed-action-btn horizontal post-controll">
