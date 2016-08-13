@@ -4,11 +4,8 @@
 <head>
     <title>CrmForum</title>
     <div th:include="includes">...</div>
-    <script th:src="@{/libs/xbbcode.js}"></script>
     <script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
-    <link type="text/css" th:href="@{/libs/css/xbbcode.css}" rel="stylesheet" />
-    <link type="text/css" th:href="@{/libs/css/spoiler.css}" rel="stylesheet" />
-    <script th:src="@{/js/ckeditor_config.js}"></script>
+        <script th:src="@{/js/ckeditor_config.js}"></script>
     <script th:src="@{/js/topic_view.js}"></script>
     <script th:src="@{/libs/spoiler.js}"></script>
     <script th:src="@{/modules/ckeditor/plugins/bbcode/plugin.js}"></script>
@@ -23,10 +20,10 @@
                 <h4 th:text="${topic.name}"></h4>
             </div>
             <ul class="topic-content">
-                <li class="card-panel row" th:each="message,iterationStatus : ${messages}">
+                <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2}" th:id="@{'msg__${message.id}__'}">
                     <div class="user-panel col s12 m2 l2" style="">
                         <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
-                        <div class="col s12">
+                        <div class="col s6 m12 l12">
                             <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" th:text="${message.author.getNickName()}" style="  ">Who</a>
                             <ul class="user-contact">
                                 <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
@@ -34,24 +31,25 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="s12 m10 l10">
+                    <div class="s12 m10 l10 user-msg" >
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
-                            <!--preloader -->
-                            <div class="preloader-wrapper big active">
-                                <div class="spinner-layer spinner-blue-only">
-                                    <div class="circle-clipper left">
-                                        <div class="circle"></div>
-                                    </div>
-                                    <div class="gap-patch">
-                                        <div class="circle"></div>
-                                    </div>
-                                    <div class="circle-clipper right">
-                                        <div class="circle"></div>
-                                    </div>
-                                </div>
+                            <!--preloader
+                            <div class="preloader-wrapper sk-circle">
+                                <div class="sk-circle1 sk-child"></div>
+                                <div class="sk-circle2 sk-child"></div>
+                                <div class="sk-circle3 sk-child"></div>
+                                <div class="sk-circle4 sk-child"></div>
+                                <div class="sk-circle5 sk-child"></div>
+                                <div class="sk-circle6 sk-child"></div>
+                                <div class="sk-circle7 sk-child"></div>
+                                <div class="sk-circle8 sk-child"></div>
+                                <div class="sk-circle9 sk-child"></div>
+                                <div class="sk-circle10 sk-child"></div>
+                                <div class="sk-circle11 sk-child"></div>
+                                <div class="sk-circle12 sk-child"></div>
                             </div>
-                            <!--/preloader -->
-                            <span class="topic_message_text white-text " th:text="${message.body}" th:id="@{'topicMessage__${iterationStatus.index}__'}"></span>
+                            /preloader -->
+                            <span class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id  ="@{'topicMessage__${indexCurrentMsg}__'}"></span>
                             <br/>
                         </p>
                     </div>
@@ -61,7 +59,7 @@
                     <!-- Counter -->
                     <a href="#!" style="position: absolute;bottom: 35px;left: 26px;">
                         <i class="material-icons">grade</i>
-                        <i th:text="    №__${iterationStatus.count+((currentPage-1)*10)}__"></i>
+                        <i th:text="    №__${indexCurrentMsg}__"></i>
                     </a>
                     <!-- Post controll btn -->
                     <div th:if="${!user.isAnonymous()}" class="fixed-action-btn horizontal post-controll">
@@ -71,7 +69,7 @@
                         <ul>
                             <li th:if="${message.author.equals(user)}"><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
                             <li th:if="${message.author.equals(user)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
-                            <li><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${iterationStatus.index}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
+                            <li><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>
                     </div>
                 </li>
