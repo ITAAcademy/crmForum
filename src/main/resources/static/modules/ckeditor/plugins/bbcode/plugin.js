@@ -787,7 +787,7 @@
 								//	if (htmlText == null || htmlText.type != 3) break;
 								//	var text = htmlText.value;
 								//	var textElm = new CKEDITOR.htmlParser.text(text);
-									newElement.children = pChildren;
+									newElement.children = newElement.children.concat(pChildren);
 									break;
 								}
 							}
