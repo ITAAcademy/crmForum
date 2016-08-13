@@ -28,7 +28,7 @@
 
 	var bbcodeMap = { b: 'strong', u: 'u', i: 'em', color: 'span', size: 'span', quote: 'blockquote', code: 'code', url: 'a', email: 'span', img: 'span', '*': 'li', list: 'ol',spoiler:'spoiler' },
 		convertMap = { strong: 'b', b: 'b', u: 'u', em: 'i', i: 'i', code: 'code', li: '*' },
-		tagnameMap = { strong: 'b', em: 'i', u: 'u', li: '*', ul: 'list', ol: 'list', code: 'code', a: 'link', img: 'img', blockquote: 'quote',spoiler: 'spoiler' },
+		tagnameMap = { strong: 'b', em: 'i', u: 'u', li: '*', ul: 'list', ol: 'list', code: 'code', a: 'link', img: 'img', blockquote: 'quote', spoiler: 'spoiler' },
 		stylesMap = { color: 'color', size: 'font-size' },
 		attributesMap = { url: 'href', email: 'mailhref', quote: 'cite', list: 'listType',spoiler:'title' };
 
@@ -610,8 +610,10 @@
 						};
 					},
 					spoiler: function(element){
+						var spoilered = new CKEDITOR.htmlParser.element( 'div' );
+						spoilered.name = 'div';
 						element.name = 'div';
-						element.addClass('spoiler');
+						spoilered.addClass('spoiler');
 						var spoilerTitle = new CKEDITOR.htmlParser.element('div');
 						spoilerTitle.addClass('spoiler-title');
 						var spoilerToggle = new CKEDITOR.htmlParser.element('div');
@@ -620,16 +622,13 @@
 						var spoilerTitleText =  new CKEDITOR.htmlParser.text(titleText);
 						var spoilerContent = new CKEDITOR.htmlParser.element('div');
 						spoilerContent.addClass('spoiler-content');
-						var contentText = " ";
-						if (element.children.length>0)contentText = element.children[ 0 ].value || ' ';
-						var spoilerContentParagraphText =  new CKEDITOR.htmlParser.text(contentText);
-						var spoilerContentParagraph = new CKEDITOR.htmlParser.element('p');
 						//relation between elements
-						element.children=[spoilerTitle,spoilerContent];
+						spoilered.children=[spoilerTitle,spoilerContent];
 						spoilerTitle.children=[spoilerToggle,spoilerTitleText];
-						spoilerContent.children=[spoilerContentParagraph];
-						spoilerContentParagraph.children=[spoilerContentParagraphText];
+						spoilerContent.children = element.children;
+						//spoilerContent.children=spoilerContent.children.concat(element.children);
 						delete element.attributes.title;
+						element.children =  [spoilered];
 						//setting test data <--TO REMOVE
 					
 
@@ -759,9 +758,11 @@
 						else if (tagName == 'div'){
 							//TODO ZIGZAG
 							if (element.attributes && element.attributes.class=='spoiler'){
+								delete element.attributes.class;
 								tagName = 'spoiler';
 							var newElement = new CKEDITOR.htmlParser.element('spoiler');
 							newElement.attributes=[];
+							newElement.children=[];
 						
 							if (element.children)
 							for (var i = 0; i < element.children.length; i++){
@@ -770,22 +771,26 @@
 									if (htmlText != null && htmlText.type == 3) {
 											value = htmlText.value;
 									}
+									continue;
 								}
 								if (element.children[i].attributes.class=='spoiler-content'){
-									var htmlP = element.children[i].children[0];
-									if (htmlP == null || htmlP.name != 'p') break;
-									var htmlText = htmlP.children[0];
+									delete element.children[i].attributes.class;
+									var pChildren = element.children[i].children;;
 									//if null or not text 
-									if (htmlText == null || htmlText.type != 3) break;
-									var text = htmlText.value;
-									var textElm = new CKEDITOR.htmlParser.text(text);
-									newElement.children.push(textElm);
+								//	if (htmlText == null || htmlText.type != 3) break;
+								//	var text = htmlText.value;
+								//	var textElm = new CKEDITOR.htmlParser.text(text);
+									newElement.children = newElement.children.concat(pChildren);
 									break;
 								}
 							}
+
 							value = value || ' ';
-							element.children=newElement.children;
-							tagName='spoiler';
+							//element=newElement;
+							//element.isUnknown=true;
+							//element.isEmpty=true;
+							element.children = newElement.children;
+							//tagName='spoiler';
 							//element = newElement;
 							//return element;
 						}
