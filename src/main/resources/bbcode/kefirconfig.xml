@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="http://kefirsf.org/kefirbb/schema"
+               xsi:schemaLocation="http://kefirsf.org/kefirbb/schema http://kefirsf.org/kefirbb/schema/kefirbb-1.0.xsd">
+
+    <!-- Root scope. This scope uses when processor started work and by default, if not set other scope -->
+ 	<params>
+   		 <param name="music" value="Punk"/>
+	</params>
+    <scope name="ROOT" parent="basic">
+        <!-- Formatting -->
+        <coderef name="bold"/>
+        <coderef name="i"/>
+        <coderef name="u"/>
+        <coderef name="quote"/>
+        <coderef name="spoiler"/>
+        <coderef name="list"/>
+        <coderef name="list1"/>
+        <coderef name="li_el"/>
+        <coderef name="color"/>
+        <coderef name="img"/>
+    </scope>
+    
+    <!-- Simple formatting -->
+    <code name="bold">
+        <pattern ignoreCase="true">[b]<var inherit="true"/>[/b]</pattern>
+        <template>&lt;b&gt;<var/>&lt;/b&gt;</template>
+    </code>
+    <code name="i">
+        <pattern ignoreCase="true">[i]<var inherit="true"/>[/i]</pattern>
+        <template>&lt;i&gt;<var/>&lt;/i&gt;</template>
+    </code>
+    <code name="u">
+        <pattern ignoreCase="true">[u]<var inherit="true"/>[/u]</pattern>
+        <template>&lt;u&gt;<var/>&lt;/u&gt;</template>
+    </code>
+	<code name="quote">
+        <pattern ignoreCase="true">[quote]<var inherit="true"/>[/quote]</pattern>
+        <template>&lt;blockquote&gt;&lt;div&gt;<var/>&lt;/div&gt;&lt;/blockquote&gt;</template>
+    </code>
+	<code name="spoiler">
+		<pattern ignoreCase="true">[spoiler=<var inherit="true" name="head"/>]<var name="text" inherit="true" />[/spoiler]</pattern>
+		<template>&lt;div class=&quot;spoiler&quot;&gt;&lt;div class=&quot;spoiler-title&quot;&gt;&lt;div class=&quot;spoiler-toggle hide-icon&quot;&gt;&lt;/div&gt;<var name="head"/>&lt;/div&gt;&lt;div
+			class=&quot;spoiler-content&quot;&gt;&lt;p&gt;<var name="text"/>&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+		</template>
+	</code>
+		<code name="list1">
+		<pattern ignoreCase="true">[list=1]<var name="text" inherit="true" />[/list]</pattern>
+		<template>
+		    &lt;ol style=&quot;list-style-type:upper-alpha&quot;&gt;<var name="text"/>&lt;/ol&gt;
+		</template>
+	</code>
+			<code name="list">
+		<pattern ignoreCase="true">[list]<var name="text" inherit="true" />[/list]</pattern>
+		<template>
+		    &lt;ul style=&quot;list-style-type:upper-alpha&quot;&gt;<var name="text"/>&lt;/ul&gt;
+		</template>
+	</code>
+				<code name="li_el">
+		<pattern ignoreCase="true">[*]<var name="text" inherit="true" /></pattern>
+		<template>
+		    &lt;li&gt;<var name="text"/>&lt;/li&gt;
+		</template>
+	</code>
+	<code name="color">
+		<pattern ignoreCase="true">[color=<var name="color" inherit="true" />]<var name="text" inherit="true" />[/color]</pattern>
+		<template>
+		    	&lt;span style=&quot;color:<var name="color"/>;&quot;&gt;<var name="text"/>&lt;/span&gt;
+		</template>
+	</code>
+		<code name="img">
+		<pattern ignoreCase="true">[img]<var name="src" inherit="true" />[/img]</pattern>
+		<template>
+		    	&lt;img src="<var name="src"/>";&quot;&gt;&lt;/img&gt;
+		</template>
+	</code>				
+	
+			
+
+    <!-- Links. http, https, mailto protocols -->
+    <scope name="url">
+        <coderef name="bold"/>
+        <coderef name="i"/>
+    </scope>
+    
+        <scope name="smiles">
+
+
+
+	<code name="smiley">
+		<pattern>:)</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/regular_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/regular_smile.png&quot;
+			title=&quot;smiley&quot; alt=&quot;smiley&quot;&gt;
+		</template>
+	</code>
+	<code name="sad">
+		<pattern>:(</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/sad_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/sad_smile.png&quot;
+			title=&quot;sad&quot; alt=&quot;sad&quot;&gt;
+		</template>
+	</code>
+	
+	<code name="wink">
+		<pattern>;)</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/wink_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/wink_smile.png&quot;
+			title=&quot;wink&quot; alt=&quot;wink&quot;&gt;
+		</template>
+	</code>
+	<code name="laugh">
+		<pattern>:D</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/teeth_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/teeth_smile.png&quot;
+			title=&quot;laugh&quot; alt=&quot;laugh&quot;&gt;
+		</template>
+	</code>
+	<code name="cheeky">
+		<pattern>:P</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/tongue_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/tongue_smile.png&quot;
+			title=&quot;cheeky&quot; alt=&quot;cheeky&quot;&gt;
+		</template>
+	</code>
+	<code name="blush">
+		<pattern>:*)</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/embarrassed_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/embarrassed_smile.png&quot;
+			title=&quot;blush&quot; alt=&quot;blush&quot;&gt;
+		</template>
+	</code>
+	<code name="surprise">
+		<pattern>:-o</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/omg_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/omg_smile.png&quot;
+			title=&quot;surprise&quot; alt=&quot;surprise&quot;&gt;
+		</template>
+	</code>
+	<code name="indecision">
+		<pattern>:|</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/whatchutalkingabout_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/whatchutalkingabout_smile.png&quot;
+			title=&quot;indecision&quot; alt=&quot;indecision&quot;&gt;
+		</template>
+	</code>
+	<code name="angel">
+		<pattern>o:)</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/angel_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/angel_smile.png&quot;
+			title=&quot;angel&quot; alt=&quot;angel&quot;&gt;
+		</template>
+	</code>
+	<code name="cool">
+		<pattern>8-)</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/shades_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/shades_smile.png&quot;
+			title=&quot;cool&quot; alt=&quot;cool&quot;&gt;
+		</template>
+	</code>
+	
+	<code name="crying">
+		<pattern>;(</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/cry_smile.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/cry_smile.png&quot;
+			title=&quot;crying&quot; alt=&quot;crying&quot;&gt;
+		</template>
+	</code>
+	<code name="kiss">
+		<pattern>:-*</pattern>
+		<template>
+			&lt;img src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/kiss.png&quot;
+			data-cke-saved-src=&quot;
+			<var name="targetURL" />/modules/ckeditor/plugins/smiley/images/kiss.png&quot;
+			title=&quot;kiss&quot; alt=&quot;kiss&quot;&gt;
+		</template>
+	</code>
+        
+    </scope>
+    
+    
+    
+    
+        <scope name="escapeXml" parent="smiles">
+        <code priority="100">
+            <pattern>&amp;</pattern>
+            <template>&amp;amp;</template>
+        </code>
+        <code priority="100">
+            <pattern>&apos;</pattern>
+            <template>&amp;apos;</template>
+        </code>
+        <code priority="100">
+            <pattern>&lt;</pattern>
+            <template>&amp;lt;</template>
+        </code>
+        <code priority="100">
+            <pattern>&gt;</pattern>
+            <template>&amp;gt;</template>
+        </code>
+        <code priority="100">
+            <pattern>&quot;</pattern>
+            <template>&amp;quot;</template>
+        </code>
+    </scope>
+
+    <!-- Scope for escaping bb spec chars -->
+    <scope name="escapeBb" parent="escapeXml">
+        <!--
+            Escape bb-code symbols
+            double slash to slash
+            slash + square bracket to square bracket
+         -->
+        <code name="slash" priority="10">
+            <pattern>\\</pattern>
+            <template>\</template>
+        </code>
+        <code name="left_square_bracket" priority="9">
+            <pattern>\[</pattern>
+            <template>[</template>
+        </code>
+        <code name="right_square_bracket" priority="9">
+            <pattern>\]</pattern>
+            <template>]</template>
+        </code>
+    </scope>
+
+    <!-- Escape basic HTML char sequences -->
+    <scope name="basic" parent="escapeBb">
+        <!-- line feed characters -->
+        <code name="br1" priority="3">
+            <pattern>&#x0A;&#x0D;</pattern>
+            <template>&lt;br/&gt;</template>
+        </code>
+        <code name="br2" priority="2">
+            <pattern>&#x0D;&#x0A;</pattern>
+            <template>&lt;br/&gt;</template>
+        </code>
+        <code name="br3" priority="1">
+            <pattern>&#x0A;</pattern>
+            <template>&lt;br/&gt;</template>
+        </code>
+        <code name="br4" priority="0">
+            <pattern>&#x0D;</pattern>
+            <template>&lt;br/&gt;</template>
+        </code>
+
+        <!-- Special html symbols -->
+        <code name="symbol">
+            <pattern ignoreCase="true">[symbol=<var scope="escapeXml"/>/]</pattern>
+            <template>&amp;<var/>;</template>
+        </code>
+
+        <!-- angle quotes -->
+        <code name="aquote">
+            <pattern ignoreCase="true">[aquote]<var inherit="true"/>[/aquote]</pattern>
+            <template>&amp;laquo;<var/>&amp;raquo;</template>
+        </code>
+    </scope>
+</configuration>

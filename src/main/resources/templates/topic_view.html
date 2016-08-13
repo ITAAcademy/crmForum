@@ -33,7 +33,7 @@
                     </div>
                     <div class="s12 m10 l10 user-msg" >
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
-                            <!--preloader -->
+                            <!--preloader
                             <div class="preloader-wrapper sk-circle">
                                 <div class="sk-circle1 sk-child"></div>
                                 <div class="sk-circle2 sk-child"></div>
@@ -48,8 +48,8 @@
                                 <div class="sk-circle11 sk-child"></div>
                                 <div class="sk-circle12 sk-child"></div>
                             </div>
-                            <!--/preloader -->
-                            <span class="topic_message_text white-text" th:text="${message.body}" th:id  ="@{'topicMessage__${indexCurrentMsg}__'}"></span>
+                            /preloader -->
+                            <span class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id  ="@{'topicMessage__${indexCurrentMsg}__'}"></span>
                             <br/>
                         </p>
                     </div>

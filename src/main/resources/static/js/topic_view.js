@@ -1,13 +1,13 @@
 var config = null;
 var initMessages = function(editor) {
-    var messageSpan = $('.topic_message_text');
-    messageSpan.each(function(index, spanElement) {
-        $(this).html(getHtmlFrommBBCode($(this).text()));
-    });
-    messageSpan.removeClass('white-text');
+    /*  var messageSpan = $('.topic_message_text');
+      messageSpan.each(function(index, spanElement) {
+          $(this).html(getHtmlFrommBBCode($(this).text()));
+      });
+      messageSpan.removeClass('white-text');*/
     var preloader = $(".preloader-wrapper");
     preloader.fadeOut(500);
-    initSpoilers();
+
 }
 
 function runEditPost(idPost) {
@@ -51,34 +51,34 @@ $(document).ready(function() {
     processSubmitButtonAvailability('');
 
     var instance = initCkEditor("ckeditor_edit", 280);
+    initSpoilers();
     if (instance != null) {
         instance.on("instanceReady", function() {
             config = instance.config;
             initMessages(instance);
-
-            setTimeout(function() {
-                var ckEditor = initCkEditor("ckeditor", 200).on('change', function(evt) {
-                    processSubmitButtonAvailability(evt.editor.getData());
-
-                });;
-                var offset = 220;
-                var duration = 500;
-                jQuery(window).scroll(function() {
-                    if (jQuery(this).scrollTop() > offset) {
-                        jQuery('.back-to-top').fadeIn(duration);
-                    } else {
-                        jQuery('.back-to-top').fadeOut(duration);
-                    }
-                });
-
-                jQuery('.back-to-top').click(function(event) {
-                    event.preventDefault();
-                    jQuery('html, body').animate({ scrollTop: 0 }, duration);
-                    return false;
-                })
-            }, 300);
-
         });
+
+        var ckEditor = initCkEditor("ckeditor", 200)
+        if (instance != null)
+            ckeditor.on('change', function(evt) {
+                processSubmitButtonAvailability(evt.editor.getData());
+
+            });;
+        var offset = 220;
+        var duration = 500;
+        jQuery(window).scroll(function() {
+            if (jQuery(this).scrollTop() > offset) {
+                jQuery('.back-to-top').fadeIn(duration);
+            } else {
+                jQuery('.back-to-top').fadeOut(duration);
+            }
+        });
+
+        jQuery('.back-to-top').click(function(event) {
+            event.preventDefault();
+            jQuery('html, body').animate({ scrollTop: 0 }, duration);
+            return false;
+        })
     }
 
 

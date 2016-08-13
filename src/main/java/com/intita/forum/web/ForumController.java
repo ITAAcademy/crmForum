@@ -1,5 +1,7 @@
 package com.intita.forum.web;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
+import org.kefirsf.bb.BBProcessorFactory;
+import org.kefirsf.bb.ConfigurationFactory;
+import org.kefirsf.bb.TextProcessor;
+import org.kefirsf.bb.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +99,17 @@ public class ForumController {
 
 	@PersistenceContext
 	EntityManager entityManager;
+	
+    private static final String KEFIRCONFIG_PATH = "bbcode/kefirconfig.xml";
+
+    private TextProcessor bbCodeProcessor;
+    private BBProcessorFactory processorFactory;
+    @PostConstruct
+    private void initTextProcessoe() {
+    	  processorFactory = BBProcessorFactory.getInstance();
+          
+	}
+        
 
 	protected Session getCurrentHibernateSession()  {
 		return entityManager.unwrap(Session.class);
@@ -314,12 +331,12 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId,Authentication principal){
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId ,Authentication principal){
 		return viewCategoryById(categoryId,1,principal);
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page, Authentication auth){
+	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page, HttpServletRequest request, Authentication auth){
 		ModelAndView model = new ModelAndView("topic_view");
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
@@ -339,12 +356,22 @@ public class ForumController {
       //  System.out.println(p.format(new Date()));
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
 		model.addObject("config",configMap);
+		
+		Configuration configuration  = ConfigurationFactory.getInstance().createFromResource(KEFIRCONFIG_PATH);
+		HashMap<String, CharSequence> map = new HashMap<>(configuration.getParams());
+		
+			map.put("targetURL", request.getContextPath());
+
+		configuration.setParams(map);
+		bbCodeProcessor = processorFactory.create(configuration);
+		model.addObject("bbcode",bbCodeProcessor);
+		
 		return model;
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(@PathVariable Long topicId, Authentication auth){	
-		return viewTopicById(topicId, 1, auth);
+	public ModelAndView viewTopicById(@PathVariable Long topicId, HttpServletRequest request, Authentication auth){	
+		return viewTopicById(topicId, 1, request, auth);
 	}
 	@ResponseBody
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
