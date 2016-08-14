@@ -256,12 +256,12 @@
 				delete node.returnPoint;
 			}
 		}
-		var cantBeChildOf = function(currentDtd,tagName){
+		var canBeChildOf = function(currentDtd,tagName){
 			//if (tagName=='br')return false;
-			if (tagName=="spoiler") return false;
-			if (currentDtd && !currentDtd[ tagName ] ) return true
+			if (tagName=="spoiler") return true;
+			if (currentDtd && !currentDtd[ tagName ] ) return false;
 				
-				return false;
+				return true;
 		}
 
 		parser.onTagOpen = function( tagName, attributes ) {
@@ -277,7 +277,7 @@
 
 			var currentDtd = currentName && ( CKEDITOR.dtd[ currentName ] || ( currentNode._.isBlockLike ? CKEDITOR.dtd.div : CKEDITOR.dtd.span ) );
 			// If the element cannot be child of the current element.
-			if ( cantBeChildOf(currentDtd,tagName) ) {
+			if ( !canBeChildOf(currentDtd,tagName) ) {
 				var reApply = false,
 					addPoint; // New position to start adding nodes.
 
