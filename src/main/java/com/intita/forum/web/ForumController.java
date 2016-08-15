@@ -365,10 +365,8 @@ public class ForumController {
 
 			configuration.setParams(map);
 			bbCodeProcessor = processorFactory.create(configuration);
-			
-			model.addObject("bbcode",bbCodeProcessor);
-
 		}
+		model.addObject("bbcode",bbCodeProcessor);
 		return model;
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
