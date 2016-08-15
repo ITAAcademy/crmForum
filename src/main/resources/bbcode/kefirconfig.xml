@@ -46,7 +46,7 @@
 		</template>
 	</code>
 		<code name="list1">
-		<pattern ignoreCase="true">[list=1]<var name="text" inherit="true" />[/list]</pattern>
+		<pattern ignoreCase="true">[list=<var name="type" inherit="true"/>]<var name="text" inherit="true" />[/list]</pattern>
 		<template>
 		    &lt;ol style=&quot;list-style-type:upper-alpha&quot;&gt;<var name="text"/>&lt;/ol&gt;
 		</template>
@@ -76,7 +76,7 @@
 		</template>
 	</code>
 		<code name="img">
-		<pattern ignoreCase="true">[img]<var name="src" inherit="true" />[/img]</pattern>
+		<pattern ignoreCase="true">[img]<var name="src" parse="false" inherit="true" />[/img]</pattern>
 		<template>
 		    	&lt;img src="<var name="src"/>";&quot;&gt;&lt;/img&gt;
 		</template>

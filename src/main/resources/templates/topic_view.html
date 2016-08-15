@@ -24,7 +24,7 @@
                     <div class="user-panel col s12 m2 l2" style="">
                         <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
                         <div class="col s6 m12 l12">
-                            <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" th:text="${message.author.getNickName()}" style="  ">Who</a>
+                            <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" style="  " th:title="${message.author.getNickName()}"><div th:text="${message.author.getNickName()}"></div></a>
                             <ul class="user-contact">
                                 <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
                                 <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
