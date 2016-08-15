@@ -182,10 +182,11 @@
 }
 
 .topics-table-row.first-row {
-    background-color: #0277bd;
+    background-color: #01579b;
     /*  #97CBF4;*/
     color: white;
     height: 40px;
+    box-shadow: 0 px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
 }
 
 .topics-table-cell {
@@ -193,7 +194,7 @@
     /*border: 1px solid blue;*/
     display: inline-block;
     padding: 10px;
-    border: 2px solid #0277bd;
+    border: 2px solid #01579b;
     margin: 0;
     margin-right: -5px;
     /*align-items: stretch;*/
@@ -423,11 +424,12 @@
 
 .topic_info {
     text-align: center;
-    background-color: #0277bd;
+    background-color: #01579b;
     margin: 0 0;
     display: inline-block;
     width: 100%;
     color: white;
+    box-shadow: 0 5px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
 }
 
 .nav-wrapper .breadcrumb:before {
@@ -586,7 +588,9 @@
     overflow: hidden;
 }
 
-.topic-content {}
+.topic-content {
+    margin-top:0px;
+}
 
 .user-contact {
     margin-top: 5px;
@@ -602,8 +606,13 @@
 .topic-content .card-panel {
     margin-left: 0px !important;
     margin-right: 0px !important;
+    margin-top: 0px !important;
     position: relative;
     min-height: 330px;
+    z-index: -22;
+}
+.topic-content:first-child{
+    
 }
 
 .topic-content .card-panel:hover .fixed-action-btn.horizontal.post-controll {
