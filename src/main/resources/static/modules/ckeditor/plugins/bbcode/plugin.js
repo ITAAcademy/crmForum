@@ -27,8 +27,8 @@
 	} );
 
 	var bbcodeMap = { b: 'strong', u: 'u', i: 'em', color: 'span', size: 'span', quote: 'blockquote', code: 'code', url: 'a', email: 'span', img: 'span', '*': 'li', list: 'ol',spoiler:'spoiler' },
-		convertMap = { strong: 'b', b: 'b', u: 'u', em: 'i', i: 'i', code: 'code', li: '*' },
-		tagnameMap = { strong: 'b', em: 'i', u: 'u', li: '*', ul: 'list', ol: 'list', code: 'code', a: 'link', img: 'img', blockquote: 'quote',spoiler: 'spoiler' },
+		convertMap = { strong: 'b', b: 'b', u: 'u', em: 'i', i: 'i', code: 'code', li: '*'},
+		tagnameMap = { strong: 'b', em: 'i', u: 'u', li: '*', ul: 'list', ol: 'list', code: 'code', a: 'link', img: 'img', blockquote: 'quote' },
 		stylesMap = { color: 'color', size: 'font-size' },
 		attributesMap = { url: 'href', email: 'mailhref', quote: 'cite', list: 'listType',spoiler:'title' };
 
@@ -256,6 +256,13 @@
 				delete node.returnPoint;
 			}
 		}
+		var canBeChildOf = function(currentDtd,tagName){
+			//if (tagName=='br')return false;
+			if (tagName=="spoiler") return true;
+			if (currentDtd && !currentDtd[ tagName ] ) return false;
+				
+				return true;
+		}
 
 		parser.onTagOpen = function( tagName, attributes ) {
 			var element = new CKEDITOR.htmlParser.element( tagName, attributes );
@@ -269,9 +276,8 @@
 			var currentName = currentNode.name;
 
 			var currentDtd = currentName && ( CKEDITOR.dtd[ currentName ] || ( currentNode._.isBlockLike ? CKEDITOR.dtd.div : CKEDITOR.dtd.span ) );
-
 			// If the element cannot be child of the current element.
-			if ( currentDtd && !currentDtd[ tagName ] ) {
+			if ( !canBeChildOf(currentDtd,tagName) ) {
 				var reApply = false,
 					addPoint; // New position to start adding nodes.
 
@@ -279,7 +285,7 @@
 				// then just close the current one and append the new one to the
 				// parent. This situation usually happens with <p>, <li>, <dt> and
 				// <dd>, specially in IE. Do not enter in this if block in this case.
-				if ( tagName == currentName )
+				if ( tagName == currentName)
 					addElement( currentNode, currentNode.parent );
 				else if ( tagName in CKEDITOR.dtd.$listItem ) {
 					parser.onTagOpen( 'ul', {} );
@@ -334,7 +340,7 @@
 				newPendingInline = [],
 				candidate = currentNode;
 
-			while ( candidate.type && candidate.name != tagName ) {
+			while (candidate && candidate.type && candidate.name != tagName ) {
 				// If this is an inline element, add it to the pending list, if we're
 				// really closing one of the parents element later, they will continue
 				// after it.
@@ -349,7 +355,7 @@
 				candidate = candidate.parent;
 			}
 
-			if ( candidate.type ) {
+			if (candidate && candidate.type ) {
 				// Add all elements that have been found in the above loop.
 				for ( i = 0; i < pendingAdd.length; i++ ) {
 					var node = pendingAdd[ i ];
@@ -610,6 +616,7 @@
 						};
 					},
 					spoiler: function(element){
+
 						element.name = 'div';
 						element.addClass('spoiler');
 						var spoilerTitle = new CKEDITOR.htmlParser.element('div');
@@ -620,16 +627,15 @@
 						var spoilerTitleText =  new CKEDITOR.htmlParser.text(titleText);
 						var spoilerContent = new CKEDITOR.htmlParser.element('div');
 						spoilerContent.addClass('spoiler-content');
-						var contentText = " ";
-						if (element.children.length>0)contentText = element.children[ 0 ].value || ' ';
-						var spoilerContentParagraphText =  new CKEDITOR.htmlParser.text(contentText);
-						var spoilerContentParagraph = new CKEDITOR.htmlParser.element('p');
 						//relation between elements
-						element.children=[spoilerTitle,spoilerContent];
+						spoilerContent.children = element.children.slice();
 						spoilerTitle.children=[spoilerToggle,spoilerTitleText];
-						spoilerContent.children=[spoilerContentParagraph];
-						spoilerContentParagraph.children=[spoilerContentParagraphText];
+						element.children=[spoilerTitle,spoilerContent];
+					
+						
+						//spoilerContent.children=spoilerContent.children.concat(element.children);
 						delete element.attributes.title;
+						//element.children =  [spoilered];
 						//setting test data <--TO REMOVE
 					
 
@@ -759,33 +765,39 @@
 						else if (tagName == 'div'){
 							//TODO ZIGZAG
 							if (element.attributes && element.attributes.class=='spoiler'){
+								delete element.attributes.class;
 								tagName = 'spoiler';
 							var newElement = new CKEDITOR.htmlParser.element('spoiler');
 							newElement.attributes=[];
+							newElement.children=[];
 						
 							if (element.children)
 							for (var i = 0; i < element.children.length; i++){
-								if (element.children[i].attributes && element.children[i].attributes.class=='spoiler-title'){
+								if (element.children[i].attributes && element.children[i].attributes.class==='spoiler-title'){
 									var htmlText = element.children[i].children[1];
 									if (htmlText != null && htmlText.type == 3) {
 											value = htmlText.value;
 									}
+									continue;
 								}
-								if (element.children[i].attributes.class=='spoiler-content'){
-									var htmlP = element.children[i].children[0];
-									if (htmlP == null || htmlP.name != 'p') break;
-									var htmlText = htmlP.children[0];
+								if (element.children[i].attributes.class==='spoiler-content'){
+									delete element.children[i].attributes.class;
+									var pChildren = element.children[i].children;;
 									//if null or not text 
-									if (htmlText == null || htmlText.type != 3) break;
-									var text = htmlText.value;
-									var textElm = new CKEDITOR.htmlParser.text(text);
-									newElement.children.push(textElm);
+								//	if (htmlText == null || htmlText.type != 3) break;
+								//	var text = htmlText.value;
+								//	var textElm = new CKEDITOR.htmlParser.text(text);
+									newElement.children = newElement.children.concat(pChildren);
 									break;
 								}
 							}
+
 							value = value || ' ';
-							element.children=newElement.children;
-							tagName='spoiler';
+							//element=newElement;
+							//element.isUnknown=true;
+							//element.isEmpty=true;
+							element.children = newElement.children;
+							//tagName='spoiler';
 							//element = newElement;
 							//return element;
 						}

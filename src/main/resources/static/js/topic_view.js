@@ -60,7 +60,7 @@ $(document).ready(function() {
 
         var ckEditor = initCkEditor("ckeditor", 200)
         if (instance != null)
-            ckeditor.on('change', function(evt) {
+            ckEditor.on('change', function(evt) {
                 processSubmitButtonAvailability(evt.editor.getData());
 
             });;
