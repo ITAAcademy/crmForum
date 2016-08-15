@@ -102,7 +102,7 @@ public class ForumController {
 	
     private static final String KEFIRCONFIG_PATH = "bbcode/kefirconfig.xml";
 
-    private TextProcessor bbCodeProcessor;
+    private TextProcessor bbCodeProcessor = null;
     private BBProcessorFactory processorFactory;
     @PostConstruct
     private void initTextProcessoe() {
@@ -356,16 +356,19 @@ public class ForumController {
       //  System.out.println(p.format(new Date()));
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
 		model.addObject("config",configMap);
-		
-		Configuration configuration  = ConfigurationFactory.getInstance().createFromResource(KEFIRCONFIG_PATH);
-		HashMap<String, CharSequence> map = new HashMap<>(configuration.getParams());
-		
-			map.put("targetURL", request.getContextPath());
+		if(bbCodeProcessor == null)
+		{
+			Configuration configuration  = ConfigurationFactory.getInstance().createFromResource(KEFIRCONFIG_PATH);
+			HashMap<String, CharSequence> map = new HashMap<>(configuration.getParams());
+			
+				map.put("targetURL", request.getContextPath());
 
-		configuration.setParams(map);
-		bbCodeProcessor = processorFactory.create(configuration);
-		model.addObject("bbcode",bbCodeProcessor);
-		
+			configuration.setParams(map);
+			bbCodeProcessor = processorFactory.create(configuration);
+			
+			model.addObject("bbcode",bbCodeProcessor);
+
+		}
 		return model;
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
