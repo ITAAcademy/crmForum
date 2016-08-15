@@ -103,9 +103,12 @@ function addMessage(event, url) {
 function quotation(messageIndex, messageAuthorName) {
     var msgElmSpanName = '#topicMessage' + messageIndex;
     var elm = $(msgElmSpanName);
+    var messageId = elm.attr('messageId');
+    var messageLink = '<a href="{0}"">→</a>'.format(URL_PREFIX+"view/post/"+messageId);
     //CKEDITOR.instances.ckeditor.setData('');
-    var prefix = "<blockquote><b>{0}:</b><br/>".format(messageAuthorName);
+    var prefix = "<blockquote>{0}<b>{1}:</b><br/>".format(messageLink,messageAuthorName);
     var suffix = "</blockquote> " //need space to make wrap on new line;
     var htmlCode = prefix + elm.html() + suffix;
+
     CKEDITOR.instances.ckeditor.insertHtml(htmlCode);
 }

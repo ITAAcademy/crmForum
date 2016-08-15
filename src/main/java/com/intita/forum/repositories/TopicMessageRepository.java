@@ -23,6 +23,9 @@ public interface TopicMessageRepository  extends CrudRepository<TopicMessage, Lo
 	  
 	  @Query(value = "SELECT m FROM topic_message m WHERE m.id <> (:messageId) and topic.id = (:topicId) order by date asc")
 	  ArrayList<TopicMessage> findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(@Param(value = "topicId")Long topicId,@Param(value = "messageId")Long messageid);
+	  @Query(value = "SELECT m FROM topic_message m WHERE topic.id = (:topicId) and date <= (:date) order by date asc")
+	  Page<TopicMessage> findAllByTopicAndDateBeforeWithLast(@Param(value = "topicId")Long topicId,@Param(value = "date") Date date,Pageable page);
+	  
 	  ArrayList<TopicMessage> findByAuthor(IntitaUser author);
 	  Page<TopicMessage> findByTopic(ForumTopic topic,Pageable page);
 	  Page<TopicMessage> findByTopicId(Long topicId,Pageable page);

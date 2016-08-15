@@ -19,6 +19,7 @@
         <coderef name="li_el"/>
         <coderef name="color"/>
         <coderef name="img"/>
+        <coderef name="url"/>
     </scope>
     
     <!-- Simple formatting -->
@@ -33,6 +34,10 @@
     <code name="u">
         <pattern ignoreCase="true">[u]<var inherit="true"/>[/u]</pattern>
         <template>&lt;u&gt;<var/>&lt;/u&gt;</template>
+    </code>
+    <code name="url">
+        <pattern ignoreCase="true">[url=<var inherit="true" name="path"/>]<var name="text" inherit="true"/>[/url]</pattern>
+        <template>&lt;a href=&quot;<var name="path"/>&quot;&gt;<var name="text"/>&lt;/a&gt;</template>
     </code>
 	<code name="quote">
         <pattern ignoreCase="true">[quote]<var inherit="true"/>[/quote]</pattern>

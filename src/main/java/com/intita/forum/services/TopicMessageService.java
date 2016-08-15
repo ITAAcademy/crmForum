@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.TopicMessage;
+import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.repositories.TopicMessageRepository;
 
 @Service
@@ -100,9 +103,14 @@ public class TopicMessageService {
 		return true;
 	}
 
+	/***
+	 * return messages from topic that have date <= dateParam
+	 * @param date
+	 * @return
+	 */
 	@Transactional(readOnly=true)
-	public ArrayList<TopicMessage> getMessagesByDate(Date date) {
-		return topicMessageRepository.findAllByDateAfter(date);
+	public Page<TopicMessage> getMessagesByTopicIdAndDateBefore(Long topicId,Date date,int page) {
+		return topicMessageRepository.findAllByTopicAndDateBeforeWithLast(topicId,date,new PageRequest(page,messagesCountPerPage));
 	}
 	@Transactional
 	public Page<TopicMessage> getAllMessagesAndPinFirst(Long topicId,int page){
@@ -126,5 +134,12 @@ public class TopicMessageService {
 		  Page<TopicMessage> pageObj = new PageImpl<TopicMessage>(sublist,pageable,allMessages.size());
 		
 		return pageObj;
+	}
+	
+	public boolean checkPostAccessToUser(Authentication  authentication,Long postId){
+		TopicMessage message = getMessage(postId);
+		ForumTopic topic = message.getTopic();
+		if (topic==null) return false;
+		return forumTopicService.checkTopicAccessToUser(authentication, topic.getId());
 	}
 }
