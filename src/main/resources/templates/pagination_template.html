@@ -8,14 +8,14 @@
             <span th:text="1"></span>
         </a>
     </li>
-    <a th:if="${currentPage-CURRENT_PAGE_NEIGHBORS} &gt; 1"><span>...</span></a>
+    <a th:if="${currentPage-1-CURRENT_PAGE_NEIGHBORS} &gt; 1"><span>...</span></a>
     <li class="waves-effect" th:if="${page} > 1 and ${page} lt ${pagesCount}" th:each="page: ${#numbers.sequence(currentPage-CURRENT_PAGE_NEIGHBORS, currentPage+CURRENT_PAGE_NEIGHBORS)}">
         <!-- <p th:text="${page}"></p>-->
         <a th:classappend="${page} == ${currentPage} ? 'active blue darken-3'" href="#" th:href="@{__${link}____${page}__}">
             <span th:text="${page}"></span>
         </a>
     </li>
-    <a th:if="${currentPage+CURRENT_PAGE_NEIGHBORS} &lt; ${pagesCount}"><span>...</span></a>
+    <a th:if="${currentPage+CURRENT_PAGE_NEIGHBORS+1} &lt; ${pagesCount}"><span>...</span></a>
     <li class="waves-effect">
         <a th:classappend="${pagesCount} == ${currentPage} ? 'active blue darken-3'" href="#" th:if="${pagesCount}&gt;1" th:href="@{__${link}____${pagesCount}__}">
             <span th:text="${pagesCount}"></span>

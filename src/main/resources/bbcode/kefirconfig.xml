@@ -19,7 +19,7 @@
         <coderef name="li_el"/>
         <coderef name="color"/>
         <coderef name="img"/>
-        <coderef name="size"/>
+        <coderef name="url"/>
     </scope>
     
     <!-- Simple formatting -->
@@ -35,6 +35,10 @@
         <pattern ignoreCase="true">[u]<var inherit="true"/>[/u]</pattern>
         <template>&lt;u&gt;<var/>&lt;/u&gt;</template>
     </code>
+    <code name="url">
+        <pattern ignoreCase="true">[url=<var inherit="true" name="path"/>]<var name="text" inherit="true"/>[/url]</pattern>
+        <template>&lt;a href=&quot;<var name="path"/>&quot;&gt;<var name="text"/>&lt;/a&gt;</template>
+    </code>
 	<code name="quote">
         <pattern ignoreCase="true">[quote]<var inherit="true"/>[/quote]</pattern>
         <template>&lt;blockquote&gt;&lt;div&gt;<var/>&lt;/div&gt;&lt;/blockquote&gt;</template>
@@ -46,7 +50,7 @@
 		</template>
 	</code>
 		<code name="list1">
-		<pattern ignoreCase="true">[list=<var name="type" inherit="true"/>]<var name="text" inherit="true" />[/list]</pattern>
+		<pattern ignoreCase="true">[list=1]<var name="text" inherit="true" />[/list]</pattern>
 		<template>
 		    &lt;ol style=&quot;list-style-type:upper-alpha&quot;&gt;<var name="text"/>&lt;/ol&gt;
 		</template>
@@ -69,14 +73,8 @@
 		    	&lt;span style=&quot;color:<var name="color"/>;&quot;&gt;<var name="text"/>&lt;/span&gt;
 		</template>
 	</code>
-		<code name="size">
-		<pattern ignoreCase="true">[size=<var name="size" inherit="true" />]<var name="text" inherit="true" />[/size]</pattern>
-		<template>
-		    	&lt;span style=&quot;color:<var name="size"/>;&quot;&gt;<var name="text"/>&lt;/span&gt;
-		</template>
-	</code>
 		<code name="img">
-		<pattern ignoreCase="true">[img]<var name="src" parse="false" inherit="true" />[/img]</pattern>
+		<pattern ignoreCase="true">[img]<var name="src" inherit="true" />[/img]</pattern>
 		<template>
 		    	&lt;img src="<var name="src"/>";&quot;&gt;&lt;/img&gt;
 		</template>
