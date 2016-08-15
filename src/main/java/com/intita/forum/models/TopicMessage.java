@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
@@ -51,11 +53,11 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	private Long id;
 	
 	//@NotBlank
-	@ManyToOne( fetch = FetchType.LAZY )
+	@ManyToOne(targetEntity = IntitaUser.class, cascade = {CascadeType.REFRESH}, fetch =FetchType.LAZY)
 	@NotNull
 	@JsonManagedReference
 	@JsonView(Views.Public.class)
-	//@NotFound(action=NotFoundAction.IGNORE)
+	@NotFound(action=NotFoundAction.EXCEPTION)
 	private IntitaUser author;
 	
 	@ManyToOne(  fetch = FetchType.LAZY )

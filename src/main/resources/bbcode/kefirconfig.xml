@@ -19,6 +19,7 @@
         <coderef name="li_el"/>
         <coderef name="color"/>
         <coderef name="img"/>
+        <coderef name="size"/>
     </scope>
     
     <!-- Simple formatting -->
@@ -66,6 +67,12 @@
 		<pattern ignoreCase="true">[color=<var name="color" inherit="true" />]<var name="text" inherit="true" />[/color]</pattern>
 		<template>
 		    	&lt;span style=&quot;color:<var name="color"/>;&quot;&gt;<var name="text"/>&lt;/span&gt;
+		</template>
+	</code>
+		<code name="size">
+		<pattern ignoreCase="true">[size=<var name="size" inherit="true" />]<var name="text" inherit="true" />[/size]</pattern>
+		<template>
+		    	&lt;span style=&quot;color:<var name="size"/>;&quot;&gt;<var name="text"/>&lt;/span&gt;
 		</template>
 	</code>
 		<code name="img">

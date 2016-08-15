@@ -1,26 +1,26 @@
 <!-- <ul class="pagination" th:with="ddd='\'/view/category/__${currentCategory.id}__/\' + ${page}'"> -->
-
 <ul class="pagination" th:with="CURRENT_PAGE_NEIGHBORS=${3}">
     <li class="waves-effect" th:class="1 == ${currentPage} ? 'disabled'"><a th:href="1 != ${currentPage} ? @{__${link}____${currentPage - 1}__} : '#!'"><i class="material-icons">chevron_left</i></a></li>
     <!--   <li class="waves-effect" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:classappend="${page} == ${currentPage} ? 'active blue darken-3'">-->
-	<li class="waves-effect" >
+    <li class="waves-effect">
         <!-- First Page -->
-         <a th:classappend="1 == ${currentPage} ? 'active blue darken-3'" href="#" th:if="${pagesCount} >= 0" th:href="@{__${link}____1__}">
+        <a th:classappend="1 == ${currentPage} ? 'active blue darken-3'" href="#" th:if="${pagesCount} >= 0" th:href="@{__${link}____1__}">
             <span th:text="1"></span>
         </a>
-
-        <a th:if="${currentPage-CURRENT_PAGE_NEIGHBORS} &gt; 1"><span>...</span></a>
-        <th:block th:each="page: ${#numbers.sequence(currentPage-CURRENT_PAGE_NEIGHBORS, currentPage+CURRENT_PAGE_NEIGHBORS)}">
-       <!-- <p th:text="${page}"></p>-->
-         <a th:classappend="${page} == ${currentPage} ? 'active blue darken-3'" th:if="${page} > 1 and ${page} lt ${pagesCount}" href="#" th:href="@{__${link}____${page}__}">
+    </li>
+    <a th:if="${currentPage-CURRENT_PAGE_NEIGHBORS} &gt; 1"><span>...</span></a>
+    <li class="waves-effect" th:if="${page} > 1 and ${page} lt ${pagesCount}" th:each="page: ${#numbers.sequence(currentPage-CURRENT_PAGE_NEIGHBORS, currentPage+CURRENT_PAGE_NEIGHBORS)}">
+        <!-- <p th:text="${page}"></p>-->
+        <a th:classappend="${page} == ${currentPage} ? 'active blue darken-3'" href="#" th:href="@{__${link}____${page}__}">
             <span th:text="${page}"></span>
         </a>
-         </th:block>
-         <a th:if="${currentPage+CURRENT_PAGE_NEIGHBORS} &lt; ${pagesCount}"><span>...</span></a>
+    </li>
+    <a th:if="${currentPage+CURRENT_PAGE_NEIGHBORS} &lt; ${pagesCount}"><span>...</span></a>
+    <li class="waves-effect">
         <a th:classappend="${pagesCount} == ${currentPage} ? 'active blue darken-3'" href="#" th:if="${pagesCount}&gt;1" th:href="@{__${link}____${pagesCount}__}">
             <span th:text="${pagesCount}"></span>
         </a>
-      </li>  
-      <!--  </li> -->
+    </li>
+    <!--  </li> -->
     <li th:class="${pagesCount} == ${currentPage} ? 'disabled'" class="waves-effect"><a th:href="${pagesCount} != ${currentPage} ? @{__${link}____${currentPage + 1}__} : '#!'"><i class="material-icons">chevron_right</i></a></li>
 </ul>

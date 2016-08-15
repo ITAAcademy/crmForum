@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,16 +36,18 @@ import com.intita.forum.repositories.TopicMessageRepository;
 @Service
 public class TopicMessageService {
 
+	private static final int EDIT_TIME_MINUTES = 15;
+
 	@Autowired
 	private TopicMessageRepository topicMessageRepository;
 
 	@Autowired
 	private ForumTopicService forumTopicService;
-	
+
 	@Autowired
 	private IntitaUserService intitaUserService;
 
-	
+
 	@Value("${forum.messagesCountPerPage}")
 	private int messagesCountPerPage;
 
@@ -104,27 +107,53 @@ public class TopicMessageService {
 	public ArrayList<TopicMessage> getMessagesByDate(Date date) {
 		return topicMessageRepository.findAllByDateAfter(date);
 	}
+
+	@Transactional(readOnly=true)
+	public boolean canEdit(IntitaUser user, TopicMessage message) {
+		if(user == null || message == null)
+			return false;
+		
+		if(intitaUserService.isAdmin(user.getId()))
+			return true;
+		IntitaUser u = message.getAuthor();
+		//System.out.println(user.getId() - message.getAuthor().getId());
+		if(message.getAuthor().equals(user))
+		{
+			Date msg_date = message.getDate();
+			Date now_date = new Date();
+			System.out.println(msg_date.getTime() - now_date.getTime() + 60000*15);
+			if(msg_date.getTime() - now_date.getTime() + 60000*EDIT_TIME_MINUTES > 0)
+				return true;
+		}	
+		return false;
+	}
+
 	@Transactional
 	public Page<TopicMessage> getAllMessagesAndPinFirst(Long topicId,int page){
-		  PageRequest pageable = new PageRequest(page, messagesCountPerPage);
-		  ForumTopic topic = forumTopicService.getTopic(topicId);
-		  TopicMessage firstMessage = topicMessageRepository.findFirstByTopicOrderByDateAsc(topic);
-		  if (firstMessage==null)return null;
-		  List<TopicMessage> otherMessages =topicMessageRepository.findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(topic.getId(),firstMessage.getId());
-		  List<TopicMessage> allMessages = new ArrayList<TopicMessage>();
-		  if (firstMessage!=null)
-		  allMessages.add(firstMessage);
-		  if (otherMessages!=null)
-		  allMessages.addAll(otherMessages);		 
-		  int max = (messagesCountPerPage*(page+1)>allMessages.size())? allMessages.size(): messagesCountPerPage*(page+1);
-		  List<TopicMessage> sublist = allMessages.subList(page*messagesCountPerPage, max);
-		  if (page>0){
+		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
+		ForumTopic topic = forumTopicService.getTopic(topicId);
+		TopicMessage firstMessage = topicMessageRepository.findFirstByTopicOrderByDateAsc(topic);
+		
+		if (firstMessage==null)return null;
+		List<TopicMessage> otherMessages =topicMessageRepository.findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(topic.getId(),firstMessage.getId());
+		for (TopicMessage topicMessage : otherMessages) {
+			IntitaUser q =  topicMessage.getAuthor();
+			System.out.println(q.getLogin());
+		}
+		List<TopicMessage> allMessages = new ArrayList<TopicMessage>();
+		if (firstMessage!=null)
+			allMessages.add(firstMessage);
+		if (otherMessages!=null)
+			allMessages.addAll(otherMessages);		 
+		int max = (messagesCountPerPage*(page+1)>allMessages.size())? allMessages.size(): messagesCountPerPage*(page+1);
+		List<TopicMessage> sublist = allMessages.subList(page*messagesCountPerPage, max);
+		if (page>0){
 			//remove last and put author initial message firstly
 			//  sublist.remove(sublist.size()-1);
-			  sublist.add(0,firstMessage);
-		  }
-		  Page<TopicMessage> pageObj = new PageImpl<TopicMessage>(sublist,pageable,allMessages.size());
-		
+			sublist.add(0,firstMessage);
+		}
+		Page<TopicMessage> pageObj = new PageImpl<TopicMessage>(sublist,pageable,allMessages.size());
+
 		return pageObj;
 	}
 }
