@@ -1,13 +1,27 @@
 <html>
+
 <head>
-	  <link type="text/css" th:href="@{/css/errors.css}" rel="stylesheet" />	
+    <link type="text/css" th:href="@{/css/errors.css}" rel="stylesheet" />
+    <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() { // Аналог $(document).ready(function(){
+    	setTimeout(function(){window.history.back()}, 5000);
+    });
+    </script>>
 </head>
+
 <body>
-	<div class="error_item_wrapper">
-	<div class="error_item">
-	<div class="error_title">Помилка</div>
-	<div class="error_description" th:text="${exception}"></div>
-	</div>
-	</div>
+    <div class="container">
+        <div class="header">
+            <div class="clr"></div>
+        </div>
+        <div class="sp-container">
+            <div class="sp-content">
+                <div class="sp-globe"></div>
+                <h2 class="frame-1">Вибачте за незручності сталася помилка</h2>
+                <h2 th:text="${exception}" class="frame-2"></h2>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
