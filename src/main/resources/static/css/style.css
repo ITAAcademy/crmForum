@@ -577,12 +577,13 @@
     text-overflow: ellipsis;
 }
 
-.user-panel .user-name {
+.user-panel .user-name, .user-panel .user-name div{
     max-width: 120px;
     text-overflow: ellipsis;
     font-size: 19px;
     font-weight: 300;
     text-decoration: underline;
+    overflow: hidden;
 }
 
 .topic-content {}

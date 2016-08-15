@@ -94,31 +94,43 @@ public class ForumController {
 	@Autowired private ForumCategoryService forumCategoryService;
 	@Autowired private ForumTopicService forumTopicService;
 	@Autowired private TopicMessageService topicMessageService;
-	
+
 	HashMap<String,String> configMap = new HashMap<String,String>();
 
 	@PersistenceContext
 	EntityManager entityManager;
-	
-    private static final String KEFIRCONFIG_PATH = "bbcode/kefirconfig.xml";
 
-    private TextProcessor bbCodeProcessor;
-    private BBProcessorFactory processorFactory;
-    @PostConstruct
-    private void initTextProcessoe() {
-    	  processorFactory = BBProcessorFactory.getInstance();
-          
+	private static final String KEFIRCONFIG_PATH = "bbcode/kefirconfig.xml";
+
+	private TextProcessor bbCodeProcessor = null;
+	private BBProcessorFactory processorFactory;
+	@PostConstruct
+	private void initTextProcessoe() {
+		processorFactory = BBProcessorFactory.getInstance();
 	}
-        
+	public TextProcessor getTextProcessorInstance(HttpServletRequest request){
+		if(bbCodeProcessor == null)//recreate bbCode processor?
+		{
+			Configuration configuration  = ConfigurationFactory.getInstance().createFromResource(KEFIRCONFIG_PATH);
+			HashMap<String, CharSequence> map = new HashMap<>(configuration.getParams());
+
+			map.put("targetURL", request.getContextPath());
+
+			configuration.setParams(map);
+			bbCodeProcessor = processorFactory.create(configuration);
+		}
+		return bbCodeProcessor;
+	}
+
 
 	protected Session getCurrentHibernateSession()  {
 		return entityManager.unwrap(Session.class);
 	}
 
 	private final static ObjectMapper mapper = new ObjectMapper();
-	
+
 	private final ConcurrentHashMap<String, ArrayList<Object>> infoMap = new ConcurrentHashMap<>();
-	
+
 	public void addFieldToInfoMap(String key, Object value)
 	{
 		ArrayList<Object> listElm = infoMap.get(key);
@@ -129,7 +141,7 @@ public class ForumController {
 		}
 		listElm.add(value);
 	}	
- 
+
 	/********************
 	 * GET CHAT USERS LIST FOR TEST
 	 *******************/
@@ -189,7 +201,7 @@ public class ForumController {
 	 * Out from room
 	 */
 
-	
+
 	public int getCurrentLangInt()
 	{
 		String lang = getCurrentLang();
@@ -212,30 +224,30 @@ public class ForumController {
 			return "ua";
 		return lg;
 	}
-	
+
 	@RequestMapping(value="/login", method = RequestMethod.GET)
 	public ModelAndView  getLoginPage(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
 		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
-		
+
 		//chatLangService.updateDataFromDatabase();
 		if(before != null)
 		{
-			 return new ModelAndView("redirect:"+ before);
+			return new ModelAndView("redirect:"+ before);
 		}
 		return new ModelAndView("redirect:/");
 	}
-		
+
 	@RequestMapping(value="/", method = RequestMethod.GET)
 	public ModelAndView  getIndex(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
 		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
-		
+
 		//chatLangService.updateDataFromDatabase();
 		if(before != null)
 		{
-			 return new ModelAndView("redirect:"+ before);
+			return new ModelAndView("redirect:"+ before);
 		}
 		//if(auth != null)
-			//addLocolization(model, forumUsersService.getForumUser(auth));
+		//addLocolization(model, forumUsersService.getForumUser(auth));
 		ModelAndView result = new ModelAndView("index");
 		IntitaUser intitaUser = (IntitaUser) auth.getPrincipal();
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
@@ -244,7 +256,7 @@ public class ForumController {
 			lastTopics.add(forumCategoryService.getLastTopic(category.getId()));
 		}
 		if (intitaUser!=null)
-		result.addObject("username",intitaUser.getNickName());
+			result.addObject("username",intitaUser.getNickName());
 		result.addObject("categories",categories);
 		result.addObject("lastTopics",lastTopics);
 		int pagesCount = categories.getTotalPages();
@@ -280,14 +292,11 @@ public class ForumController {
 	public String testMapping(){
 		return "test good";
 	}
-	
+
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page,Authentication auth){
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
 		ModelAndView model = new ModelAndView();
-		
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-		
-	
 		model.addObject("currentPage",page);
 		model.addObject("currentCategory",category);
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
@@ -326,14 +335,19 @@ public class ForumController {
 			model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
 			model.setViewName("topics_list");
 		}
-		
+		model.addObject("bbcode", getTextProcessorInstance(request));
+
 		return model;
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId ,Authentication principal){
-		return viewCategoryById(categoryId,1,principal);
+	public ModelAndView viewCategoryById(@PathVariable Long categoryId, HttpServletRequest requset, Authentication principal){
+		return viewCategoryById(categoryId, 1, requset, principal);
 	}
+
+	/*******************************
+	 * TOPIC @RequestMapping
+	 ******************************/
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page, HttpServletRequest request, Authentication auth){
@@ -352,20 +366,20 @@ public class ForumController {
 		model.addObject("user", (IntitaUser)auth.getPrincipal());
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
-		
-      //  System.out.println(p.format(new Date()));
+
+		//  System.out.println(p.format(new Date()));
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
 		model.addObject("config",configMap);
-		
-		Configuration configuration  = ConfigurationFactory.getInstance().createFromResource(KEFIRCONFIG_PATH);
-		HashMap<String, CharSequence> map = new HashMap<>(configuration.getParams());
-		
-			map.put("targetURL", request.getContextPath());
+		model.addObject("bbcode", getTextProcessorInstance(request));
 
-		configuration.setParams(map);
-		bbCodeProcessor = processorFactory.create(configuration);
-		model.addObject("bbcode",bbCodeProcessor);
-		
+		Map<Long, Boolean> canEditMap = new HashMap<>();
+		if(messages != null)
+			for (TopicMessage topicMessage : messages) {
+				canEditMap.put(topicMessage.getId(), topicMessageService.canEdit((IntitaUser)auth.getPrincipal(), topicMessage));
+			}
+
+		model.addObject("canEditMap", canEditMap);
+
 		return model;
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
@@ -373,6 +387,7 @@ public class ForumController {
 	public ModelAndView viewTopicById(@PathVariable Long topicId, HttpServletRequest request, Authentication auth){	
 		return viewTopicById(topicId, 1, request, auth);
 	}
+
 	@PreAuthorize("@topicMessageService.checkPostAccessToUser(authentication,#postId)")
 	@RequestMapping(value="/view/post/{postId}",method = RequestMethod.GET)
 	public String viewPostById(@PathVariable Long postId, HttpServletRequest request, Authentication auth) throws Exception{	
@@ -387,10 +402,11 @@ public class ForumController {
 		  return "redirect:/view/topic/"+topicId+"#msg"+post.getId();
 	}
 	
+
 	@ResponseBody
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
 	public ResponseEntity<Map<String,String>> addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request, Authentication auth){
-		 String referer = request.getHeader("Referer");
+		String referer = request.getHeader("Referer");
 		if (postText.length()==0)
 			return new ResponseEntity<Map<String,String>>(HttpStatus.BAD_REQUEST);
 		IntitaUser currentUser = intitaUserService.getCurrentIntitaUser();
@@ -406,6 +422,8 @@ public class ForumController {
 		messageMap.put("topic", topicId.toString());
 		return new ResponseEntity<Map<String,String>>(messageMap,HttpStatus.OK);//"redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last				
 	}
+
+
 	@ResponseBody
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
 	public ResponseEntity<Long> addTopic(@RequestParam(value = "topic_name") String topicName,@RequestParam(value = "topic_text") String topicText,@PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
@@ -418,11 +436,12 @@ public class ForumController {
 		ForumTopic topic = forumTopicService.addTopic(topicName,category,author);
 		if (topic == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		addNewMessage(topicText, topic.getId(), request, auth);
-		 return new ResponseEntity<Long>(topic.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
+		return new ResponseEntity<Long>(topic.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
 	}
+
 	@RequestMapping(value="/operations/topic/{topicId}/toggle_pin",method = RequestMethod.POST)
 	public String togglePinTopic(@PathVariable Long topicId,Authentication auth,HttpServletRequest request){
-		 String referer = request.getHeader("Referer");
+		String referer = request.getHeader("Referer");
 		IntitaUser user  = (IntitaUser) auth.getPrincipal();
 		if (intitaUserService.isAdmin(user.getId())){
 			if(!forumTopicService.toggleTopicPin(topicId)){
@@ -431,6 +450,7 @@ public class ForumController {
 		}
 		return "redirect:"+referer;
 	}
+
 	@ResponseBody
 	@RequestMapping(value="/operations/message/{messageId}/get",method = RequestMethod.POST)
 	public String getMsg(@PathVariable("messageId") Long msgID, Authentication auth,HttpServletRequest request){
@@ -446,16 +466,19 @@ public class ForumController {
 	@RequestMapping(value="/operations/message/{messageId}/update",method = RequestMethod.POST)
 	public String getMsg(@PathVariable("messageId") Long msgID,@RequestParam("msg_body") String body,Authentication auth,HttpServletRequest request){
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
-		if(user.isAnonymous())
+		if(user == null || user.isAnonymous())
 			return "null";//need return code
 		TopicMessage msg = topicMessageService.getMessage(msgID);
 		if(msg == null /*|| !msg.getAuthor().equals(user)*/)
 			return "null";//need return code
+		if(!topicMessageService.canEdit(user, msg))
+			return "null";//need return code
+		
 		msg.setBody(body);
 		topicMessageService.addMessage(msg);
 		return "true";
 	}
-	
+
 	@RequestMapping(value="/operations/config/update",method = RequestMethod.POST)
 	public void refreshConfigParameters()
 	{
@@ -467,5 +490,5 @@ public class ForumController {
 		refreshConfigParameters();
 	}
 
-	
+
 }

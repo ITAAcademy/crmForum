@@ -48,13 +48,14 @@
                         <a class="topic_name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
 					  		 Назва розділу
 					  		 </a></p>
-                        <p th:text="${topic.author.email}">
+                        <p> <a th:href="@{__${config['baseUrl']}__/profile/__${topic.author.id}__}" th:text="${topic.author.email}"/>
                         </p>
                     </div> 
                     <div th:if="${lastMessages[status.index]!=null}" class="topics-table-cell four">
-                        <p> <span th:text="${prettyTime.format(lastMessages[status.index].date)}"></span> </p>
-                        <p> <b>Повідомлення: </b> <span th:text="${lastMessages[status.index].body}"></span></p>
-                        <p> <b>Автор: </b> <span th:text="${lastMessages[status.index].author.login}"></span> </p>
+                        <p>Остальне повідомлення: <span th:text="${prettyTime.format(lastMessages[status.index].date)}"></span> </p>
+                        <!--<p> <b>Останнє повідомлення: </b> </p>
+                        <span style="max-height:20px;" th:utext="${bbcode.process(lastMessages[status.index].body)}"></span>-->
+                        <p><b>Автор: </b><a th:href="@{__${config['baseUrl']}__/profile/__${lastMessages[status.index].author.id}__}" th:text="${lastMessages[status.index].author.login}"></a></p>
                     </div>
                     <div th:unless="${lastMessages[status.index]!=null}" class="topics-table-cell four">
                         <p><b>Повідомлення відсутні</b></p>
