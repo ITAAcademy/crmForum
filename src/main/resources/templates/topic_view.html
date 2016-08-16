@@ -71,7 +71,7 @@
                     <!-- Post prety time -->
                     <p class="topic-time" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
                     <!-- Counter -->
-                    <a href="#!" th:href="@{'/redirect/message/__${message.id}__'}" style="position: absolute;bottom: 20px;left: 26px;">
+                    <a href="#!" th:href="@{'/view/post/__${message.id}__'}" style="position: absolute;bottom: 20px;left: 26px;">
                         <i class="material-icons">grade</i>
                         <i th:text="    №__${indexCurrentMsg}__"></i>
                     </a>
@@ -97,7 +97,7 @@
                         </ul>
                     </div>
                 </li>
-                <li th:if="${messages.getNumberOfElements() == 0}" class="card-panel row" style="position: relative; display: table; width: 100%;">
+                <li th:if="${ messages != null &amp;&amp; messages.getNumberOfElements() == 0}" class="card-panel row" style="position: relative; display: table; width: 100%;">
                     <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
 ">Повідомлення по запиту відсутні</span>
                 </li>
