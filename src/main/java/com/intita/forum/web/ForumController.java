@@ -306,7 +306,7 @@ public class ForumController {
 			redirectAttributes.addAttribute("searchvalue", search);
 			return new ModelAndView("redirect:" + "/view/search/" + categoryId + "/1");
 		}
-		
+		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView model = new ModelAndView();
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		model.addObject("currentPage",page);
@@ -319,7 +319,7 @@ public class ForumController {
 		
 		if (category.isCategoriesContainer())
 		{
-			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
+			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1,user);
 			int pagesCount = categories.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
 			model.addObject("pagesCount",pagesCount);
@@ -341,7 +341,7 @@ public class ForumController {
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
 			}
-			IntitaUser user = (IntitaUser) auth.getPrincipal();
+			
 			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
@@ -454,11 +454,10 @@ public class ForumController {
 		if (post==null)throw new Exception("post not found");
 		ForumTopic topic = post.getTopic();
 		if (topic==null)throw new Exception("post haven't topic");
-		Page<TopicMessage> posts = topicMessageService.getMessagesByTopicIdAndDateBefore(topic.getId(), post.getDate(),1);
-		int pages = posts.getTotalPages();
+		int pages = topicMessageService.getPagesCountByTopicIdAndMessageid(topic.getId(), post.getDate());
 		Long topicId = topic.getId();
 		//ModelAndView result = viewTopicById(topicId, pages, request, auth);
-		  return "redirect:/view/topic/"+topicId+"#msg"+post.getId();
+		  return "redirect:/view/topic/"+topicId+"/"+pages+"#msg"+post.getId();
 	}
 	
 

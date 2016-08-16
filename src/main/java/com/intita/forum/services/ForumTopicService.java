@@ -22,6 +22,8 @@ import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.repositories.ForumTopicRepository;
 
+import utils.CustomDataConverters;
+
 @Service
 public class ForumTopicService {
 	@Autowired ForumTopicRepository forumTopicRepository;
@@ -37,16 +39,12 @@ public class ForumTopicService {
 	}
 	@Transactional
 	public Page<ForumTopic> getAllTopicsSortedByPin(Long categoryId,int page){
-		  PageRequest pageable = new PageRequest(page, topicsCountForPage);
 		  List<ForumTopic> unPinnedTopics = forumTopicRepository.findByCateogryIdAndSortByPin(categoryId,false);
 		  List<ForumTopic> pinnedTopics = forumTopicRepository.findByCateogryIdAndSortByPin(categoryId,true);
 		  List<ForumTopic> allTopics = new ArrayList<ForumTopic>();
 		  allTopics.addAll(pinnedTopics);
 		  allTopics.addAll(unPinnedTopics);		 
-		  int max = (topicsCountForPage*(page+1)>allTopics.size())? allTopics.size(): topicsCountForPage*(page+1);
-		  Page<ForumTopic> pageObj = new PageImpl<ForumTopic>(allTopics.subList(page*topicsCountForPage, max),pageable,allTopics.size());
-		
-		return pageObj;
+		 return CustomDataConverters.listToPage(allTopics, page, topicsCountForPage);
 	}
 	@Transactional
 	public ForumTopic getTopic(Long topicId){
