@@ -334,11 +334,11 @@ public class ForumController {
 			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
-			model.addObject("user", (IntitaUser)auth.getPrincipal());
 			model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
 			model.setViewName("topics_list");
 		}
 		model.addObject("bbcode", getTextProcessorInstance(request));
+		model.addObject("user", (IntitaUser)auth.getPrincipal());
 
 		return model;
 	}

@@ -57,7 +57,7 @@
                     <!-- Post prety time -->
                     <p class="topic-time" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
                     <!-- Counter -->
-                    <a href="#!" style="position: absolute;bottom: 35px;left: 26px;">
+                    <a href="#!" style="position: absolute;bottom: 20px;left: 26px;">
                         <i class="material-icons">grade</i>
                         <i th:text="    №__${indexCurrentMsg}__"></i>
                     </a>
@@ -67,7 +67,7 @@
                             <i class="large material-icons">menu</i>
                         </a>
                         <ul>
-                            <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
+                            <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
                             <li><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>
