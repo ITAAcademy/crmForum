@@ -70,12 +70,39 @@ public Page<ForumCategory> getSubCategories(Long id,int page){
 	switch(childrensType){
 	case ChildrenTopic: return null;
 	case ChildrenCategory:
-		return forumCategoryRepository.findByCategory(new ForumCategory(id),new PageRequest(page,categoriesCountForPage));
+		return forumCategoryRepository.findByCategory(rootCategory, new PageRequest(page,categoriesCountForPage));
 	default:
 		return null;
 	}
-
 }
+public ArrayList<ForumCategory> getSubCategories(Long id){
+	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
+	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
+	switch(childrensType){
+	case ChildrenTopic: return null;
+	case ChildrenCategory:
+		return forumCategoryRepository.findByCategory(rootCategory);
+	default:
+		return null;
+	}
+}
+@Transactional
+public ArrayList<ForumTopic> getAllInludeSubCategoriesArray(ForumCategory rootCategory){
+	ArrayList<ForumTopic> array = new ArrayList<>();
+	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
+	switch(childrensType){
+	case ChildrenTopic: array.addAll(rootCategory.getTopics());
+	case ChildrenCategory:
+		ArrayList<ForumCategory> t_array = new ArrayList<>(rootCategory.getCategories());
+		for (ForumCategory forumCategory : t_array) {
+			ArrayList<ForumTopic> tt_array = getAllInludeSubCategoriesArray(forumCategory);
+			if(tt_array != null)
+				array.addAll(tt_array);
+		}
+	}
+	return array;
+}
+
 @PostConstruct
 public void initDatabase(){
 	if (forumCategoryRepository.count()>0) return;

@@ -42,7 +42,7 @@ function Hilitor(id, tag)
       var re = "(" + input + ")";
       if(!this.openLeft) re = "\\b" + re;
       if(!this.openRight) re = re + "\\b";
-      matchRegex = new RegExp(re, "i");
+      matchRegex = new RegExp(input, "i");
       return true;
     }
     return false;

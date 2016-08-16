@@ -31,7 +31,7 @@
                         </div>
                     </div>
                     <div class="s12 m10 l10 user-msg">
-                        <h4 th:if="${iterationStatus.count == 1}" th:text="${topic.name}" style="text-align: center;"></h4>
+                        <h4 th:if="${iterationStatus.count == 1}" th:text="${message.topic.name}" style="text-align: center;"></h4>
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
                             <!--preloader
                             <div class="preloader-wrapper sk-circle">
@@ -57,7 +57,7 @@
                     <!-- Post prety time -->
                     <p class="topic-time" th:text="${prettyTime.format(message.date)}">15:11 10.20.15</p>
                     <!-- Counter -->
-                    <a href="#!" style="position: absolute;bottom: 20px;left: 26px;">
+                    <a href="#!" th:href="@{'/redirect/message/__${message.id}__'}" style="position: absolute;bottom: 20px;left: 26px;">
                         <i class="material-icons">grade</i>
                         <i th:text="    №__${indexCurrentMsg}__"></i>
                     </a>
@@ -69,19 +69,23 @@
                         <ul>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
-                            <li><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
+                            <li><a th:if="${topic != null}" class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>
                     </div>
                 </li>
+                <li th:if="${messages.getNumberOfElements() == 0}" class="card-panel row" style="position: relative; display: table; width: 100%;">
+                    <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
+">Повідомлення по запиту відсутні</span>
+                </li>
             </ul>
-            <form id="addMessageForm" th:if="${!user.isAnonymous()}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
+            <form id="addMessageForm" th:if="${!user.isAnonymous() &amp;&amp; topic != null}" th:action="@{/messages/add/__${topic.id}__}" method="POST">
                 <textarea cols="80" id="ckeditor" name="text" rows="10"></textarea>
                 <button id="submitcke" class="waves-effect waves-light btn" style="background-color: rgb(43, 87, 154);width: 100%;border-radius: 0px;box-shadow: none;" th:onclick="@{'javascript:addMessage(event,\'__${#httpServletRequest.getContextPath()}__/messages/add/__${topic.id}__\')'}" name="action">Відправити
                     <i class="material-icons right">send</i>
                 </button>
             </form>
         </div>
-        <div class="page-list row">
+        <div th:if="${topic != null}" class="page-list row">
             <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topic.id}__/'">...</span>
         </div>
     </div>

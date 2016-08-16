@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.TopicMessage;
@@ -43,6 +44,9 @@ public class TopicMessageService {
 
 	@Autowired
 	private TopicMessageRepository topicMessageRepository;
+
+	@Autowired 
+	ForumCategoryService forumCategoryService;
 
 	@Autowired
 	private ForumTopicService forumTopicService;
@@ -120,7 +124,7 @@ public class TopicMessageService {
 	public boolean canEdit(IntitaUser user, TopicMessage message) {
 		if(user == null || message == null)
 			return false;
-		
+
 		if(intitaUserService.isAdmin(user.getId()))
 			return true;
 		IntitaUser u = message.getAuthor();
@@ -141,7 +145,7 @@ public class TopicMessageService {
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage firstMessage = topicMessageRepository.findFirstByTopicOrderByDateAsc(topic);
-		
+
 		if (firstMessage==null)return null;
 		List<TopicMessage> otherMessages =topicMessageRepository.findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(topic.getId(),firstMessage.getId());
 		for (TopicMessage topicMessage : otherMessages) {
@@ -164,7 +168,50 @@ public class TopicMessageService {
 
 		return pageObj;
 	}
-	
+
+	@Transactional
+	public Page<TopicMessage> searchInCategories (ArrayList<ForumCategory> categories, String category, int page){
+		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
+		ArrayList<ForumTopic> array = new ArrayList<>();
+		for (ForumCategory forumCategory : categories) {
+			ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(forumCategory);
+			if(list != null)
+				array.addAll(list);
+		}
+		return topicMessageRepository.findByBodyLikeAndTopicInOrderByDateDesc("%cu%", array, pageable);
+	}
+	@Transactional
+	public Page<TopicMessage> searchInCategory (ForumCategory categoryObj, String search, int page){
+		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
+		ArrayList<ForumTopic> array = new ArrayList<>();
+		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(categoryObj);
+		if(list != null)
+			array.addAll(list);
+		else
+			return null;
+
+		return topicMessageRepository.findByBodyLikeAndTopicInOrderByDateDesc("%" + search + "%", array, pageable);
+	}
+
+	@Transactional
+	public String getUrl(Long id){
+		TopicMessage message = topicMessageRepository.findById(id);
+		if(message == null)
+			return null;
+		ForumTopic topic = message.getTopic();
+		if(topic == null)
+			return null;
+
+		ArrayList<Long> list = topicMessageRepository.getIdsListByTopic(topic.getId());
+		int index = list.lastIndexOf(message.getId());
+		if(index != 0)
+			index -= 1 + list.size()/(messagesCountPerPage - 1) ;
+		index /= messagesCountPerPage  - 1;
+		String res = String.format("/view/topic/%s/%s#msg%s", topic.getId(), index + 1, message.getId()); 
+		return res;
+	}
+
+
 	public boolean checkPostAccessToUser(Authentication  authentication,Long postId){
 		TopicMessage message = getMessage(postId);
 		ForumTopic topic = message.getTopic();

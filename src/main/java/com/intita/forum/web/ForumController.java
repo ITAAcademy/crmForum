@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -295,9 +296,17 @@ public class ForumController {
 	public String testMapping(){
 		return "test good";
 	}
-
+	/*******************************
+	 * Category @RequestMapping
+	 ******************************/
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+		if(search != null)
+		{
+			redirectAttributes.addAttribute("searchvalue", search);
+			return new ModelAndView("redirect:" + "/view/search/" + categoryId + "/1");
+		}
+		
 		ModelAndView model = new ModelAndView();
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		model.addObject("currentPage",page);
@@ -307,6 +316,7 @@ public class ForumController {
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
 		model.addObject("config",configMap);
+		
 		if (category.isCategoriesContainer())
 		{
 			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
@@ -320,6 +330,7 @@ public class ForumController {
 			}
 			model.addObject("lastTopics",lastTopics);
 			model.setViewName("categories_list");
+
 		}
 		else{
 			Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, page-1);
@@ -344,9 +355,54 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(@PathVariable Long categoryId, HttpServletRequest requset, Authentication principal){
-		return viewCategoryById(categoryId, 1, requset, principal);
+	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset, Authentication principal){
+		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset, principal);
 	}
+	/******************************
+	 * REDIRECT @RequestMapping 
+	 ******************************/
+	@RequestMapping(value="/redirect/message/{msgId}",method = RequestMethod.GET)
+	public ModelAndView redirectToMsg(@PathVariable("msgId") Long msgId, HttpServletRequest request, Authentication auth){
+		return new ModelAndView("redirect:" + topicMessageService.getUrl(msgId)); 
+	}
+	/******************************
+	 * SEARCH @RequestMapping 
+	 ******************************/
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@RequestMapping(value="/view/search/{categoryId}/{page}",method = RequestMethod.GET)
+	public ModelAndView viewSearch(@RequestParam(name="searchvalue") String searchValue, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+		ModelAndView model = new ModelAndView("topic_view");
+		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
+		Page<TopicMessage> messages = topicMessageService.searchInCategory(category, searchValue, 0);
+		int pagesCount = 0;
+		if (messages!=null){
+			model.addObject("messages",messages);
+			pagesCount = messages.getTotalPages();
+		}
+		if(pagesCount<1)pagesCount=1;
+		model.addObject("pagesCount",pagesCount);
+		model.addObject("currentPage",page);
+		model.addObject("user", (IntitaUser)auth.getPrincipal());
+		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
+		model.addObject("prettyTime",p);
+
+		//  System.out.println(p.format(new Date()));
+		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
+		model.addObject("config",configMap);
+		model.addObject("bbcode", getTextProcessorInstance(request));
+
+		Map<Long, Boolean> canEditMap = new HashMap<>();
+		if(messages != null)
+			for (TopicMessage topicMessage : messages) {
+				canEditMap.put(topicMessage.getId(), topicMessageService.canEdit((IntitaUser)auth.getPrincipal(), topicMessage));
+			}
+
+		model.addObject("canEditMap", canEditMap);
+
+		return model;
+	}
+
+	
 
 	/*******************************
 	 * TOPIC @RequestMapping

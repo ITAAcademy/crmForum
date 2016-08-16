@@ -27,7 +27,8 @@ $('.search-container > input')
     })
     .keypress(function(e) {
         if (e.which == 13) {
-            alert('You pressed enter!');
+           // window.location.replace("/view/search/category//1".format());
+           window.location.replace(window.location.href + "?search=" + $(e.target).val());
         }
     });
 </script>

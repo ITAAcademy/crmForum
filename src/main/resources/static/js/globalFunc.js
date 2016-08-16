@@ -419,7 +419,7 @@ var menu_upate = function(event) {
 var myHilitor;
 $(window).on('resize', menu_upate);
 $(document).ready(function() {
-    var search_param = getRequestParam('search');
+    var search_param = getRequestParam('searchvalue');
     if (search_param != undefined && search_param != null) {
         myHilitor = new Hilitor();
         myHilitor.apply(search_param);

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.TopicMessage;
@@ -41,4 +42,8 @@ public interface TopicMessageRepository  extends CrudRepository<TopicMessage, Lo
 	  ArrayList<TopicMessage> findAllByDateAfter(Date date);
 	  TopicMessage findFirstByTopicOrderByDateDesc(ForumTopic topic);
 	  TopicMessage findFirstByTopicOrderByDateAsc(ForumTopic topic);
+	  
+	  Page<TopicMessage> findByBodyLikeAndTopicInOrderByDateDesc(String like, ArrayList<ForumTopic> topics,Pageable page);
+	  @Query(value = "SELECT u.id FROM topic_message u WHERE topic.id = :id order by date asc")
+	  ArrayList<Long> getIdsListByTopic(@Param("id")Long topicId);
 }
