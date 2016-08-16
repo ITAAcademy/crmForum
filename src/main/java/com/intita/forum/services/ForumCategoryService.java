@@ -30,6 +30,8 @@ import com.intita.forum.models.Module;
 import com.intita.forum.repositories.ForumCategoryRepository;
 import com.intita.forum.web.ForumController;
 
+import utils.CustomDataConverters;
+
 @Service
 public class ForumCategoryService {
 	@Autowired
@@ -51,6 +53,9 @@ public class ForumCategoryService {
 	
 	private final static Logger log = LoggerFactory.getLogger(ForumController.class);
 	
+	@Value("${forum.categoriesOrTopicsCountPerPage}")
+	private int topicsCountForPage;
+	
 
 public Page<ForumCategory> getAllCategories(int page){
 	return forumCategoryRepository.findAll(new PageRequest(page,categoriesCountForPage)); 
@@ -63,17 +68,42 @@ public Page<ForumCategory> getMainCategories(int page){
 public ForumCategory getCategoryById(Long id){
 	return forumCategoryRepository.findOne(id);
 }
+public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user,int page){
+	if (pageObj==null)return null;
+	List<ForumCategory> pageContent = pageObj.getContent();
+	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
+	for (ForumCategory category : pageContent){
+		if(checkCategoryAccessToUser(user, category.getId())){
+			accessibleCategoriesList.add(category);	
+		}
+	}
+	return CustomDataConverters.listToPage(accessibleCategoriesList, page, topicsCountForPage);
+}
+public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user){
+	List<ForumCategory> pageContent = pageObj.getContent();
+	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
+	for (ForumCategory category : pageContent){
+		if(checkCategoryAccessToUser(user, category.getId())){
+			accessibleCategoriesList.add(category);	
+		}
+	}
+	return accessibleCategoriesList;
+}
 
-public Page<ForumCategory> getSubCategories(Long id,int page){
+public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
 	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
+	Page<ForumCategory> result;
 	switch(childrensType){
-	case ChildrenTopic: return null;
+	case ChildrenTopic: result = null;
+	break;
 	case ChildrenCategory:
-		return forumCategoryRepository.findByCategory(new ForumCategory(id),new PageRequest(page,categoriesCountForPage));
+		result = forumCategoryRepository.findByCategory(new ForumCategory(id),new PageRequest(page,categoriesCountForPage));
+		break;
 	default:
-		return null;
+		result = null;
 	}
+	return filterNotAccesibleCategories(result,user,page);
 
 }
 @PostConstruct
@@ -214,11 +244,15 @@ public LinkedList<ForumTreeNode> getCategoriesTree(ForumTopic topic){
 
 public boolean checkCategoryAccessToUser(Authentication  authentication,Long categoryId){
 
+	IntitaUser currentUser =  (IntitaUser) authentication.getPrincipal();
+	return checkCategoryAccessToUser(currentUser,categoryId);
+}
+public boolean checkCategoryAccessToUser(IntitaUser  user,Long categoryId){
+if (user==null || categoryId==null) return false;
 	ForumCategory category = getCategoryById(categoryId);
 	if (category==null) return false;
 	LinkedList<Set<IntitaUserRoles>> demandedRoles = getDemandsForCategory(categoryId);
-	IntitaUser currentUser =  (IntitaUser) authentication.getPrincipal();
-	if(intitaUserService.hasAllRolesSets(currentUser.getId(),demandedRoles)){
+	if(intitaUserService.hasAllRolesSets(user.getId(),demandedRoles)){
 		return true;
 	}
 	return false;

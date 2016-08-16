@@ -298,6 +298,7 @@ public class ForumController {
 
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryById(@PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView model = new ModelAndView();
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		model.addObject("currentPage",page);
@@ -309,7 +310,7 @@ public class ForumController {
 		model.addObject("config",configMap);
 		if (category.isCategoriesContainer())
 		{
-			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1);
+			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1,user);
 			int pagesCount = categories.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
 			model.addObject("pagesCount",pagesCount);
@@ -330,7 +331,7 @@ public class ForumController {
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
 			}
-			IntitaUser user = (IntitaUser) auth.getPrincipal();
+			
 			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
