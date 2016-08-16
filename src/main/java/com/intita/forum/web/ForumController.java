@@ -399,11 +399,10 @@ public class ForumController {
 		if (post==null)throw new Exception("post not found");
 		ForumTopic topic = post.getTopic();
 		if (topic==null)throw new Exception("post haven't topic");
-		Page<TopicMessage> posts = topicMessageService.getMessagesByTopicIdAndDateBefore(topic.getId(), post.getDate(),1);
-		int pages = posts.getTotalPages();
+		int pages = topicMessageService.getPagesCountByTopicIdAndMessageid(topic.getId(), post.getDate());
 		Long topicId = topic.getId();
 		//ModelAndView result = viewTopicById(topicId, pages, request, auth);
-		  return "redirect:/view/topic/"+topicId+"#msg"+post.getId();
+		  return "redirect:/view/topic/"+topicId+"/"+pages+"#msg"+post.getId();
 	}
 	
 

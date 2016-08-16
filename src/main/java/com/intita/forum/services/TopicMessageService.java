@@ -112,8 +112,14 @@ public class TopicMessageService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public Page<TopicMessage> getMessagesByTopicIdAndDateBefore(Long topicId,Date date,int page) {
-		return topicMessageRepository.findAllByTopicAndDateBeforeWithLast(topicId,date,new PageRequest(page,messagesCountPerPage));
+	public Long getMessagesCountByTopicIdAndDateBefore(Long topicId,Date date) {
+		return topicMessageRepository.findAllByTopicAndDateBeforeWithLast(topicId,date);
+	}
+	//source code of page count finded at https://github.com/spring-projects/spring-data-commons/blob/a8db5e3d230f33e86d9d017571ed3ddcb7ad8294/src/main/java/org/springframework/data/domain/PageImpl.java
+	public int getPagesCountByTopicIdAndMessageid(Long topicId,Date date){
+		Long messagesCount = getMessagesCountByTopicIdAndDateBefore(topicId,date);
+		int pagesCount = messagesCount == 0 ? 1 : (int) Math.ceil((double) messagesCount / (double) messagesCountPerPage);		
+		return pagesCount;
 	}
 
 	@Transactional(readOnly=true)
