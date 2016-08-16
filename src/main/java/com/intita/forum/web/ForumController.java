@@ -266,11 +266,12 @@ public class ForumController {
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		result.addObject("prettyTime",p);
 		result.addObject("config",configMap);
+		result.addObject("user", (IntitaUser)auth.getPrincipal());
 		return result;
 	}
 	//@author zinhcuk roman
 	@RequestMapping(value="/categories_list", method = RequestMethod.GET)
-	public ModelAndView getAllCategories(@RequestParam int page){
+	public ModelAndView getAllCategories(@RequestParam int page, Authentication auth){
 		ModelAndView model = new ModelAndView("categories_list");
 		Page<ForumCategory> categoriesPage = forumCategoryService.getMainCategories(page-1);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
@@ -285,6 +286,8 @@ public class ForumController {
 		model.addObject("currentPage",page);
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
+		model.addObject("user", (IntitaUser)auth.getPrincipal());
+		
 		return model;
 	}
 	@RequestMapping(value="/test",method = RequestMethod.GET)

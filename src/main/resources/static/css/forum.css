@@ -1,4 +1,11 @@
 @import url('materialize.min.css');
+/*
+body {
+    background: #d2e4f4;
+    background: -webkit-linear-gradient(to left, #bfd0e0, #bfd0e0);
+    background: linear-gradient(to left, #bfd0e0, #bfd0e0);
+}*/
+
 .sk-circle {
     width: 100px;
     height: 100px;
@@ -176,23 +183,25 @@
     }
 }
 
-
-
-blockquote{
-  border-color: #1976D2 !important;
+blockquote {
+    border-color: #1976D2 !important;
 }
 
-.cke_editable{
-  padding: 20px;
+.cke_editable {
+    padding: 20px;
 }
 
-.topic_message_text ul, .cke_editable ul{
-  padding-left: 40px;
+.topic_message_text ul,
+.cke_editable ul {
+    padding-left: 40px;
 }
-.topic_message_text ul li , .cke_editable ul li{
+
+.topic_message_text ul li,
+.cke_editable ul li {
     list-style: initial !important;
 }
 
- .topic_message_text ol li , .cke_editable ol li{
+.topic_message_text ol li,
+.cke_editable ol li {
     list-style: decimal outside !important;
 }

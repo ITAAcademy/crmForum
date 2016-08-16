@@ -1,5 +1,5 @@
 <div class="row menu">
-    <div class="col l1 m12 s12" style="text-align: center;background-color:#01579b ;line-height: 64px;margin: auto;height: auto;font-size: 19px;">
+    <div class="col l1 m12 s12" style="text-align: center;background-color:#01579b ;margin: auto;height: auto;font-size: 19px;">
         <a th:href="@{/}" class="brand-logo"><i class="material-icons"></i>Forum</a>
     </div>
     <div class="col l11 m12 s12">
@@ -8,6 +8,26 @@
                         <a class="breadcrumb" th:href="@{/}"><div>Корінь</div></a>
                             <a th:each="category,itrStat : ${categoriesTree}" data-position="bottom" data-delay="50" th:attr="data-tooltip=${category.name}" class="breadcrumb tooltipped"  th:href="${category.id}!=null ? @{/view/category/__${category.id}__} : '#!'"><div th:text="${category.name}"></div></a>
                         </span>
+            <div class="search-container input-field" style="">
+                <input class="search-input" placeholder="Пошук" autocomplete="off" id="last_name" type="text" />
+                <i style="position: absolute;bottom: 0px;left: 0px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
+            </div>
+            <img style="width: 35px;height: 35px;position: absolute;right: 5px;bottom: 2.5px;" class="circle" th:src="${user.isAnonymous()} ? @{'/images/no-name-avatar.png'} : '__${config['baseUrl']}__/images/avatars/__${user.avatar}__'" alt="" />
         </nav>
     </div>
 </div>
+<script>
+$('.search-container > input')
+    .focus(function() {
+        $('.search-container').addClass('focused');
+    })
+    .blur(function() {
+        $('.search-container').removeClass('focused');
+        $(this).val("");
+    })
+    .keypress(function(e) {
+        if (e.which == 13) {
+            alert('You pressed enter!');
+        }
+    });
+</script>

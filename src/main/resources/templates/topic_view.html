@@ -5,7 +5,7 @@
     <title>CrmForum</title>
     <div th:include="includes">...</div>
     <script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
-        <script th:src="@{/js/ckeditor_config.js}"></script>
+    <script th:src="@{/js/ckeditor_config.js}"></script>
     <script th:src="@{/js/topic_view.js}"></script>
     <script th:src="@{/libs/spoiler.js}"></script>
     <script th:src="@{/modules/ckeditor/plugins/bbcode/plugin.js}"></script>
@@ -13,25 +13,25 @@
 
 <body>
     <div id="forumcontainer" class="container">
-        <div class="wraper topics row">
+        <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <!-- Topic info -->
-            <div class="topic_info">
-                <h4 th:text="${topic.name}"></h4>
-            </div>
             <ul class="topic-content">
                 <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2}" th:id="@{'msg__${message.id}__'}">
                     <div class="user-panel col s12 m2 l2" style="">
                         <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
                         <div class="col s6 m12 l12">
-                            <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" style="  " th:title="${message.author.getNickName()}"><div th:text="${message.author.getNickName()}"></div></a>
+                            <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" style="  " th:title="${message.author.getNickName()}">
+                                <div th:text="${message.author.getNickName()}"></div>
+                            </a>
                             <ul class="user-contact">
                                 <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
                                 <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
                             </ul>
                         </div>
                     </div>
-                    <div class="s12 m10 l10 user-msg" >
+                    <div class="s12 m10 l10 user-msg">
+                        <h4 th:if="${iterationStatus.count == 1}" th:text="${topic.name}" style="text-align: center;"></h4>
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
                             <!--preloader
                             <div class="preloader-wrapper sk-circle">
@@ -49,7 +49,7 @@
                                 <div class="sk-circle12 sk-child"></div>
                             </div>
                             /preloader -->
-                            <div class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id  = "@{'topicMessage__${indexCurrentMsg}__'}" th:attr="messageId=${message.id}"></div>
+                            <div class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id="@{'topicMessage__${indexCurrentMsg}__'}" th:attr="messageId=${message.id}"></div>
                             <br/>
                         </p>
                     </div>

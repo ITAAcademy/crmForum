@@ -335,8 +335,8 @@ jQuery.fn.calcTextSize = function() {
         .css("font-size", this.css("font-size"))
         .css("font-weight", this.css("font-weight")).appendTo('body');
     res = cont.width();
-     var size = 160//parseInt(this.css("max-width"), 10);
-    if(res > size)
+    var size = 160 //parseInt(this.css("max-width"), 10);
+    if (res > size)
         res = size;
     cont.remove();
     return res;
@@ -349,7 +349,7 @@ jQuery.fn.hasOverflown = function() {
         .css("font-family", this.css("font-family"))
         .css("font-size", this.css("font-size"))
         .css("font-weight", this.css("font-weight")).appendTo('body');
-    var size = 160//parseInt(this.css("max-width"), 10);
+    var size = 160 //parseInt(this.css("max-width"), 10);
     res = (cont.width() > size);
     var q = cont.text();
     var q1 = cont.width();
@@ -379,18 +379,23 @@ function autoDisableToolTips($element) {
         $element.removeClass("tooltipped");
 }
 
+function getRequestParam(name) {
+    if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
+        return decodeURIComponent(name[1]);
+}
+
 var menu_upate = function(event) {
     clearTimeout(globalTimeOut);
     globalTimeOut = setTimeout(function() {
         var tooltipped = $('.tooltipped');
         if (typeof tooltipped != 'undefined')
-        tooltipped.tooltip('remove');
+            tooltipped.tooltip('remove');
         var win = $(this); //this = window
         if (win.height() >= 820) { /* ... */ }
         if (win.width() >= 1280) { /* ... */ }
         ellipses = $(".breadcrumb-container")[0].children;
         //
-        var sum = 0;
+        var sum = 80;
         var max = $(".breadcrumb-container").parent().width();
         var i = ellipses.length - 1;
         for (; i >= 0; i--) {
@@ -411,28 +416,39 @@ var menu_upate = function(event) {
 
 
 }
+var myHilitor;
 $(window).on('resize', menu_upate);
+$(document).ready(function() {
+    var search_param = getRequestParam('search');
+    if (search_param != undefined && search_param != null) {
+        myHilitor = new Hilitor();
+        myHilitor.apply(search_param);
+    }
 
-function onDivLinkClick(event,url){
- var isLink = event.target.nodeName == "a" || event.target.nodeName == "A";
-        if (!isLink) { //skip redirection to chatroom from block onclick event
-            //if click occured in <a> element
-           GoToUrl(url);
-        }
+});
+
+
+function onDivLinkClick(event, url) {
+    var isLink = event.target.nodeName == "a" || event.target.nodeName == "A";
+    if (!isLink) { //skip redirection to chatroom from block onclick event
+        //if click occured in <a> element
+        GoToUrl(url);
+    }
 }
-function GoToUrl(url){
-window.location.href = url;
+
+function GoToUrl(url) {
+    window.location.href = url;
 }
 menu_upate();
 
-function submitForm(formId,url,successCallback,failCallback){
+function submitForm(formId, url, successCallback, failCallback) {
     var serialized = $(formId).serialize();
-      $.ajax({
-        url:url,
-        type:'post',
-        data:serialized,
-        success:successCallback,
-        error:failCallback
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: serialized,
+        success: successCallback,
+        error: failCallback
 
     });
 }
@@ -440,13 +456,10 @@ function submitForm(formId,url,successCallback,failCallback){
 
 // First, checks if it isn't implemented yet.
 if (!String.prototype.format) {
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match
-      ;
-    });
-  };
+    String.prototype.format = function() {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function(match, number) {
+            return typeof args[number] != 'undefined' ? args[number] : match;
+        });
+    };
 }

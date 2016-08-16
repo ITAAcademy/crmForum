@@ -45,7 +45,7 @@ public class RedisService {
 	public String getKeyValue(String key) {
 		if(!jedis.isConnected())
 		{
-			jedis.close();
+			//jedis.close();
 			jedis.connect();
 			return new String();
 		}
@@ -57,8 +57,9 @@ public class RedisService {
 		}
 		catch(JedisConnectionException ex)
 		{
-			jedis.close();
-			jedis.connect();
+			/*jedis.close();
+			jedis.connect();*/
+			jedis = pool.getResource();
 			return new String();
 		}
 	}
