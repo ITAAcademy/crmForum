@@ -682,10 +682,21 @@
     opacity: 1;
 }
 
+.circle{
+    box-shadow: 0 0 8px rgba(0, 0, 0, .53);
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .53);
+    -moz-box-shadow: 0 0 8px rgba(0, 0, 0, .53);
+}
 .circle.sp {
-    width: 86px;
+    /*width: 86px;
     height: auto;
-    position: static;
+    position: static;*/
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 86px;
+    height: 86px;
+    display: inline-block;
 }
 
 @media(min-width:601px) {
@@ -780,6 +791,7 @@
     color: white;
     border-radius: 25px;
 }
-.btn-floating img{
+
+.btn-floating img {
     width: 100%;
 }

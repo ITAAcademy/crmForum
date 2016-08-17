@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
         e.printStackTrace(new PrintWriter(sw));
         String exceptionAsString = sw.toString();    
         mav.addObject("exception", "Необхідна авторизація");
-        mav.addObject("errorCode",401);
+        mav.addObject("errorCode", 401);
         log.error(exceptionAsString);
         return mav;
     }
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
         e.printStackTrace(new PrintWriter(sw));
         String exceptionAsString = sw.toString();    
         mav.addObject("exception", "Відсутні права для цієї сторінки");
-        mav.addObject("errorCode",403);
+        mav.addObject("errorCode", 403);
         log.error(exceptionAsString);
         return mav;
     }

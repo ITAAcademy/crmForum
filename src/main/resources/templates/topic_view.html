@@ -19,7 +19,7 @@
             <ul class="topic-content">
                 <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2}" th:id="@{'msg__${message.id}__'}">
                     <div class="user-panel col s12 m2 l2" style="">
-                        <img class="circle sp" th:src="@{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__}" alt="" />
+                        <div class="circle sp" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__} + ');'" alt=""></div>
                         <div class="col s6 m12 l12">
                             <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" style="  " th:title="${message.author.getNickName()}">
                                 <div th:text="${message.author.getNickName()}"></div>
@@ -67,15 +67,14 @@
                             <i class="large material-icons">menu</i>
                         </a>
                         <ul>
-                         <li>
-                            <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/topic/__${topic.id}__/&amp;title=__${topic.name}__&amp;description=__${message.body}__'">
-                                             <img src="http://vk.com/images/share_32_eng.png"/>
-                            </a>
-                                           </li>
-           
                             <li>
-                            <a class="btn-floating fb" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"></a>
-                                           </li>
+                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/topic/__${topic.id}__/&amp;title=__${topic.name}__&amp;description=__${message.body}__'">
+                                    <img src="http://vk.com/images/share_32_eng.png" />
+                                </a>
+                            </li>
+                            <li>
+                                <a class="btn-floating fb" th:attr="data-href='__${config['baseUrl']}____@{/}__view/topic/__${topic.id}__/'" data-layout="button_count" data-size="small" data-mobile-iframe="true"><img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
+                            </li>
                             <!--Social Separator -->
                             <li>|</li>
                             <!--/Social Separator -->
@@ -139,20 +138,20 @@
 <script type="text/javascript" src="//vk.com/js/api/share.js?93" charset="windows-1251"></script>
 <div id="fb-root"></div>
 <script>
-/* <![CDATA[ */
-(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s);
-    js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7";
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+$(document).ready(function() {
+  $.ajaxSetup({ cache: true });
+  $.getScript('//connect.facebook.net/en_US/sdk.js', function(){
+    FB.init({
+      appId: '1738206246427696',
+      version: 'v2.7' // or v2.1, v2.2, v2.3, ...
+    });     
+  });
+});
 
 function postToFeed(title, desc, url, image) {
     var obj = {
         method: 'share',
-        link: url,
+        href: url,
         picture: image,
         name: title,
         description: desc
@@ -166,16 +165,15 @@ function postToFeed(title, desc, url, image) {
 var fbShareBtn = document.querySelector('.fb');
 fbShareBtn.addEventListener('click', function(e) {
     e.preventDefault();
+    debugger;
     var title = fbShareBtn.getAttribute('data-title'),
         desc = fbShareBtn.getAttribute('data-desc'),
-        url = fbShareBtn.getAttribute('href'),
+        url = fbShareBtn.getAttribute('data-href'),
         image = fbShareBtn.getAttribute('data-image');
     postToFeed(title, desc, url, image);
 
     return false;
 });
-/* ]]> */
-document.write(VK.Share.button({url: 'http://mysite.com', title: 'Заголовок страницы'}, {type: 'custom', text: '<img src="http://vk.com/images/vk32.png" />'}));
 </script>
 
 </html>

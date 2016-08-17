@@ -205,3 +205,14 @@ blockquote {
 .cke_editable ol li {
     list-style: decimal outside !important;
 }
+
+.circular {
+    border-radius: 150px;
+    -webkit-border-radius: 150px;
+    -moz-border-radius: 150px;
+    }
+
+.circular img {
+    opacity: 0;
+    filter: alpha(opacity=0);
+    }
