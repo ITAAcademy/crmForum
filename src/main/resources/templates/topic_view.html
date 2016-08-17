@@ -74,7 +74,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="btn-floating fb" onclick="openDialog(event);" th:href="'https://www.facebook.com/sharer/sharer.php?app_id=1738206246427696&amp;sdk=joey&amp;u=__${postLink}__&amp;display=popup&amp;ref=plugin&amp;src=share_button&amp;quote=__${message.body}__'"> <img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
+                                <a class="btn-floating fb" onclick="openDialog(event);" th:href="'https://www.facebook.com/sharer/sharer.php?app_id=1738206246427696&amp;sdk=joey&amp;u=__${postLink}__&amp;display=popup&amp;ref=plugin&amp;src=share_button&amp;title=__${topic.name}__&amp;description=__${bbcode.process(message.body)}__'"> <img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
                             </li>
                             <!--Social Separator -->
                             <li>|</li>
