@@ -198,6 +198,11 @@ public class TopicMessageService {
 
 		return topicMessageRepository.findByBodyLikeAndTopicInOrderByDateDesc("%" + search + "%", array, pageable);
 	}
+	@Transactional
+	public Page<TopicMessage> searchInTopic (ForumTopic topic, String search, int page){
+		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
+		return topicMessageRepository.findByBodyLikeAndTopicOrderByDateDesc("%" + search + "%", topic, pageable);
+	}
 
 	@Transactional
 	public String getUrl(Long id){

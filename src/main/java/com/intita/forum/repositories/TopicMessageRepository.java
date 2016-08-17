@@ -44,6 +44,8 @@ public interface TopicMessageRepository  extends CrudRepository<TopicMessage, Lo
 	  TopicMessage findFirstByTopicOrderByDateAsc(ForumTopic topic);
 	  
 	  Page<TopicMessage> findByBodyLikeAndTopicInOrderByDateDesc(String like, ArrayList<ForumTopic> topics,Pageable page);
+	  Page<TopicMessage> findByBodyLikeAndTopicOrderByDateDesc(String like, ForumTopic topic,Pageable page);
+	  
 	  @Query(value = "SELECT u.id FROM topic_message u WHERE topic.id = :id order by date asc")
 	  ArrayList<Long> getIdsListByTopic(@Param("id")Long topicId);
 }

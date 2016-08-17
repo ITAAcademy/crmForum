@@ -68,7 +68,7 @@
                         </a>
                         <ul>
                             <li>
-                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/post/__${message.id}__&amp;title=__${topic.name}__&amp;description=__${bbcode.process(message.body)}__'">
+                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/post/__${message.id}__&amp;title=__${message.topic.name}__&amp;description=__${bbcode.process(message.body)}__'">
                                     <img src="http://vk.com/images/share_32_eng.png" />
                                 </a>
                             </li>

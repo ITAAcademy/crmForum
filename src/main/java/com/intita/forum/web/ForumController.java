@@ -304,6 +304,7 @@ public class ForumController {
 		if(search != null)
 		{
 			redirectAttributes.addAttribute("searchvalue", search);
+			redirectAttributes.addAttribute("type", SearchType.CATEGORY);
 			return new ModelAndView("redirect:" + "/view/search/" + categoryId + "/1");
 		}
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
@@ -368,12 +369,35 @@ public class ForumController {
 	/******************************
 	 * SEARCH @RequestMapping 
 	 ******************************/
+	class SearchType{
+		public final static int CATEGORY = 1 << 0; 
+		public final static int TOPIC = 1 << 1;
+		public final static int CATEGORY_NAME = 1 << 2;
+	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/search/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewSearch(@RequestParam(name="searchvalue") String searchValue, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+	public ModelAndView viewSearch(@RequestParam(name="searchvalue") String searchValue,@RequestParam(name="type", required= false) int type, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
 		ModelAndView model = new ModelAndView("topic_view");
-		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-		Page<TopicMessage> messages = topicMessageService.searchInCategory(category, searchValue, 0);
+		Page<TopicMessage> messages = null;
+		switch (type) {
+		case SearchType.CATEGORY:
+			ForumCategory category = forumCategoryService.getCategoryById(categoryId);
+			messages = topicMessageService.searchInCategory(category, searchValue, 0);
+			model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
+			break;
+		case SearchType.TOPIC:
+			ForumTopic topic = forumTopicService.getTopic(categoryId);
+			messages = topicMessageService.searchInTopic(topic, searchValue, 0);
+			model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
+			break;
+		case SearchType.CATEGORY_NAME:
+			//messages = topicMessageService.searchInCategory(category, searchValue, 0);
+			break;
+		default:
+			break;
+		}
+			
+			
 		int pagesCount = 0;
 		if (messages!=null){
 			model.addObject("messages",messages);
@@ -387,7 +411,6 @@ public class ForumController {
 		model.addObject("prettyTime",p);
 
 		//  System.out.println(p.format(new Date()));
-		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
 		model.addObject("config",configMap);
 		model.addObject("bbcode", getTextProcessorInstance(request));
 
@@ -409,7 +432,13 @@ public class ForumController {
 	 ******************************/
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(@PathVariable Long topicId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long topicId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+		if(search != null)
+		{
+			redirectAttributes.addAttribute("searchvalue", search);
+			redirectAttributes.addAttribute("type", SearchType.TOPIC);
+			return new ModelAndView("redirect:" + "/view/search/" + topicId + "/1");
+		}
 		ModelAndView model = new ModelAndView("topic_view");
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
@@ -443,8 +472,8 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(@PathVariable Long topicId, HttpServletRequest request, Authentication auth){	
-		return viewTopicById(topicId, 1, request, auth);
+	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long topicId, HttpServletRequest request, Authentication auth){	
+		return viewTopicById(redirectAttributes, search, topicId, 1, request, auth);
 	}
 
 	@PreAuthorize("@topicMessageService.checkPostAccessToUser(authentication,#postId)")
@@ -531,7 +560,7 @@ public class ForumController {
 			return "null";//need return code
 		if(!topicMessageService.canEdit(user, msg))
 			return "null";//need return code
-		
+
 		msg.setBody(body);
 		topicMessageService.addMessage(msg);
 		return "true";

@@ -529,17 +529,44 @@
 }
 
 .row.menu .search-container:hover,
+.row.menu .search-container .check-box:hover,
 .row.menu .search-container.focused {
     /* width: calc(100% - 200px);*/
     max-width: 200px;
 }
 
+.row.menu .search-container .check-box {
+    position: absolute;
+    max-width: 0px;
+    max-height: 0px;
+    width: 228px;
+    padding-left: 8px;
+    background-color: #01579b !important;
+    padding-top: 40px;
+    z-index: -1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-transition: all 1.0s;
+    -moz-transition: all 1.0s;
+    -o-transition: all 1.0s;
+    transition: all 1.0s;
+}
+
+.row.menu .search-container .check-box:hover,
+.row.menu .search-container.focused .check-box {
+    max-height: 80px;
+    max-width: 228px;
+}
+
 .row.menu .search-input:focus {}
 
-.row.menu .search-container:hover .search-input,
+.row.menu .search-container:hover:not(.focused) .search-input {
+
+}
+
 .row.menu .search-container.focused .search-input {
-    border-bottom: 1px solid white !important;
-    border-left: 1px solid white !important;
+    border: none;
+    background-color: transparent !important;
 }
 
 .row.menu .breadcrumb:last-child div {
@@ -555,7 +582,7 @@
     -moz-transition: max-width 1.0s;
     -o-transition: max-width 1.0s;
     transition: max-width 1.0s;
-    max-height: 30px;
+    max-height: 40px;
 }
 
 .row.menu .breadcrumb:hover div {
@@ -682,11 +709,12 @@
     opacity: 1;
 }
 
-.circle{
+.circle {
     box-shadow: 0 0 8px rgba(0, 0, 0, .53);
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .53);
     -moz-box-shadow: 0 0 8px rgba(0, 0, 0, .53);
 }
+
 .circle.sp {
     /*width: 86px;
     height: auto;
@@ -703,7 +731,7 @@
     .user-panel {
         display: block;
         position: absolute;
-        bottom: 67px;
+        bottom: 50px;
         top: 30px;
         max-width: 160px;
         min-width: 160px;

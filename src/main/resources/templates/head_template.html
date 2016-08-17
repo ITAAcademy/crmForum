@@ -4,20 +4,27 @@
     </div>
     <div class="col l11 m12 s12">
         <nav class="light-blue darken-4" style="max-height:64px;    overflow: hidden; box-shadow:none">
-            <span class="breadcrumb-container" style="position: relative; padding-left: 15px;">
+            <span class="breadcrumb-container" style="height: 40px; display: block;position: relative; padding-left: 15px;">
                         <a class="breadcrumb" th:href="@{/}"><div>Корінь</div></a>
                             <a th:each="category,itrStat : ${categoriesTree}" data-position="bottom" data-delay="50" th:attr="data-tooltip=${category.name}" class="breadcrumb tooltipped"  th:href="${category.id}!=null ? @{/view/category/__${category.id}__} : '#!'"><div th:text="${category.name}"></div></a>
                         </span>
+            <!-- ===========================
+                SEARCH             
+            ============================ -->
             <div class="search-container input-field" style="">
                 <input class="search-input" placeholder="Пошук" autocomplete="off" id="last_name" type="text" />
                 <i style="position: absolute;bottom: 0px;left: 0px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
+                <div th:if="${topic == null}" class="check-box">
+                    <input class="checkbox" type="checkbox" id="test6"/>
+                    Шукати по імені
+                </div>
             </div>
             <img style="width: 35px;height: 35px;position: absolute;right: 5px;bottom: 2.5px;" class="circle" th:src="${user.isAnonymous()} ? @{'/images/no-name-avatar.png'} : '__${config['baseUrl']}__/images/avatars/__${user.avatar}__'" alt="" />
         </nav>
     </div>
 </div>
 <script>
-$('.search-container > input')
+$('.search-container  input')
     .focus(function() {
         $('.search-container').addClass('focused');
     })
@@ -27,8 +34,8 @@ $('.search-container > input')
     })
     .keypress(function(e) {
         if (e.which == 13) {
-           // window.location.replace("/view/search/category//1".format());
-           window.location.replace(window.location.href + "?search=" + $(e.target).val());
+            // window.location.replace("/view/search/category//1".format());
+            window.location.replace(window.location.href + "?search=" + $(e.target).val());
         }
     });
 </script>
