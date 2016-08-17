@@ -62,25 +62,25 @@
                         <i th:text="    №__${indexCurrentMsg}__"></i>
                     </a>
                     <!-- Post controll btn -->
-                    <div th:if="${!user.isAnonymous()}" class="fixed-action-btn horizontal post-controll">
+                    <div class="fixed-action-btn horizontal post-controll">
                         <a class="btn-floating btn-middle red">
                             <i class="large material-icons">menu</i>
                         </a>
                         <ul>
                             <li>
-                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${postLink}__&amp;title=__${topic.name}__&amp;description=__${bbcode.process(message.body)}__'">
+                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${postLink}__&amp;title=__${message.topic.name}__&amp;description=__${bbcode.process(message.body)}__'">
                                     <img src="http://vk.com/images/share_32_eng.png" />
                                 </a>
                             </li>
                             <li>
-                                <a class="btn-floating fb" onclick="openDialog(event);" th:href="'https://www.facebook.com/sharer/sharer.php?app_id=1738206246427696&amp;sdk=joey&amp;u=__${postLink}__&amp;display=popup&amp;ref=plugin&amp;src=share_button&amp;title=__${topic.name}__&amp;description=__${bbcode.process(message.body)}__'"> <img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
+                                <a class="btn-floating fb" onclick="openDialog(event);" th:href="'https://www.facebook.com/sharer/sharer.php?app_id=1738206246427696&amp;sdk=joey&amp;u=__${postLink}__&amp;display=popup&amp;ref=plugin&amp;src=share_button&amp;title=__${message.topic.name}__&amp;description=__${bbcode.process(message.body)}__'"> <img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
                             </li>
                             <!--Social Separator -->
-                            <li>|</li>
+                            <li th:if="${!user.isAnonymous()}">|</li>
                             <!--/Social Separator -->
                             <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
-                            <li><a th:if="${topic != null}" class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
+                            <li th:if="${!user.isAnonymous()}"><a th:if="${topic != null}" class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>
                     </div>
                 </li>
@@ -100,7 +100,7 @@
             <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topic.id}__/'">...</span>
         </div>
     </div>
-    <div th:if="${!user.isAnonymous()}" class="fixed-action-btn  back-to-top" style="bottom: 45px; right: 24px;">
+    <div class="fixed-action-btn  back-to-top" style="bottom: 45px; right: 24px;">
         <a class="btn-floating btn-large waves-effect waves-light blue darken-2"><i class="material-icons">navigation</i></a>
     </div>
 </body>

@@ -264,3 +264,6 @@ blockquote {
     background-color: transparent !important;
     cursor: pointer;
 }
+ a.disabled{
+    pointer-events: none;
+}
