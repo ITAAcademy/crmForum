@@ -17,7 +17,7 @@
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <!-- Topic info -->
             <ul class="topic-content">
-                <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2}" th:id="@{'msg__${message.id}__'}">
+                <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2},postLink='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" th:id="@{'msg__${message.id}__'}">
                     <div class="user-panel col s12 m2 l2" style="">
                         <div class="circle sp" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${message.author.avatar}__} + ');'" alt=""></div>
                         <div class="col s6 m12 l12">
@@ -49,6 +49,7 @@
                                 <div class="sk-circle12 sk-child"></div>
                             </div>
                             /preloader -->
+
                             <div class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id="@{'topicMessage__${indexCurrentMsg}__'}" th:attr="messageId=${message.id}"></div>
                             <br/>
                         </p>
@@ -68,12 +69,12 @@
                         </a>
                         <ul>
                             <li>
-                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/post/__${message.id}__&amp;title=__${topic.name}__&amp;description=__${bbcode.process(message.body)}__'">
+                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${postLink}__&amp;title=__${topic.name}__&amp;description=__${bbcode.process(message.body)}__'">
                                     <img src="http://vk.com/images/share_32_eng.png" />
                                 </a>
                             </li>
                             <li>
-                                <a class="btn-floating fb" th:attr="data-href='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" data-layout="button_count" data-size="small" data-mobile-iframe="true"><img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
+                                <a class="btn-floating fb" onclick="openDialog(event);" th:href="'https://www.facebook.com/sharer/sharer.php?app_id=1738206246427696&amp;sdk=joey&amp;u=__${postLink}__&amp;display=popup&amp;ref=plugin&amp;src=share_button&amp;quote=__${message.body}__'"> <img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
                             </li>
                             <!--Social Separator -->
                             <li>|</li>
@@ -138,7 +139,7 @@
 <script type="text/javascript" src="//vk.com/js/api/share.js?93" charset="windows-1251"></script>
 <div id="fb-root"></div>
 <script>
-$(document).ready(function() {
+/*$(document).ready(function() {
   $.ajaxSetup({ cache: true });
   $.getScript('//connect.facebook.net/en_US/sdk.js', function(){
     FB.init({
@@ -159,10 +160,10 @@ function postToFeed(title, desc, url, image) {
 
     function callback(response) {}
     FB.ui(obj, callback);
-}
+}*/
 
 
-var fbShareBtn = document.querySelector('.fb');
+/*var fbShareBtn = document.querySelector('.fb');
 fbShareBtn.addEventListener('click', function(e) {
     e.preventDefault();
     debugger;
@@ -173,7 +174,7 @@ fbShareBtn.addEventListener('click', function(e) {
     postToFeed(title, desc, url, image);
 
     return false;
-});
+});*/
 </script>
 
 </html>
