@@ -68,12 +68,12 @@
                         </a>
                         <ul>
                             <li>
-                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/topic/__${topic.id}__/&amp;title=__${topic.name}__&amp;description=__${message.body}__'">
+                                <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/post/__${message.id}__&amp;title=__${topic.name}__&amp;description=__${bbcode.process(message.body)}__'">
                                     <img src="http://vk.com/images/share_32_eng.png" />
                                 </a>
                             </li>
                             <li>
-                                <a class="btn-floating fb" th:attr="data-href='__${config['baseUrl']}____@{/}__view/topic/__${topic.id}__/'" data-layout="button_count" data-size="small" data-mobile-iframe="true"><img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
+                                <a class="btn-floating fb" th:attr="data-href='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" data-layout="button_count" data-size="small" data-mobile-iframe="true"><img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
                             </li>
                             <!--Social Separator -->
                             <li>|</li>
