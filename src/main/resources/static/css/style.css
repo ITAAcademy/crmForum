@@ -780,3 +780,6 @@
     color: white;
     border-radius: 25px;
 }
+.btn-floating img{
+    width: 100%;
+}

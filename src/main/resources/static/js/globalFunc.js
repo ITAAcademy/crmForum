@@ -463,3 +463,19 @@ if (!String.prototype.format) {
         });
     };
 }
+
+function openDialog(event) {
+
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    var obj = $(event.currentTarget);
+
+    var win = window.open(obj.attr("href"), 'Dialog', 'width=600,height=400');
+    win.focus()
+    $(window).focus(function() {
+    win.close();
+})
+    
+
+    return false;
+}

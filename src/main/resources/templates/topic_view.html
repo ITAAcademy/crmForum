@@ -12,20 +12,6 @@
 </head>
 
 <body>
-<!-- Load Facebook SDK for JavaScript -->
-    <div id="fb-root"></div>
-    <script>
-    /* <![CDATA[ */
-    (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-    /* ]]> */
-    </script>
-
     <div id="forumcontainer" class="container">
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
@@ -40,7 +26,7 @@
                             </a>
                             <ul class="user-contact">
                                 <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
-                                <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li> 
+                                <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
                             </ul>
                         </div>
                     </div>
@@ -81,16 +67,18 @@
                             <i class="large material-icons">menu</i>
                         </a>
                         <ul>
-
+                         <li>
+                            <a class="btn-floating" onclick="openDialog(event);" th:href="'https://vk.com/share.php?url=__${config['baseUrl']}____@{/}__view/topic/__${topic.id}__/&amp;title=__${topic.name}__&amp;description=__${message.body}__'">
+                                             <img src="http://vk.com/images/share_32_eng.png"/>
+                            </a>
+                                           </li>
+           
                             <li>
-                                <div class="fb-share-button" 
-                                th:attr="data-href='__${config['baseUrl']}__/view/topic/__${topic.id}__/'"
-                                data-layout="button_count">
-                            </div>
-                        </li>
-                        <!--Social Separator -->
-                         <li>|</li>
-                         <!--/Social Separator -->
+                            <a class="btn-floating fb" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"></a>
+                                           </li>
+                            <!--Social Separator -->
+                            <li>|</li>
+                            <!--/Social Separator -->
                             <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
                             <li><a th:if="${topic != null}" class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
@@ -147,5 +135,47 @@
         <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Ні</a>
     </div>
 </div>
+<!-- Load Facebook SDK for JavaScript -->
+<script type="text/javascript" src="//vk.com/js/api/share.js?93" charset="windows-1251"></script>
+<div id="fb-root"></div>
+<script>
+/* <![CDATA[ */
+(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+function postToFeed(title, desc, url, image) {
+    var obj = {
+        method: 'share',
+        link: url,
+        picture: image,
+        name: title,
+        description: desc
+    };
+
+    function callback(response) {}
+    FB.ui(obj, callback);
+}
+
+
+var fbShareBtn = document.querySelector('.fb');
+fbShareBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    var title = fbShareBtn.getAttribute('data-title'),
+        desc = fbShareBtn.getAttribute('data-desc'),
+        url = fbShareBtn.getAttribute('href'),
+        image = fbShareBtn.getAttribute('data-image');
+    postToFeed(title, desc, url, image);
+
+    return false;
+});
+/* ]]> */
+document.write(VK.Share.button({url: 'http://mysite.com', title: 'Заголовок страницы'}, {type: 'custom', text: '<img src="http://vk.com/images/vk32.png" />'}));
+</script>
 
 </html>
