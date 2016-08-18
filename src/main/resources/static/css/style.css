@@ -226,7 +226,9 @@ ul.collection {
 .row .col.topic-info {
     margin-left: 60px;
 }
-
+.topic-name{
+    text-transform: uppercase;
+}
 .topic-statistic {
     text-align: right;
 }

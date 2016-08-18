@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.intita.forum.domain.TreeNodeStatistic;
 import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.models.Course;
@@ -39,6 +40,8 @@ public class ForumCategoryService {
 	private ForumCategoryRepository forumCategoryRepository;
 	@Autowired
 	private CourseService courseService;
+	@Autowired
+	private TopicMessageService topicMessageService;
 	
 	@Autowired
 	private ModuleService moduleService;
@@ -321,5 +324,18 @@ public ForumTopic getLastTopic(Long categoryId){
 	return lastTopic;
 
 }
+
+public List<TreeNodeStatistic> getCategoriesStatistic(List<ForumCategory> categories){
+	
+	List<TreeNodeStatistic> categoriesStatistic = new ArrayList<TreeNodeStatistic>();
+	for (ForumCategory c : categories){
+	HashSet<Long> topicsIds = forumTopicService.getAllSubTopicsIds(c);
+	int messagesCount = topicMessageService.getTotalMessagesCountByTopicsIds(topicsIds);
+	TreeNodeStatistic statistic = new TreeNodeStatistic(topicsIds.size(),messagesCount);
+	categoriesStatistic.add(statistic);
+	}
+	return categoriesStatistic;
+}
+
 
 }

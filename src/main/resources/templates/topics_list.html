@@ -28,7 +28,7 @@
                         <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${topic.author.avatar}__} + ');'" alt=""></div>
                     </div>
                     <div class="col s8 m6 topic-info">
-                        <p><a class="topic-path-a" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
+                        <p><a class="topic-name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
                             Назва розділу
                         </a></p>
                         <p>
@@ -41,7 +41,7 @@
                             <b>відвідувань</b>
                         </p>
                         <p>
-                            <a>54545</a>
+                            <a th:text="${statistic[status.index].messagesCount}">54545</a>
                             <b>повідомлень</b>
                         </p>
                     </div>

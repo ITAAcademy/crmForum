@@ -20,7 +20,7 @@
                         <i class="medium material-icons">label_outline</i>
                     </div>
                     <div class="col s8 m6 topic-info">
-                        <p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
+                        <p><a class="topic-name" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
                             Назва розділу
                         </a></p>
                         <p th:text="${category.description}">
@@ -28,11 +28,11 @@
                     </div>
                     <div th:if="${lastTopics[status.index]!=null}" class="col s4 m2 topic-statistic">
                         <p>
-                            <a>13245</a>
-                            <b>тем</b>
+                            <a th:text="${statistic[status.index].topicsCount}">13245</a>
+                            <b>теми</b>
                         </p>
                         <p>
-                            <a>54545</a>
+                            <a th:text="${statistic[status.index].messagesCount}">54545</a>
                             <b>повідомлень</b>
                         </p>
                     </div>

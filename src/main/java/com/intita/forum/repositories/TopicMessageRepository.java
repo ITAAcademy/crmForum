@@ -2,6 +2,7 @@ package com.intita.forum.repositories;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,4 +49,9 @@ public interface TopicMessageRepository  extends CrudRepository<TopicMessage, Lo
 	  
 	  @Query(value = "SELECT u.id FROM topic_message u WHERE topic.id = :id order by date asc")
 	  ArrayList<Long> getIdsListByTopic(@Param("id")Long topicId);
+	  
+	  @Query(value = "SELECT count(u) FROM topic_message u WHERE topic.id in :topicsIds")
+	  int getMessagesCountInTopics(@Param("topicsIds") HashSet<Long> topicsIds);
+	  @Query(value = "SELECT count(u) FROM topic_message u WHERE topic.id = :topicIds")
+	  int getMessagesCountInTopic(@Param("topicIds") Long topicIds);
 }
