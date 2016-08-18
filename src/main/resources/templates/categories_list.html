@@ -8,13 +8,13 @@
 
 <body>
     <div id="forumcontainer" class="container">
-        <div class="wraper row">
+        <div class="wraper fixed row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <div class="configure-head hide">
+            <div class="configure-head hide-me">
                 <div class=""> Розділи </div>
                 <div class=""> Останній пост </div>
             </div>
-            <ul class="collection">
+            <ul class="collection ul-container">
                 <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${categories}">
                     <div class="icon-container">
                         <i class="medium material-icons">label_outline</i>

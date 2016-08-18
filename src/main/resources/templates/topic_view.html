@@ -15,6 +15,10 @@
     <div id="forumcontainer" class="container">
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
+            <div class="configure-head hide-me">
+                <div class=""> Розділи </div>
+                <div class=""> Останній пост </div>
+            </div>
             <!-- Topic info -->
             <ul class="topic-content">
                 <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2},postLink='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" th:id="@{'msg__${message.id}__'}">

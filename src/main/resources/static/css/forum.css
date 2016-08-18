@@ -7,6 +7,21 @@ body {
     background: linear-gradient(to left, #bfd0e0, #bfd0e0);
 }*/
 
+html, body{
+     height:100%; /* needed for container min-height */
+}
+#forumcontainer{
+    height: 1px;
+    min-height: 100%;
+}
+.wraper.fixed{
+    height: 1px;
+    min-height: calc(100% - 90px);
+    max-height: calc(100% - 90px);
+    overflow: hidden;
+    background-color: white;
+}
+
 .sk-circle {
     width: 100px;
     height: 100px;

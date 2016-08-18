@@ -168,9 +168,13 @@
     background-color: #01579b;
     color: white;
     max-height: 40px;
+    -webkit-transition: max-height 1.0s;
+    -moz-transition: max-height 1.0s;
+    -o-transition: max-height 1.0s;
+    transition: max-height 1.0s;
 }
 
-.configure-head.hide {
+.configure-head.hide-me {
     max-height: 0px;
 }
 
@@ -186,7 +190,8 @@
 .page-list ul {
     margin-top: -2px;
 }
-.page-list ul.pagination span{
+
+.page-list ul.pagination a.active span {
     color: white;
 }
 
@@ -195,8 +200,17 @@
 * TOPIC LIST PAGE
 ************************************************************************/
 
-ul.collection {
+.ul-container {
     margin-top: 0px;
+    max-height: calc(100% - 90px);
+    overflow-y: scroll;
+    border: none;
+    margin-right: -300px;
+    padding-right: 300px;
+}
+
+.ul-container::-webkit-scrollbar {
+    display: none;
 }
 
 .topic-item {
@@ -219,6 +233,7 @@ ul.collection {
     top: calc(50% - 30px);
     color: #01579b;
 }
+
 .icon-container .circle.sp.img {
     width: 60px;
     height: 60px;
@@ -229,9 +244,11 @@ ul.collection {
 .row .col.topic-info {
     margin-left: 60px;
 }
-.topic-name{
+
+.topic-name {
     text-transform: uppercase;
 }
+
 .topic-statistic {
     text-align: right;
 }
