@@ -33,22 +33,6 @@
                     <div class="s12 m10 l10 user-msg">
                         <h4 th:if="${iterationStatus.count == 1}" th:text="${message.topic.name}" style="text-align: center;"></h4>
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
-                            <!--preloader
-                            <div class="preloader-wrapper sk-circle">
-                                <div class="sk-circle1 sk-child"></div>
-                                <div class="sk-circle2 sk-child"></div>
-                                <div class="sk-circle3 sk-child"></div>
-                                <div class="sk-circle4 sk-child"></div>
-                                <div class="sk-circle5 sk-child"></div>
-                                <div class="sk-circle6 sk-child"></div>
-                                <div class="sk-circle7 sk-child"></div>
-                                <div class="sk-circle8 sk-child"></div>
-                                <div class="sk-circle9 sk-child"></div>
-                                <div class="sk-circle10 sk-child"></div>
-                                <div class="sk-circle11 sk-child"></div>
-                                <div class="sk-circle12 sk-child"></div>
-                            </div>
-                            /preloader -->
                             <div class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id="@{'topicMessage__${indexCurrentMsg}__'}" th:attr="messageId=${message.id}"></div>
                             <br/>
                         </p>
@@ -76,7 +60,7 @@
                                 <a class="btn-floating fb" onclick="openDialog(event);" th:href="'https://www.facebook.com/sharer/sharer.php?app_id=1738206246427696&amp;sdk=joey&amp;u=__${postLink}__&amp;display=popup&amp;ref=plugin&amp;src=share_button&amp;title=__${message.topic.name}__&amp;description=__${bbcode.process(message.body)}__'"> <img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
                             </li>
                             <!--Social Separator -->
-                            <li th:if="${!user.isAnonymous()}">|</li>
+                            <li th:if="${!user.isAnonymous()}" style="font-size: 33px; line-height: 24px; vertical-align: middle;">|</li>
                             <!--/Social Separator -->
                             <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>

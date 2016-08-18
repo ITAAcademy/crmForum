@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intita.forum.config.CustomAuthenticationProvider;
+import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.SessionProfanity;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
@@ -268,6 +270,8 @@ public class ForumController {
 		result.addObject("prettyTime",p);
 		result.addObject("config",configMap);
 		result.addObject("user", (IntitaUser)auth.getPrincipal());
+		result.addObject("blockSearch", true);
+		
 		return result;
 	}
 	//@author zinhcuk roman
@@ -379,16 +383,17 @@ public class ForumController {
 	public ModelAndView viewSearch(@RequestParam(name="searchvalue") String searchValue,@RequestParam(name="type", required= false) int type, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
 		ModelAndView model = new ModelAndView("topic_view");
 		Page<TopicMessage> messages = null;
+		LinkedList<ForumTreeNode> tree = null;
 		switch (type) {
 		case SearchType.CATEGORY:
 			ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 			messages = topicMessageService.searchInCategory(category, searchValue, 0);
-			model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
+			tree = forumCategoryService.getCategoriesTree(category);
 			break;
 		case SearchType.TOPIC:
 			ForumTopic topic = forumTopicService.getTopic(categoryId);
 			messages = topicMessageService.searchInTopic(topic, searchValue, 0);
-			model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
+			tree = forumCategoryService.getCategoriesTree(topic);
 			break;
 		case SearchType.CATEGORY_NAME:
 			//messages = topicMessageService.searchInCategory(category, searchValue, 0);
@@ -396,7 +401,8 @@ public class ForumController {
 		default:
 			break;
 		}
-			
+		tree.add(new ForumTreeNode("Пошук"));
+		model.addObject("categoriesTree", tree);
 			
 		int pagesCount = 0;
 		if (messages!=null){
@@ -421,6 +427,7 @@ public class ForumController {
 			}
 
 		model.addObject("canEditMap", canEditMap);
+		model.addObject("blockSearch", true);
 
 		return model;
 	}

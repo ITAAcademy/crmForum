@@ -267,3 +267,9 @@ blockquote {
  a.disabled{
     pointer-events: none;
 }
+a.redirect{
+    position: relative;
+    top: 0.3em;
+    font-size: 30px;
+
+}

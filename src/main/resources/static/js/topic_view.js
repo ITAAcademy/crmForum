@@ -108,7 +108,7 @@ function quotation(messageIndex, messageAuthorName) {
     //CKEDITOR.instances.ckeditor.setData('');
     var prefix = "<blockquote>{0}<b>{1}:</b><br/>".format(messageLink,messageAuthorName);
     var suffix = "</blockquote> " //need space to make wrap on new line;
-    var htmlCode = prefix + elm.html() + suffix;
+    var htmlCode = prefix + elm.html().replace("label_outline", '→') + suffix;
 
     CKEDITOR.instances.ckeditor.insertHtml(htmlCode);
 }
