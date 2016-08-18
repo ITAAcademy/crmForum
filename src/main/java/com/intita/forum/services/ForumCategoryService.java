@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.intita.forum.domain.ForumTreeNode;
+import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.models.Course;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumCategory.CategoryChildrensType;
@@ -263,7 +264,8 @@ public HashSet<Long> getAllSubCategoriesIds(ForumCategory category,HashSet<Long>
 public LinkedList<ForumTreeNode> getCategoriesTree(ForumTopic topic){
 	if (topic==null)return null;
 	LinkedList<ForumTreeNode> tree = getCategoriesTree(topic.getCategory());
-	ForumTreeNode topicNode = new ForumTreeNode(topic.getName(),null);//null id to distinguish categories and topic nodes
+	ForumTreeNode topicNode = new ForumTreeNode(topic.getName(), TreeNodeType.TOPIC);//null id to distinguish categories and topic nodes
+	topicNode.setId(topic.getId());
 	tree.addLast(topicNode);
 
 	return tree;

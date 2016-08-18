@@ -6,7 +6,7 @@
         <nav class="light-blue darken-4" style="max-height:64px;    overflow: hidden; box-shadow:none">
             <span class="breadcrumb-container" style="height: 40px; display: block;position: relative; padding-left: 15px;">
                         <a class="breadcrumb" th:href="@{/}"><div>Корінь</div></a>
-                            <a th:each="category,itrStat : ${categoriesTree}" data-position="bottom" data-delay="50" th:attr="data-tooltip=${category.name}" class="breadcrumb tooltipped"  th:href="${category.id}!=null ? @{/view/category/__${category.id}__} : '#!'"><div th:text="${category.name}"></div></a>
+                            <a th:each="item,itrStat : ${categoriesTree}" data-position="bottom" data-delay="50" th:attr="data-tooltip=${item.name}" class="breadcrumb tooltipped"  th:href="${item.type == T(com.intita.forum.domain.ForumTreeNode.TreeNodeType).CATEGORY} ?  @{/view/category/__${item.id}__} : ( ${item.type == T(com.intita.forum.domain.ForumTreeNode.TreeNodeType).TOPIC} ? (@{/view/topic/__${item.id}__}) : '#')" ><div th:text="${item.name}"></div></a>
                         </span>
             <!-- ===========================
                 SEARCH             

@@ -51,6 +51,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.ForumTreeNode;
+import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.domain.SessionProfanity;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
@@ -401,7 +402,7 @@ public class ForumController {
 		default:
 			break;
 		}
-		tree.add(new ForumTreeNode("Пошук"));
+		tree.add(new ForumTreeNode("Пошук", TreeNodeType.OTHER));
 		model.addObject("categoriesTree", tree);
 			
 		int pagesCount = 0;
