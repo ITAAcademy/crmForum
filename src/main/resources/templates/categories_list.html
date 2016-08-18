@@ -45,7 +45,7 @@
                                     <a th:href="@{/view/topic/__${lastTopics[status.index].id}__}" th:text="${lastTopics[status.index].name}"></a>
                                 </p>
                                 <p><b>Автор: </b>
-                                    <a th:href="@{__${config['baseUrl']}__/profile/__${lastTopics[status.index].author.id}__}" th:text="${lastTopics[status.index].author.login}"></a>
+                                    <a th:href="@{__${config['baseUrl']}__/profile/__${lastTopics[status.index].author.id}__}" th:text="${lastTopics[status.index].author.getNickName()}"></a>
                                 </p>
                             </div>
                         </th:block>

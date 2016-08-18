@@ -198,6 +198,7 @@ ul.collection {
 
 .topic-item {
     position: relative;
+    min-height: 90px;
 }
 
 .topic-item:hover {
@@ -214,6 +215,10 @@ ul.collection {
     position: absolute;
     top: calc(50% - 30px);
     color: #01579b;
+}
+.icon-container .circle.sp.img {
+    width: 60px;
+    height: 60px;
 }
 
 .topic-info {}

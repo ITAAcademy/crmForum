@@ -16,81 +16,82 @@
 
 <body>
     <div id="forumcontainer" class="container">
-        <div class="wraper topics row">
+        <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <div class="topics-table">
-                <div class="topics-table-row first-row">
-                    <div class="topics-table-cell one"> Топіки </div>
-                    <div class="topics-table-cell four"> Останній пост </div>
-                </div>
-                <div th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/topic/'+${topic.id}+'\');'" class="topics-table-row" th:each="topic,status : ${topics}">
-                    <div class="topics-table-cell one">
-                        <!--For admin -->
-                        <th:block th:if="${isAdmin}">
-                            <form method="post" th:action="@{/operations/topic/__${topic.id}__/toggle_pin}" class="inline">
-                                <button class="link_button" type="submit" th:if="${topic.pinned}"><span class="filled_star"></span></button>
-                                <button class="link_button" type="submit" th:unless="${topic.pinned}"><span class="unfilled_star"></span></button>
-                            </form>
-                        </th:block>
-                        <!--///For admin -->
-                        <!--For regular user -->
-                       
-                        <!--/For regular user -->
-                        <p>
-                        <th:block th:unless="${isAdmin}">
-                            <span class="filled_star" th:if="${topic.pinned}">
-                                
-                            </span>
-                            <span class="unfilled_star" th:unless="${topic.pinned}">
-                                
-                            </span>
-                        </th:block>
-                        <a class="topic_name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
-					  		 Назва розділу
-					  		 </a></p>
-                        <p> <a th:href="@{__${config['baseUrl']}__/profile/__${topic.author.id}__}" th:text="${topic.author.email}"/>
-                        </p>
-                    </div> 
-                    <div th:if="${lastMessages[status.index]!=null}" class="topics-table-cell four">
-                        <p>Остальне повідомлення: <span th:text="${prettyTime.format(lastMessages[status.index].date)}"></span> </p>
-                        <!--<p> <b>Останнє повідомлення: </b> </p>
-                        <span style="max-height:20px;" th:utext="${bbcode.process(lastMessages[status.index].body)}"></span>-->
-                        <p><b>Автор: </b><a th:href="@{__${config['baseUrl']}__/profile/__${lastMessages[status.index].author.id}__}" th:text="${lastMessages[status.index].author.login}"></a></p>
-                    </div>
-                    <div th:unless="${lastMessages[status.index]!=null}" class="topics-table-cell four">
-                        <p><b>Повідомлення відсутні</b></p>
-                    </div>
-                </div>
+            <div class="configure-head hide">
+                <div class=""> Розділи </div>
+                <div class=""> Останній пост </div>
             </div>
+            <ul class="collection">
+                <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/topic/'+${topic.id}+'\');'" th:each="topic,status  : ${topics}">
+                    <div class="icon-container">
+                        <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${topic.author.avatar}__} + ');'" alt=""></div>
+                    </div>
+                    <div class="col s8 m6 topic-info">
+                        <p><a class="topic-path-a" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
+                            Назва розділу
+                        </a></p>
+                        <p>
+                            <a th:href="@{__${config['baseUrl']}__/profile/__${topic.author.id}__}" th:text="${topic.author.getNickName()}"></a>
+                        </p>
+                    </div>
+                    <div th:if="${lastMessages[status.index]!=null}" class="col s4 m2 topic-statistic">
+                        <p>
+                            <a>13245</a>
+                            <b>відвідувань</b>
+                        </p>
+                        <p>
+                            <a>54545</a>
+                            <b>повідомлень</b>
+                        </p>
+                    </div>
+                    <div class="col m0 l4 topic-last">
+                        <th:block th:if="${lastMessages[status.index]!=null}">
+                            <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${lastMessages[status.index].author.avatar}__} + ');'" alt=""></div>
+                            <div class="msg">
+                                <p> <b>Останнє повідомлення: </b>
+                                    <a th:text="${prettyTime.format(lastMessages[status.index].date)}"></a>
+                                </p>
+                                <p><b>Від: </b>
+                                    <a th:href="@{__${config['baseUrl']}__/profile/__${lastMessages[status.index].author.id}__}" th:text="${lastMessages[status.index].author.getNickName()}"></a>
+                                </p>
+                            </div>
+                        </th:block>
+                        <th:block th:unless="${lastMessages[status.index]!=null}">
+                            <p style="text-align: center;"><b>Повідомлення відсутні</b></p>
+                        </th:block>
+                    </div>
+                </li>
+            </ul>
         </div>
         <div class="page-list row">
             <span th:unless="${currentCategory==null}" th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/category/__${currentCategory.id}__/'">...</span>
         </div>
     </div>
-    <div th:if="${!user.isAnonymous()}" class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-        <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
-    </div>
-    <!-- Modal Structure -->
-    <div id="modal1" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
-        <form id="addTopicForm" method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
-            <div class="modal-content">
-                <h4>Створити новий топік</h4>
-                <div class="row">
-                    <div class="input-field col s6">
-                        <input id="topic_name" name="topic_name" type="text" class="validate" />
-                        <label for="topic_name">Заголовок</label>
-                    </div>
-                    <div class="input-field col s12" style="postition: absolute; min-height: 70%;overflow: hidden">
-                        <textarea cols="20" id="ckeditor" name="topic_text" rows="10">
-                            </textarea>
-                    </div>
+</body>
+<div th:if="${!user.isAnonymous()}" class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
+</div>
+<!-- Modal Structure -->
+<div id="modal1" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
+    <form id="addTopicForm" method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
+        <div class="modal-content">
+            <h4>Створити новий топік</h4>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="topic_name" name="topic_name" type="text" class="validate" />
+                    <label for="topic_name">Заголовок</label>
+                </div>
+                <div class="input-field col s12" style="postition: absolute; min-height: 70%;overflow: hidden">
+                    <textarea cols="20" id="ckeditor" name="topic_text" rows="10">
+                    </textarea>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button id="addTopicButton" style="" class=" modal-action modal-close waves-effect waves-green btn-flat" value="Додати" th:onclick="@{'javascript:addTopic(event,\'__${#httpServletRequest.getContextPath()}__/operations/category/__${currentCategory.id}__/add_topic\')'}">Додати</button>
-            </div>
-        </form>
-    </div>
-</body>
+        </div>
+        <div class="modal-footer">
+            <button id="addTopicButton" style="" class=" modal-action modal-close waves-effect waves-green btn-flat" value="Додати" th:onclick="@{'javascript:addTopic(event,\'__${#httpServletRequest.getContextPath()}__/operations/category/__${currentCategory.id}__/add_topic\')'}">Додати</button>
+        </div>
+    </form>
+</div>
 
 </html>
