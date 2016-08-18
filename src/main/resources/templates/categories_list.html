@@ -27,6 +27,8 @@
                         <p> <span th:text="${prettyTime.format(lastTopics[status.index].date)}"></span></p>
                         <p> <b>Тема: </b> <a th:href="@{/view/topic/__${lastTopics[status.index].id}__}" th:text="${lastTopics[status.index].name}"></a> </p>
                         <p><b>Автор: </b><a th:href="@{__${config['baseUrl']}__/profile/__${lastTopics[status.index].author.id}__}" th:text="${lastTopics[status.index].author.login}"></a></p>
+                        <p><b>Кількість топіків: </b><span th:text="${statistic[status.index].topicsCount}"></span></p>
+                        <p><b>Кількість повідомлень: </b><span th:text="${statistic[status.index].messagesCount}"></span></p>
                     </div>
                     <div th:unless="${lastTopics[status.index]!=null}" class="topics-table-cell four">
                         <p><b>Топіки відсутні</b></p>

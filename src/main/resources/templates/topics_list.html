@@ -56,6 +56,7 @@
                         <!--<p> <b>Останнє повідомлення: </b> </p>
                         <span style="max-height:20px;" th:utext="${bbcode.process(lastMessages[status.index].body)}"></span>-->
                         <p><b>Автор: </b><a th:href="@{__${config['baseUrl']}__/profile/__${lastMessages[status.index].author.id}__}" th:text="${lastMessages[status.index].author.login}"></a></p>
+                        <p><b>Кількість повідомлень: </b><span th:text="${statistic[status.index].messagesCount}"></span></p>
                     </div>
                     <div th:unless="${lastMessages[status.index]!=null}" class="topics-table-cell four">
                         <p><b>Повідомлення відсутні</b></p>

@@ -272,7 +272,8 @@ public class ForumController {
 		result.addObject("config",configMap);
 		result.addObject("user", (IntitaUser)auth.getPrincipal());
 		result.addObject("blockSearch", true);
-		
+		List<ForumCategory> pageCategories = categories.getContent();
+		result.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 		return result;
 	}
 	//@author zinhcuk roman
@@ -293,7 +294,8 @@ public class ForumController {
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
 		model.addObject("user", (IntitaUser)auth.getPrincipal());
-		
+		List<ForumCategory> pageCategories = categoriesPage.getContent();
+		model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 		return model;
 	}
 	@RequestMapping(value="/test",method = RequestMethod.GET)
@@ -335,6 +337,8 @@ public class ForumController {
 				lastTopics.add(forumCategoryService.getLastTopic(c.getId()));
 			}
 			model.addObject("lastTopics",lastTopics);
+			List<ForumCategory> pageCategories = categories.getContent();
+			model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 			model.setViewName("categories_list");
 
 		}
@@ -352,6 +356,8 @@ public class ForumController {
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
 			model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
+			List<ForumTopic> pageTopics = topics.getContent();
+			model.addObject("statistic",forumTopicService.getTopicsStatistic(pageTopics));
 			model.setViewName("topics_list");
 		}
 		model.addObject("bbcode", getTextProcessorInstance(request));
