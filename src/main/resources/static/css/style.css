@@ -186,6 +186,9 @@
 .page-list ul {
     margin-top: -2px;
 }
+.page-list ul.pagination span{
+    color: white;
+}
 
 
 /************************************************************************

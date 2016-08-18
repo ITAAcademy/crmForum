@@ -464,13 +464,20 @@ if (!String.prototype.format) {
     };
 }
 
+function strip(html)
+{
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent || tmp.innerText || "";
+}
+
 function openDialog(event) {
 
     event.stopImmediatePropagation();
     event.preventDefault();
     var obj = $(event.currentTarget);
 
-    var win = window.open(obj.attr("href"), 'Dialog', 'width=600,height=400');
+    var win = window.open(strip(obj.attr("href")), 'Dialog', 'width=600,height=400');
     win.focus()
     $(window).focus(function() {
     win.close();

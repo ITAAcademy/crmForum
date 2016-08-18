@@ -68,7 +68,7 @@
                         </ul>
                     </div>
                 </li>
-                <li th:if="${ messages != null &amp;&amp; messages.getNumberOfElements() == 0}" class="card-panel row" style="position: relative; display: table; width: 100%;">
+                <li th:if="${ messages == null || messages.getNumberOfElements() == 0}" class="card-panel row" style="position: relative; display: table; width: 100%;">
                     <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
 ">Повідомлення по запиту відсутні</span>
                 </li>
