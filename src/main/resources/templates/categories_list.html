@@ -17,7 +17,7 @@
             <ul class="collection">
                 <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${categories}">
                     <div class="icon-container">
-                        <i class="medium material-icons">chat_bubble_outline</i>
+                        <i class="medium material-icons">label_outline</i>
                     </div>
                     <div class="col s8 m6 topic-info">
                         <p><a class="topic-path-a" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
