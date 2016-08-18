@@ -264,12 +264,27 @@ blockquote {
     background-color: transparent !important;
     cursor: pointer;
 }
- a.disabled{
+
+a.disabled {
     pointer-events: none;
 }
-a.redirect{
+
+a.redirect {
     position: relative;
     top: 0.3em;
     font-size: 30px;
+}
 
+@media(min-width:601px) {}
+
+@media(max-width:767px) {}
+
+@media(min-width:768px) {}
+
+@media(max-width:992px) {
+    .col.s0,
+    .col.m0,
+    .col.l0 {
+        display: none;
+    }
 }
