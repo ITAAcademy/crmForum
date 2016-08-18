@@ -60,11 +60,11 @@
                                 <a class="btn-floating fb" onclick="openDialog(event);" th:href="'https://www.facebook.com/sharer/sharer.php?app_id=1738206246427696&amp;sdk=joey&amp;u=__${postLink}__&amp;display=popup&amp;ref=plugin&amp;src=share_button&amp;title=__${message.topic.name}__&amp;description=__${bbcode.process(message.body)}__'"> <img src="http://icons.iconarchive.com/icons/sicons/flat-shadow-social/256/facebook-icon.png" /></a>
                             </li>
                             <!--Social Separator -->
-                            <li th:if="${!user.isAnonymous()}" style="font-size: 33px; line-height: 24px; vertical-align: middle;">|</li>
+                            <li th:if="${!user.isAnonymous() &amp;&amp; topic != null}" style="font-size: 33px; line-height: 24px; vertical-align: middle;">|</li>
                             <!--/Social Separator -->
                             <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
-                            <li th:if="${!user.isAnonymous()}"><a th:if="${topic != null}" class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
+                            <li th:if="${!user.isAnonymous() &amp;&amp; topic != null}"><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>
                     </div>
                 </li>
