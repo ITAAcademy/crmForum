@@ -252,7 +252,7 @@ public class ForumController {
 		}
 		//if(auth != null)
 		//addLocolization(model, forumUsersService.getForumUser(auth));
-		ModelAndView result = new ModelAndView("index");
+		ModelAndView result = new ModelAndView("categories_list");
 		IntitaUser intitaUser = (IntitaUser) auth.getPrincipal();
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
