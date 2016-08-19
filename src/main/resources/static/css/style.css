@@ -45,8 +45,9 @@
     /* max-width: 0px; */
     /* background-color: #01579b !important; */
 }
-.row.menu .tool-bar > *{
-   line-height: 40px;
+
+.row.menu .tool-bar > * {
+    line-height: 40px;
 }
 
 .row.menu .search-input {
@@ -59,6 +60,10 @@
     padding: 0px;
 }
 
+.row.menu .search-container * {
+    background-color: #01579b !important;
+}
+
 .row.menu .search-container {
     position: relative;
     /* right: 10px; */
@@ -67,7 +72,7 @@
     max-height: 40px;
     height: 40px;
     max-width: 0px;
-    /* background-color: #01579b !important; */
+    background-color: #01579b !important;
     -webkit-transition: all 1.0s;
     -moz-transition: all 1.0s;
     -o-transition: all 1.0s;
@@ -206,6 +211,7 @@
 
 .page-list {
     text-align: center;
+    margin-bottom: 0px;
 }
 
 .page-list ul {
@@ -223,30 +229,12 @@
 
 .ul-container {
     margin-top: 0px;
-    max-height: calc(100% - 90px);
+    max-height: calc(100% - 70px);
     overflow-y: scroll;
     border: none;
     margin-right: -300px;
     padding-right: 300px;
     position: relative;
-}
-
-.ul-container-sh {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: calc(100% - 90px);
-    display: block;
-    z-index: 1;
-    top: 0;
-    pointer-events: none;
-    background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 40%);
-    background: -moz-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 99%);
-    background: -o-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 99%);
-    background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 80%, rgba(255, 255, 255, 1) 100%) background-attachment: scroll;
-    background-size: 100% 10%;
-    background-position: bottom;
-    background-repeat: no-repeat;
 }
 
 .ul-container::-webkit-scrollbar {
@@ -258,7 +246,7 @@
     min-height: 90px;
 }
 
-.topic-item:hover {
+.topic-item:not(.non-click):hover {
     cursor: pointer;
     background-color: #eee;
 }

@@ -14,7 +14,6 @@
                 <div class=""> Розділи </div>
                 <div class=""> Останній пост </div>
             </div>
-            <div class="ul-container-sh"></div>
             <ul class="collection ul-container">
                 <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${categories}">
                     <div class="icon-container">
@@ -54,6 +53,10 @@
                             <p style="text-align: center;"><b>Топіки відсутні</b></p>
                         </th:block>
                     </div>
+                </li>
+                <li th:if="${categories.getNumberOfElements() == 0}" class="collection-item valign-wrapper row topic-item non-click" style="position: relative; display: table; width: 100%;">
+                    <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
+">Категорії по запиту відсутні</span>
                 </li>
             </ul>
         </div>

@@ -395,7 +395,7 @@ var menu_upate = function(event) {
         if (win.width() >= 1280) { /* ... */ }
         ellipses = $(".breadcrumb-container")[0].children;
         //
-        var sum = 80;
+        var sum = 80 + $(".tool-bar").width();
         var max = $(".breadcrumb-container").parent().width();
         var i = ellipses.length - 1;
         for (; i >= 0; i--) {
