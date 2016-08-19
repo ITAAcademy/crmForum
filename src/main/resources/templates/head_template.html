@@ -11,12 +11,15 @@
             <!-- ===========================
                 SEARCH             
             ============================ -->
-            <div th:if="${blockSearch == null}" class="search-container input-field" style="">
-                <input class="search-input" placeholder="Пошук" autocomplete="off" id="last_name" type="text" />
-                <i style="position: absolute;bottom: 0px;left: 0px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
-                <div th:if="${topic == null}" class="check-box">
-                    <input class="checkbox" type="checkbox" id="test6" /> Шукати по імені
+            <div class="tool-bar">
+                <div th:if="${blockSearch == null}" class="search-container input-field" style="">
+                    <input class="search-input" placeholder="Пошук" autocomplete="off" id="last_name" type="text" />
+                    <i style="position: absolute;bottom: 0px;left: -35px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
+                    <div th:if="${topic == null}" class="check-box">
+                        <input class="checkbox" type="checkbox" id="test6" /> Шукати по імені
+                    </div>
                 </div>
+                <i style="width: 40px; height: 40px;" class="small material-icons pointer glow">clear_all</i>
             </div>
             <img style="width: 35px;height: 35px;position: absolute;right: 5px;bottom: 2.5px;" class="circle" th:src="${user.isAnonymous()} ? @{'/images/no-name-avatar.png'} : '__${config['baseUrl']}__/images/avatars/__${user.avatar}__'" alt="" />
         </nav>

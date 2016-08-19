@@ -34,6 +34,21 @@
     line-height: 40px;
 }
 
+.row.menu .tool-bar {
+    position: absolute;
+    right: 10px;
+    margin-right: 22px !important;
+    bottom: 0px;
+    max-height: 40px;
+    height: auto;
+    display: flex;
+    /* max-width: 0px; */
+    /* background-color: #01579b !important; */
+}
+.row.menu .tool-bar > *{
+   line-height: 40px;
+}
+
 .row.menu .search-input {
     margin: 0px;
     height: 90%;
@@ -41,16 +56,18 @@
     position: absolute;
     border-radius: 10px;
     border-width: 1px;
+    padding: 0px;
 }
 
 .row.menu .search-container {
-    position: absolute;
-    right: 10px;
-    margin-right: 65px !important;
+    position: relative;
+    /* right: 10px; */
+    /* margin-right: 65px !important; */
     bottom: 0px;
     max-height: 40px;
+    height: 40px;
     max-width: 0px;
-    background-color: #01579b !important;
+    /* background-color: #01579b !important; */
     -webkit-transition: all 1.0s;
     -moz-transition: all 1.0s;
     -o-transition: all 1.0s;
@@ -69,7 +86,7 @@
     position: absolute;
     max-width: 0px;
     max-height: 0px;
-    width: 228px;
+    width: 200px;
     padding-left: 8px;
     background-color: #01579b !important;
     padding-top: 40px;
@@ -85,7 +102,7 @@
 .row.menu .search-container .check-box:hover,
 .row.menu .search-container.focused .check-box {
     max-height: 80px;
-    max-width: 228px;
+    max-width: 200px;
 }
 
 .row.menu .search-input:focus {}
@@ -178,6 +195,10 @@
     max-height: 0px;
 }
 
+.row.menu:hover .configure-head.hide-me {
+    max-height: 40px;
+}
+
 
 /****************
 * PAGINATION
@@ -222,8 +243,7 @@
     background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 40%);
     background: -moz-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 99%);
     background: -o-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 99%);
-    background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 80%, rgba(255, 255, 255, 1) 100%)
-    background-attachment: scroll;
+    background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 80%, rgba(255, 255, 255, 1) 100%) background-attachment: scroll;
     background-size: 100% 10%;
     background-position: bottom;
     background-repeat: no-repeat;

@@ -7,14 +7,18 @@ body {
     background: linear-gradient(to left, #bfd0e0, #bfd0e0);
 }*/
 
-html, body{
-     height:100%; /* needed for container min-height */
+html,
+body {
+    height: 100%;
+    /* needed for container min-height */
 }
-#forumcontainer{
+
+#forumcontainer {
     height: 1px;
     min-height: 100%;
 }
-.wraper.fixed{
+
+.wraper.fixed {
     height: 1px;
     min-height: calc(100% - 90px);
     max-height: calc(100% - 90px);
@@ -278,6 +282,14 @@ blockquote {
     height: 1.1rem;
     background-color: transparent !important;
     cursor: pointer;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.glow:hover{
+    text-shadow: 0 0 3px #fff;
 }
 
 a.disabled {
