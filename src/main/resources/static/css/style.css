@@ -195,7 +195,7 @@
     color: white;
     max-height: 40px;
     height: 40px;
-    margin: 0px;
+    margin-bottom: 0px;
     -webkit-transition: all 1.0s;
     -moz-transition: all 1.0s;
     -o-transition: all 1.0s;
