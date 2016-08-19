@@ -9,8 +9,32 @@ import org.slf4j.LoggerFactory;
 import com.intita.forum.web.ForumController;
 
 public class UserSortingCriteria {
-public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH};
-public enum SortByField {AUTHOR,DATE,TOPIC};
+public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH;
+	public static ShowItemsCriteria fromInteger(int x) {
+        switch(x) {
+        case 0:
+            return ALL;
+        case 1:
+            return ONE_DAY;
+        case 2:
+            return SEVEN_DAYS;
+        case 3:
+            return ONE_MONTH;
+        }
+        return null;
+    }};
+public enum SortByField {AUTHOR,DATE,TOPIC;
+	public static SortByField fromInteger(int x) {
+    switch(x) {
+    case 0:
+        return AUTHOR;
+    case 1:
+        return DATE;
+    case 2:
+        return TOPIC;
+    }
+    return null;
+}};
 private ShowItemsCriteria showItemsCriteria;
 private SortByField sortByField;
 private Boolean isAscend;
@@ -84,7 +108,7 @@ public Date getDateParam(){
 
 public String getSortingParamNameForClass(Class className){
 	if (sortByField==null)return null;
-	if (className.getName()=="ForumCategory")
+	if (className.getName().equals("com.intita.forum.models.ForumCategory"))
 	{
 	switch(sortByField){
 	case DATE: return "date";
@@ -94,7 +118,7 @@ public String getSortingParamNameForClass(Class className){
 		return null;
 	}
 	}
-	else if (className.getName()=="ForumTopic"){
+	else if (className.getName().equals("com.intita.forum.models.ForumTopic")){
 			switch(sortByField){
 			case DATE: return "date";
 			case TOPIC: return "name";
@@ -112,7 +136,7 @@ public String getSortingParamNameForClass(Class className){
 }
 public String getWhereParamNameForClass(Class className){
 	if (showItemsCriteria==null)return null;
-	if (className.getName()=="ForumCategory")
+	if (className.getName().equals("com.intita.forum.models.ForumCategory"))
 	{
 	switch(showItemsCriteria){
 	case ALL: return null;//we needn't any where clause in this case;
@@ -125,7 +149,7 @@ public String getWhereParamNameForClass(Class className){
 		return null;
 	}
 	}
-	else if (className.getName()=="ForumTopic"){
+	else if (className.getName().equals("com.intita.forum.models.ForumTopic")){
 		switch(showItemsCriteria){
 		case ALL: return null;//we needn't any where clause in this case;
 		case ONE_DAY:

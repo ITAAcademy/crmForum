@@ -16,7 +16,6 @@ import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.Session;
 import org.kefirsf.bb.BBProcessorFactory;
 import org.kefirsf.bb.ConfigurationFactory;
 import org.kefirsf.bb.TextProcessor;
@@ -50,6 +49,8 @@ import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.domain.SessionProfanity;
 import com.intita.forum.domain.UserSortingCriteria;
+import com.intita.forum.domain.UserSortingCriteria.ShowItemsCriteria;
+import com.intita.forum.domain.UserSortingCriteria.SortByField;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
 import com.intita.forum.models.ConfigParam;
@@ -121,11 +122,6 @@ public class ForumController {
 			bbCodeProcessor = processorFactory.create(configuration);
 		}
 		return bbCodeProcessor;
-	}
-
-
-	protected Session getCurrentHibernateSession()  {
-		return entityManager.unwrap(Session.class);
 	}
 
 	private final static ObjectMapper mapper = new ObjectMapper();
@@ -304,7 +300,8 @@ public class ForumController {
 	 * Category @RequestMapping
 	 ******************************/
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,
+			@PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
 		return viewCategoryById(redirectAttributes,search,categoryId,1,request,auth,null);
 	}
 	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, String search,  Long categoryId, 
@@ -370,6 +367,12 @@ public class ForumController {
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset, Authentication principal){
 		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset, principal,null);
+	}
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.POST)
+	public ModelAndView viewCategoryByIdMappingPost(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset, Authentication principal,@RequestParam(required = false) int where,@RequestParam(required = false) int sort,@RequestParam(required = false) Boolean order){
+		UserSortingCriteria criteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(where),SortByField.fromInteger(sort),order);
+		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset, principal,criteria);
 	}
 	/******************************
 	 * REDIRECT @RequestMapping 

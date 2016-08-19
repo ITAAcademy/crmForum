@@ -12,35 +12,30 @@
     <div class="modal-content">
      <!--Modal content -->
 
-    <form type="post" th:action="@{/view/category/__${currentCategory.id}}">
+    <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
       <div class="row">
         <div class="input-field col s6">
           <!-- -->
-       <span>Показувати повідомлення за </span>
-          <select>
-      <option value="" disabled="true" selected="true">Оберіть варіант</option>
-      <option value="1">Усі повідомлення</option>
-      <option value="2">1 день</option>
-      <option value="3">7 днів</option>
-      <option value="4">1 місяць</option>
-        <option value="5">1 рік</option>
+       <span>Показувати елементи за </span>
+          <select name="where">
+      <option value="0" selected="true">Усі повідомлення</option>
+      <option value="1">1 день</option>
+      <option value="2">7 днів</option>
+      <option value="3">1 місяць</option>
+        <option value="4">1 рік</option>
     </select>
       <label for="icon_prefix2">First Name</label>
         
 
         <span>Сортувати за</span>
-                 <select>
-      <option value="" disabled="true" selected="true">Оберіть варіант</option>
-      <option value="1">Автор</option>
-      <option value="2">Час розміщення</option>
-      <option value="3">Тема</option>
+                 <select name="sort">
+      <option value="0">Автор</option>
+      <option value="1" selected="true">Час розміщення</option>
+      <option value="2">Тема</option>
     </select>
-
-
-                <select>
-      <option value="" disabled="true" selected="true">Оберіть варіант</option>
-      <option value="1">За зростанням</option>
-      <option value="2">За спаданням</option>
+                <select name="order">
+      <option value="0">За спаданням</option>
+      <option value="1" selected="true">За зростанням</option>    
     </select>
     </div>
        <div class="input-field col s2">
@@ -63,6 +58,7 @@
             <div class="configure-head hide-me">
             Menu
             </div>
+            <div class="ul-container-sh"></div>
             <ul class="collection ul-container">
                 <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${categories}">
                     <div class="icon-container">
@@ -102,10 +98,6 @@
                             <p style="text-align: center;"><b>Топіки відсутні</b></p>
                         </th:block>
                     </div>
-                </li>
-                <li th:if="${categories.getNumberOfElements() == 0}" class="collection-item valign-wrapper row topic-item non-click" style="position: relative; display: table; width: 100%;">
-                    <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
-">Категорії по запиту відсутні</span>
                 </li>
             </ul>
         </div>

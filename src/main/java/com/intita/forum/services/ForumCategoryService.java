@@ -98,7 +98,7 @@ public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
 	}
 	return accessibleCategoriesList;
 }
-
+@Transactional
 public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
 	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
@@ -113,10 +113,12 @@ public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,Use
 			Session session = sessionFactory.getCurrentSession();
 			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
 			String sortingPart = (sortingParam!=null) ? "ORDER BY c."+sortingParam : "";
-			if (sortingPart.length()>0)sortingPart+=sortingCriteria.getOrder();
+			if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
 			String whereParam = sortingCriteria.getWhereParamNameForClass(ForumCategory.class);
-			String wherePart = (whereParam!=null) ?  "WHERE " + whereParam : "";
-			String hql = "SELECT c FROM forum_category c "+sortingPart + " "+wherePart;
+			String wherePart = "WHERE c.category.id = "+id +" ";
+			if (whereParam!=null)
+			wherePart += " AND "+ whereParam ;
+			String hql = "SELECT c FROM forum_category c " + " "+wherePart+sortingPart;
 			Query query = session.createQuery(hql);
 			if (whereParam!=null)
 			query.setParameter("dateParam", sortingCriteria.getDateParam());
@@ -340,8 +342,8 @@ public ForumTopic getLastTopic(Long categoryId){
 	HashSet<Long> categoriesIds = getAllSubCategoriesIds(category,null);
 	if (categoriesIds==null){
 		categoriesIds = new HashSet<Long>();
-		categoriesIds.add(category.getId());
 	}
+	categoriesIds.add(category.getId());
 	ForumTopic lastTopic = forumCategoryRepository.getLastTopic(categoriesIds);
 	return lastTopic;
 
