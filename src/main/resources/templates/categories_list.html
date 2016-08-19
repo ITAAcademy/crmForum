@@ -14,6 +14,7 @@
                 <div class=""> Розділи </div>
                 <div class=""> Останній пост </div>
             </div>
+            <div class="ul-container-sh"></div>
             <ul class="collection ul-container">
                 <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${categories}">
                     <div class="icon-container">

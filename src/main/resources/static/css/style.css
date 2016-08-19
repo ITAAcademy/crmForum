@@ -207,6 +207,26 @@
     border: none;
     margin-right: -300px;
     padding-right: 300px;
+    position: relative;
+}
+
+.ul-container-sh {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: calc(100% - 90px);
+    display: block;
+    z-index: 1;
+    top: 0;
+    pointer-events: none;
+    background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 40%);
+    background: -moz-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 99%);
+    background: -o-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 99%);
+    background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 80%, rgba(255, 255, 255, 1) 100%)
+    background-attachment: scroll;
+    background-size: 100% 10%;
+    background-position: bottom;
+    background-repeat: no-repeat;
 }
 
 .ul-container::-webkit-scrollbar {
