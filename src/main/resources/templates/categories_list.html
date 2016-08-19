@@ -7,12 +7,61 @@
 </head>
 
 <body>
+<!-- Sorting Modal -->
+  <div id="sorting_modal" class="modal bottom-sheet">
+    <div class="modal-content">
+     <!--Modal content -->
+
+    <form type="post" th:action="@{/view/category/__${currentCategory.id}}">
+      <div class="row">
+        <div class="input-field col s6">
+          <!-- -->
+       <span>Показувати повідомлення за </span>
+          <select>
+      <option value="" disabled="true" selected="true">Оберіть варіант</option>
+      <option value="1">Усі повідомлення</option>
+      <option value="2">1 день</option>
+      <option value="3">7 днів</option>
+      <option value="4">1 місяць</option>
+        <option value="5">1 рік</option>
+    </select>
+      <label for="icon_prefix2">First Name</label>
+        
+
+        <span>Сортувати за</span>
+                 <select>
+      <option value="" disabled="true" selected="true">Оберіть варіант</option>
+      <option value="1">Автор</option>
+      <option value="2">Час розміщення</option>
+      <option value="3">Тема</option>
+    </select>
+
+
+                <select>
+      <option value="" disabled="true" selected="true">Оберіть варіант</option>
+      <option value="1">За зростанням</option>
+      <option value="2">За спаданням</option>
+    </select>
+    </div>
+       <div class="input-field col s2">
+        <input type="submit" class="waves-effect waves-light btn">button</input>   
+       </div>
+           <!-- -->
+      
+      </div>
+    </form>
+     <!--/Modal content -->
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
+  <!-- /Sorting Modal -->
     <div id="forumcontainer" class="container">
         <div class="wraper fixed row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <div class="configure-head hide-me">
-                <div class=""> Розділи </div>
-                <div class=""> Останній пост </div>
+            Menu
             </div>
             <div class="ul-container-sh"></div>
             <ul class="collection ul-container">

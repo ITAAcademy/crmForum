@@ -1,6 +1,5 @@
 package com.intita.forum.services;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -9,6 +8,9 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.intita.forum.domain.TreeNodeStatistic;
 import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
+import com.intita.forum.domain.TreeNodeStatistic;
+import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.models.Course;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumCategory.CategoryChildrensType;
@@ -59,6 +62,8 @@ public class ForumCategoryService {
 	
 	@Value("${forum.categoriesOrTopicsCountPerPage}")
 	private int topicsCountForPage;
+	@Autowired
+	private SessionFactory sessionFactory;
 	
 
 public Page<ForumCategory> getAllCategories(int page){
@@ -94,7 +99,7 @@ public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
 	return accessibleCategoriesList;
 }
 
-public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user){
+public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
 	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
 	Page<ForumCategory> result;
@@ -102,13 +107,30 @@ public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user){
 	case ChildrenTopic: result = null;
 	break;
 	case ChildrenCategory:
+		if (sortingCriteria==null)
 		result = forumCategoryRepository.findByCategory(rootCategory, new PageRequest(page,categoriesCountForPage));
+		else{
+			Session session = sessionFactory.getCurrentSession();
+			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
+			String sortingPart = (sortingParam!=null) ? "ORDER BY c."+sortingParam : "";
+			if (sortingPart.length()>0)sortingPart+=sortingCriteria.getOrder();
+			String whereParam = sortingCriteria.getWhereParamNameForClass(ForumCategory.class);
+			String wherePart = (whereParam!=null) ?  "WHERE " + whereParam : "";
+			String hql = "SELECT c FROM forum_category c "+sortingPart + " "+wherePart;
+			Query query = session.createQuery(hql);
+			if (whereParam!=null)
+			query.setParameter("dateParam", sortingCriteria.getDateParam());
+			List<ForumCategory> resultList = query.list();
+			result =  CustomDataConverters.listToPage(resultList,page,categoriesCountForPage);
+		}
+		
 		break;
 	default:
 		result = null;
 	}
 	return filterNotAccesibleCategories(result,user,page);
 }
+
 public ArrayList<ForumCategory> getSubCategories(Long id){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
 	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();

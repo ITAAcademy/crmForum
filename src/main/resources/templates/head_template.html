@@ -20,6 +20,7 @@
                     </div>
                 </div>
                 <i id="sortbtn" style="width: 40px; height: 40px;" class="small material-icons pointer glow">clear_all</i>
+                <a class="modal-trigger" href="#sorting_modal"><i class="small material-icons pointer glow">sort_by_alpha</i></a>
             </div>
             <img style="width: 35px;height: 35px;position: absolute;right: 5px;bottom: 2.5px;" class="circle" th:src="${user.isAnonymous()} ? @{'/images/no-name-avatar.png'} : '__${config['baseUrl']}__/images/avatars/__${user.avatar}__'" alt="" />
         </nav>

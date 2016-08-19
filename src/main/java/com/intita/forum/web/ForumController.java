@@ -1,7 +1,5 @@
 package com.intita.forum.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -32,7 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -53,6 +49,7 @@ import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.domain.SessionProfanity;
+import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
 import com.intita.forum.models.ConfigParam;
@@ -307,7 +304,11 @@ public class ForumController {
 	 * Category @RequestMapping
 	 ******************************/
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+		return viewCategoryById(redirectAttributes,search,categoryId,1,request,auth,null);
+	}
+	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, String search,  Long categoryId, 
+			 int page, HttpServletRequest request, Authentication auth,UserSortingCriteria sortingCriteria){
 		if(search != null)
 		{
 			redirectAttributes.addAttribute("searchvalue", search);
@@ -327,7 +328,7 @@ public class ForumController {
 		
 		if (category.isCategoriesContainer())
 		{
-			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1,user);
+			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1,user,sortingCriteria);
 			int pagesCount = categories.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
 			model.addObject("pagesCount",pagesCount);
@@ -367,8 +368,8 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
-	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset, Authentication principal){
-		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset, principal);
+	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset, Authentication principal){
+		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset, principal,null);
 	}
 	/******************************
 	 * REDIRECT @RequestMapping 
