@@ -19,13 +19,13 @@
                         <input class="checkbox" type="checkbox" id="test6" /> Шукати по імені
                     </div>
                 </div>
-                <i style="width: 40px; height: 40px;" class="small material-icons pointer glow">clear_all</i>
+                <i id="sortbtn" style="width: 40px; height: 40px;" class="small material-icons pointer glow">clear_all</i>
             </div>
             <img style="width: 35px;height: 35px;position: absolute;right: 5px;bottom: 2.5px;" class="circle" th:src="${user.isAnonymous()} ? @{'/images/no-name-avatar.png'} : '__${config['baseUrl']}__/images/avatars/__${user.avatar}__'" alt="" />
         </nav>
     </div>
 </div>
-<script>
+<script th:inline="javascript">
 $('.search-container  input')
     .focus(function() {
         $('.search-container').addClass('focused');
@@ -40,5 +40,32 @@ $('.search-container  input')
             debugger;
             window.location.replace(window.location.pathname + "?search=" + $(e.target).val());
         }
+    });
+
+$('#sortbtn')
+    .click(function(e) {
+        $('.configure-head').removeClass('hide-me');
+        e.stopPropagation();
+    });
+
+var timerToolBar = null;
+$('body')
+    .click(function(e) {
+        var container = $(".configure-head");
+
+        if (!container.is(e.target)) // if the target of the click isn't the container...
+            if (container.has(e.target).length === 0) // ... nor a descendant of the container
+            {
+                timerToolBar = setTimeout(function() {
+                    container.addClass('hide-me');
+                    timerToolBar = null;
+                }, 2000);
+                return;
+            }
+        if (timerToolBar != null)
+        {
+            clearTimeout(timerToolBar);
+        }
+
     });
 </script>
