@@ -14,7 +14,7 @@
             <div class="tool-bar">
                 <div th:if="${blockSearch == null}" class="search-container input-field" style="">
                     <input class="search-input" placeholder="Пошук" autocomplete="off" id="last_name" type="text" />
-                    <i style="position: absolute;bottom: 0px;left: -35px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
+                    <i style="position: absolute;bottom: 0px;left: -30px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
                     <div th:if="${topic == null}" class="check-box">
                         <input class="checkbox" type="checkbox" id="test6" /> Шукати по імені
                     </div>
@@ -50,10 +50,9 @@ $('#sortbtn')
     });
 
 var timerToolBar = null;
-$('body')
-    .click(function(e) {
-        var container = $(".configure-head");
-
+var hiddenFunction = function(e) {
+    var container = $(".configure-head");
+    if (!container.hasClass("hide-me"))
         if (!container.is(e.target)) // if the target of the click isn't the container...
             if (container.has(e.target).length === 0) // ... nor a descendant of the container
             {
@@ -63,10 +62,12 @@ $('body')
                 }, 2000);
                 return;
             }
-        if (timerToolBar != null)
-        {
-            clearTimeout(timerToolBar);
-        }
+    if (timerToolBar != null) {
+        clearTimeout(timerToolBar);
+    }
 
-    });
+}
+
+$('body')
+    .mousedown(hiddenFunction).on("tap", hiddenFunction);
 </script>

@@ -10,6 +10,7 @@ body {
 html,
 body {
     height: 100%;
+    width: 100%;
     /* needed for container min-height */
 }
 
@@ -20,8 +21,8 @@ body {
 
 .wraper.fixed {
     height: 1px;
-    min-height: calc(100% - 90px);
-    max-height: calc(100% - 90px);
+    min-height: calc(100% - 70px);
+    max-height: calc(100% - 70px);
     overflow: hidden;
     background-color: white;
 }
@@ -288,7 +289,7 @@ blockquote {
     cursor: pointer;
 }
 
-.glow:hover{
+.glow:hover {
     text-shadow: 0 0 3px #fff;
 }
 
@@ -309,6 +310,10 @@ a.redirect {
 @media(min-width:768px) {}
 
 @media(max-width:992px) {
+    #forumcontainer {
+        width: calc(100% - 1.5rem);
+        margin-left: 0.75rem;
+    }
     .col.s0,
     .col.m0,
     .col.l0 {
