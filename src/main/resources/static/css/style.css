@@ -104,9 +104,13 @@
     transition: all 1.0s;
 }
 
+.row.menu .search-container .check-box div {
+    white-space: nowrap;
+}
+
 .row.menu .search-container .check-box:hover,
 .row.menu .search-container.focused .check-box {
-    max-height: 80px;
+    max-height: initial;
     max-width: 200px;
 }
 
@@ -190,18 +194,40 @@
     background-color: #01579b;
     color: white;
     max-height: 40px;
-    -webkit-transition: max-height 1.0s;
-    -moz-transition: max-height 1.0s;
-    -o-transition: max-height 1.0s;
-    transition: max-height 1.0s;
+    height: 40px;
+    margin: 0px;
+    -webkit-transition: all 1.0s;
+    -moz-transition: all 1.0s;
+    -o-transition: all 1.0s;
+    transition: all 1.0s;
 }
 
 .configure-head.hide-me {
     max-height: 0px;
 }
+.configure-head * {
+    max-height: 9999px;
+    max-width: 9999px;
+    font-size: initial;
+}
+
+.configure-head.hide-me * {
+    max-height: 0px !important;
+    max-width: 0px !important;
+    font-size: 0px !important;
+}
 
 .row.menu:hover .configure-head.hide-me {
     max-height: 40px;
+}
+
+.configure-head .input-field {
+    margin-top: 0px;
+}
+
+.configure-head .input-field input:not(.hide-me) {
+    max-height: 30px;
+    margin: 0px;
 }
 
 

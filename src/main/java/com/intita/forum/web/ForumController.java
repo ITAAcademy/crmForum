@@ -324,7 +324,7 @@ public class ForumController {
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
 		model.addObject("config",configMap);
-		
+
 		if (category.isCategoriesContainer())
 		{
 			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1,user);
@@ -351,7 +351,7 @@ public class ForumController {
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
 			}
-			
+
 			model.addObject("lastMessages",lastMessages);
 			model.addObject("pagesCount",pagesCount);
 			model.addObject("topics",topics);
@@ -387,30 +387,35 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/search/{categoryId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewSearch(@RequestParam(name="searchvalue") String searchValue,@RequestParam(name="type", required= false) int type, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+	public ModelAndView viewSearch(@RequestParam(name="searchvalue") String searchValue,@RequestParam(name="type") int type, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
 		ModelAndView model = new ModelAndView("topic_view");
 		Page<TopicMessage> messages = null;
 		LinkedList<ForumTreeNode> tree = null;
-		switch (type) {
-		case SearchType.CATEGORY:
+		String t = request.getQueryString();
+
+		if((SearchType.CATEGORY & type) == 1 || (SearchType.CATEGORY_NAME & type) == 1 || !(SearchType.TOPIC == type))
+		{
 			ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-			messages = topicMessageService.searchInCategory(category, searchValue, 0);
+			if((SearchType.CATEGORY_NAME | SearchType.CATEGORY) == type)
+			{
+				messages = topicMessageService.searchByTopicNameAndBodyAndAsAndInCategory(searchValue, category, 0);
+			}
+			else
+				if(SearchType.CATEGORY == type)
+					messages = topicMessageService.searchInCategory(category, searchValue, 0);
+				else
+					if(SearchType.CATEGORY_NAME ==  type)
+						messages = topicMessageService.searchByTopicNameAsAndInCategory(searchValue, category, 0);
 			tree = forumCategoryService.getCategoriesTree(category);
-			break;
-		case SearchType.TOPIC:
+		}else
+		{
 			ForumTopic topic = forumTopicService.getTopic(categoryId);
 			messages = topicMessageService.searchInTopic(topic, searchValue, 0);
 			tree = forumCategoryService.getCategoriesTree(topic);
-			break;
-		case SearchType.CATEGORY_NAME:
-			//messages = topicMessageService.searchInCategory(category, searchValue, 0);
-			break;
-		default:
-			break;
 		}
 		tree.add(new ForumTreeNode("Пошук", TreeNodeType.OTHER));
 		model.addObject("categoriesTree", tree);
-			
+
 		int pagesCount = 0;
 		if (messages!=null){
 			model.addObject("messages",messages);
@@ -435,11 +440,13 @@ public class ForumController {
 
 		model.addObject("canEditMap", canEditMap);
 		model.addObject("blockSearch", true);
+		model.addObject("paginationLink", "/view/search/" + categoryId + "/");
+
 
 		return model;
 	}
 
-	
+
 
 	/*******************************
 	 * TOPIC @RequestMapping
@@ -481,6 +488,7 @@ public class ForumController {
 			}
 
 		model.addObject("canEditMap", canEditMap);
+		model.addObject("paginationLink", "/view/topic/" + topicId + "/");
 
 		return model;
 	}
@@ -500,9 +508,9 @@ public class ForumController {
 		int pages = topicMessageService.getPagesCountByTopicIdAndMessageid(topic.getId(), post.getDate());
 		Long topicId = topic.getId();
 		//ModelAndView result = viewTopicById(topicId, pages, request, auth);
-		  return "redirect:/view/topic/"+topicId+"/"+pages+"#msg"+post.getId();
+		return "redirect:/view/topic/"+topicId+"/"+pages+"#msg"+post.getId();
 	}
-	
+
 
 	@ResponseBody
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)

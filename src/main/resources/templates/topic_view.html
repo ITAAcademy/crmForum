@@ -84,8 +84,8 @@
                 </button>
             </form>
         </div>
-        <div th:if="${topic != null}" class="page-list row">
-            <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/topic/__${topic.id}__/'">...</span>
+        <div class="page-list row">
+            <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link=${paginationLink}">...</span>
         </div>
     </div>
     <div class="fixed-action-btn  back-to-top" style="bottom: 45px; right: 24px;">

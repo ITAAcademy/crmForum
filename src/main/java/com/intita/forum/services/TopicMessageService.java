@@ -203,6 +203,29 @@ public class TopicMessageService {
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		return topicMessageRepository.findByBodyLikeAndTopicOrderByDateDesc("%" + search + "%", topic, pageable);
 	}
+	
+	@Transactional
+	public Page<TopicMessage> searchByTopicNameAndBodyAndAsAndInCategory (String search,ForumCategory category, int page){
+		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
+		ArrayList<ForumTopic> array = new ArrayList<>();
+		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(category);
+		if(list != null)
+			array.addAll(list);
+		else
+			return null;
+		return topicMessageRepository.findByBodyLikeOrTopicNameLikeAndTopicInOrderByDateDesc("%" + search + "%", "%" + search + "%", array, pageable);
+	}
+	@Transactional
+	public Page<TopicMessage> searchByTopicNameAsAndInCategory (String search,ForumCategory category, int page){
+		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
+		ArrayList<ForumTopic> array = new ArrayList<>();
+		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(category);
+		if(list != null)
+			array.addAll(list);
+		else
+			return null;
+		return topicMessageRepository.findByTopicNameLikeAndTopicInOrderByDateDesc("%" + search + "%", array, pageable);
+	}
 
 	@Transactional
 	public String getUrl(Long id){

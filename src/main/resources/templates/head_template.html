@@ -9,14 +9,19 @@
                             <a th:each="item,itrStat : ${categoriesTree}" data-position="bottom" data-delay="50" th:attr="data-tooltip=${item.name}" class="breadcrumb tooltipped"  th:href="${item.type == T(com.intita.forum.domain.ForumTreeNode.TreeNodeType).CATEGORY} ?  @{/view/category/__${item.id}__} : ( ${item.type == T(com.intita.forum.domain.ForumTreeNode.TreeNodeType).TOPIC} ? (@{/view/topic/__${item.id}__}) : '#')" ><div th:text="${item.name}"></div></a>
                         </span>
             <!-- ===========================
-                SEARCH             
+                SEARCH  BAR           
             ============================ -->
             <div class="tool-bar">
                 <div th:if="${blockSearch == null}" class="search-container input-field" style="">
                     <input class="search-input" placeholder="Пошук" autocomplete="off" id="last_name" type="text" />
                     <i style="position: absolute;bottom: 0px;left: -30px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
                     <div th:if="${topic == null}" class="check-box">
-                        <input class="checkbox" type="checkbox" id="test6" /> Шукати по імені
+                        <div>
+                            <input class="checkbox" type="checkbox" id="findbybody" checked="true" /> Шукати в тілі
+                        </div>
+                        <div>
+                            <input class="checkbox" type="checkbox" id="findbyname" /> Шукати по імені
+                        </div>
                     </div>
                 </div>
                 <i id="sortbtn" style="width: 40px; height: 40px;" class="small material-icons pointer glow">clear_all</i>
@@ -26,6 +31,10 @@
     </div>
 </div>
 <script th:inline="javascript">
+/************************
+ * SEARCH BAR FUNCTIONS
+ ************************/
+// <![CDATA[
 $('.search-container  input')
     .focus(function() {
         $('.search-container').addClass('focused');
@@ -38,16 +47,45 @@ $('.search-container  input')
         if (e.which == 13) {
             // window.location.replace("/view/search/category//1".format());
             debugger;
-            window.location.replace(window.location.pathname + "?search=" + $(e.target).val());
+
+            var id = 0;
+            var type = 0;
+
+
+            if ((id = urlPathValue("category")) != null) {
+                type = 1;
+            } else
+            if ((id = urlPathValue("topic")) != null) {
+                type = 2;
+            }
+            var mainCh = $('#findbybody');
+            if (mainCh.prop("checked") != undefined && !$('#findbybody').prop("checked")) {
+                type = 0;
+            }
+            if ($('#findbyname').prop("checked"))
+                type |= 4;
+
+            var link = URL_PREFIX + "view/search/" + id + "/1?type=" + type + "&searchvalue=" + $(e.target).val();
+
+
+            window.location.href = link;
+            //window.location.replace(window.location.pathname + "?search=" + $(e.target).val());
         }
     });
+// ]]>
 
+/************************
+ * SORT BUTTON
+ ************************/
 $('#sortbtn')
     .click(function(e) {
         $('.configure-head').removeClass('hide-me');
         e.stopPropagation();
     });
 
+/************************
+ * TOOL BAR FUNCTIONS
+ ************************/
 var timerToolBar = null;
 var hiddenFunction = function(e) {
     var container = $(".configure-head");

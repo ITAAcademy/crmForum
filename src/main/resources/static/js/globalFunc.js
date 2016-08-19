@@ -359,6 +359,53 @@ jQuery.fn.hasOverflown = function() {
     return res;
 }
 
+/*************
+ * URL PARSE
+ *************/
+function getRequestParam(name) {
+    if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
+        return decodeURIComponent(name[1]);
+}
+
+function getUrlQueryString() {
+    return window.location.href.slice(window.location.href.indexOf('?') + 1);
+}
+
+function getUrlPath() {
+    if(window.location.href.indexOf('?') == -1)
+        return window.location.href;
+    return window.location.href.slice(0, window.location.href.indexOf('?') - 1);
+}
+
+function urlPathContain(part) {
+    if (getUrlPath().indexOf('/' + part + '/') == -1)
+        return false;
+    return true;
+}
+function urlPathValue(name) {
+    var index = getUrlPath().indexOf('/' + name + '/');
+    if (index == -1)
+        return null;
+    var res = getUrlPath().slice(index + 2 + name.length);
+    if(res.indexOf("/") != -1)
+        res = res.slice(0, res.indexOf("/") - 1);
+    return res;
+}
+
+function getRequestVars() {
+    var vars = [],
+        hash;
+    var hashes = getUrlQueryString().split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+/*************
+ * BREADSCRUMB
+ *************/
 function autoDisableToolTips($element) {
     /* var $c = $element.find('div')
          .clone()
@@ -378,12 +425,6 @@ function autoDisableToolTips($element) {
     else
         $element.removeClass("tooltipped");
 }
-
-function getRequestParam(name) {
-    if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
-        return decodeURIComponent(name[1]);
-}
-
 var menu_upate = function(event) {
     clearTimeout(globalTimeOut);
     globalTimeOut = setTimeout(function() {
@@ -413,9 +454,8 @@ var menu_upate = function(event) {
         }
         $('.tooltipped').tooltip();
     }, 500)
-
-
 }
+
 var myHilitor;
 $(window).on('resize', menu_upate);
 $(document).ready(function() {
@@ -426,7 +466,6 @@ $(document).ready(function() {
     }
 
 });
-
 
 function onDivLinkClick(event, url) {
     var isLink = event.target.nodeName == "a" || event.target.nodeName == "A";
@@ -439,6 +478,7 @@ function onDivLinkClick(event, url) {
 function GoToUrl(url) {
     window.location.href = url;
 }
+
 menu_upate();
 
 function submitForm(formId, url, successCallback, failCallback) {
@@ -464,11 +504,11 @@ if (!String.prototype.format) {
     };
 }
 
-function strip(html)
-{
-   var tmp = document.createElement("DIV");
-   tmp.innerHTML = html;
-   return tmp.textContent || tmp.innerText || "";
+//cleen text from HTML tag
+function strip(html) {
+    var tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
 }
 
 function openDialog(event) {
@@ -480,9 +520,7 @@ function openDialog(event) {
     var win = window.open(strip(obj.attr("href")), 'Dialog', 'width=600,height=400');
     win.focus()
     $(window).focus(function() {
-    win.close();
-})
-    
-
+        win.close();
+    })
     return false;
 }
