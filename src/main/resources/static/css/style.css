@@ -211,20 +211,47 @@
 
 .tool-bar-wraper {
     position: absolute;
-    width: 100%;
+    width: calc(100% - 80px);
+    margin-left: 40px;
     text-align-last: center;
     text-align: justify;
 }
 
 .configure-head.hide-me * {
-    max-height: 0px !important;
+    /*max-height: 0px !important;
     max-width: 0px !important;
     font-size: 0px !important;
-    min-height: 0px !important;
+    min-height: 0px !important;*/
 }
 
 .row.menu:hover .configure-head.hide-me {
     max-height: 40px;
+}
+
+.sort-enter-bnt {
+    position: absolute;
+    top: 2px;
+}
+
+.sort-enter-bnt .waves-effect {
+    position: static;
+}
+.sort-enter-bnt .btn{
+    max-width: 60px;
+    padding: 2px;
+    background: none;
+}
+.sort-enter-bnt .btn i {
+    margin: 0px;
+    font-size: 25px;
+}
+
+.sort-enter-bnt.left {
+    left: 0px;
+}
+
+.sort-enter-bnt.right {
+    right: 0px;
 }
 
 
@@ -237,7 +264,7 @@
     margin-left: 6px;
     margin-right: 6px;
     position: relative;
-    max-width: 170px;
+    max-width: 200px;
     display: inline-block;
 }
 
