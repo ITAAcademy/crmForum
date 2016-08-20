@@ -8,17 +8,35 @@
 
 <body>
     <div id="forumcontainer" class="container">
-        <div class="wraper fixed row">
+        <div class="wraper fixed">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <div class="configure-head hide-me row">
-             <!--   <div class="input-field col s12">
-                    <select>
-                        <option value="" disabled="" selected = "">Choose your option</option>
-                        <option value="1">Option 1</option>
-                        <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
-                    </select>
-                </div> -->
+            <div class="configure-head hide-me">
+                <div class="tool-bar-wraper">
+                    <div class="input-field tool-bar-select">
+                        <select>
+                            
+                                <option value="1">Option 1</option>
+                            
+                            <optgroup label="team 1">
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                            </optgroup>
+                        </select>
+                        <label>Сортувати по імені</label>
+                    </div>
+                      <div class="input-field tool-bar-select">
+                        <select>
+                            
+                                <option value="1">Option 1</option>
+                            
+                            <optgroup label="team 1">
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                            </optgroup>
+                        </select>
+                        <label>Сортувати по імені</label>
+                    </div>
+                </div>
             </div>
             <ul class="collection ul-container">
                 <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${categories}">

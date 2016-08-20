@@ -191,6 +191,7 @@
 ****************/
 
 .configure-head {
+    position: relative;
     background-color: #01579b;
     color: white;
     max-height: 40px;
@@ -205,29 +206,116 @@
 .configure-head.hide-me {
     max-height: 0px;
 }
-.configure-head * {
-    max-height: 9999px;
-    max-width: 9999px;
-    font-size: initial;
+
+.configure-head * {}
+
+.tool-bar-wraper {
+    position: absolute;
+    width: 100%;
+    text-align-last: center;
+    text-align: justify;
 }
 
 .configure-head.hide-me * {
     max-height: 0px !important;
     max-width: 0px !important;
     font-size: 0px !important;
+    min-height: 0px !important;
 }
 
 .row.menu:hover .configure-head.hide-me {
     max-height: 40px;
 }
 
-.configure-head .input-field {
-    margin-top: 0px;
+
+/******************
+* CUSTOM SELECT
+******************/
+
+.input-field.tool-bar-select {
+    margin-top: 15px;
+    margin-left: 6px;
+    margin-right: 6px;
+    position: relative;
+    max-width: 170px;
+    display: inline-block;
 }
 
-.configure-head .input-field input:not(.hide-me) {
-    max-height: 30px;
+.tool-bar-select .select-wrapper span.caret {
+    top: 25%;
+    color: white;
+}
+
+.tool-bar-select .dropdown-content li>span {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    color: white;
+}
+
+.tool-bar-select .dropdown-content li.active {
+    background-color: #1268ac;
+}
+
+.tool-bar-select .dropdown-content li.active>span {
+    color: #333;
+}
+
+.tool-bar-select .dropdown-content li:hover:not(.optgroup) {
+    background-color: #1268ac;
+}
+
+.tool-bar-select .dropdown-content li.optgroup {
+    cursor: default;
+}
+
+.tool-bar-select .dropdown-content li.disabled {
+    background-color: #00468a;
+}
+
+.tool-bar-select .dropdown-content li {
+    line-height: initial;
+    min-height: auto;
+    background-color: #01579b;
+}
+
+.input-field.tool-bar-select:after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: -14px;
+    bottom: 0px;
+    width: 2px;
+    background-image: -webkit-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background-image: -moz-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background-image: -ms-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background-image: -o-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+}
+
+.input-field.tool-bar-select:nth-child(1):before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: -14px;
+    bottom: 0px;
+    width: 2px;
+    background-image: -webkit-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background-image: -moz-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background-image: -ms-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background-image: -o-linear-gradient(bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+}
+
+.input-field.tool-bar-select input {
+    max-height: 27px;
     margin: 0px;
+    border-top: 1px white solid;
+    opacity: 0.8;
+    text-align: center;
+}
+
+.input-field.tool-bar-select label {
+    color: white;
+    font-size: 14px;
+    line-height: 12px;
 }
 
 
