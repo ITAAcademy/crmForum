@@ -2,14 +2,18 @@ package com.intita.forum.domain;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.intita.forum.util.CookieHelper;
 import com.intita.forum.web.ForumController;
 
 public class UserSortingCriteria {
-public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH;
+public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH,ONE_YEAR;
 	public static ShowItemsCriteria fromInteger(int x) {
         switch(x) {
         case 0:
@@ -20,6 +24,8 @@ public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH;
             return SEVEN_DAYS;
         case 3:
             return ONE_MONTH;
+        case 4:
+        	return ONE_YEAR;
         }
         return null;
     }};
@@ -102,6 +108,9 @@ public Date getDateParam(){
 	case ONE_MONTH:
 		Date dateBefore30Days = DateUtils.addDays(new Date(),-30);
 		return dateBefore30Days;
+	case ONE_YEAR:
+		Date dateBefore365Days = DateUtils.addDays(new Date(),-365);
+		return dateBefore365Days;
 	}
 	return null;
 }
@@ -122,7 +131,7 @@ public String getSortingParamNameForClass(Class className){
 			switch(sortByField){
 			case DATE: return "date";
 			case TOPIC: return "name";
-			case AUTHOR: return "author";
+			case AUTHOR: return "author.firstName";
 			default:
 				log.error("passed uncorrect field for query sorting !");
 				return null;
@@ -166,6 +175,36 @@ public String getWhereParamNameForClass(Class className){
 		return null;
 	}
 	
+}
+public void saveToCookie(Class classObj,HttpServletResponse response){
+		String className = classObj.getSimpleName();
+		if (className!="ForumCategory" && className!="ForumTopic" ){
+			log.error("class must be ForumCategory or ForumTopic");
+			return;
+		}
+		CookieHelper.saveCookie(className+"sorting_where_condition", showItemsCriteria.toString(), 1000, response);
+		CookieHelper.saveCookie(className+"sorting_condition", sortByField.toString(), 1000, response);
+		CookieHelper.saveCookie(className+"sorting_order_is_ascend", isAscend.toString(), 1000, response);		
+}
+public static UserSortingCriteria loadFromCookie(Class classObj,HttpServletRequest request){
+	String className = classObj.getSimpleName();
+	if (className!="ForumCategory" && className!="ForumTopic" ){
+		log.error("class must be ForumCategory or ForumTopic");
+		return null;
+	}
+	UserSortingCriteria userCriteria = new UserSortingCriteria();
+	String whereCondition = CookieHelper.getCookieValue(className+"sorting_where_condition", request);
+	if (whereCondition!=null && whereCondition.length()>0)
+		userCriteria.setShowItemsCriteria(ShowItemsCriteria.valueOf(whereCondition));
+	String sortingCondition = CookieHelper.getCookieValue(className+"sorting_condition", request);
+	if (sortingCondition!=null && sortingCondition.length()>0)
+		userCriteria.setSortByField(SortByField.valueOf(sortingCondition));
+	String sortingOrderIsAscendString = CookieHelper.getCookieValue(className+"sorting_order_is_ascend", request);
+	if (sortingOrderIsAscendString!=null && sortingOrderIsAscendString.length()>0){
+		if (sortingOrderIsAscendString=="true")userCriteria.setAscend(true);
+		else userCriteria.setAscend(false);
+	}
+	return userCriteria;
 }
 
 }

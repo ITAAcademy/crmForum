@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.TreeNodeStatistic;
+import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
@@ -34,19 +38,42 @@ public class ForumTopicService {
 	@Autowired TopicMessageService topicMessageService;
 	@Autowired IntitaUserService intitaUserService;
 	@Autowired private CustomAuthenticationProvider authenticationProvider;
+	@Autowired
+	private SessionFactory sessionFactory;
 	
 	@Transactional
 	public Page<ForumTopic> getAllTopics(Long categoryId,int page){
 		return forumTopicRepository.findByCategoryId(categoryId,new PageRequest(page,topicsCountForPage)); 
 	}
 	@Transactional
-	public Page<ForumTopic> getAllTopicsSortedByPin(Long categoryId,int page){
-		  List<ForumTopic> unPinnedTopics = forumTopicRepository.findByCateogryIdAndSortByPin(categoryId,false);
+	public Page<ForumTopic> getAllTopicsSortedByPin(Long categoryId,int page,UserSortingCriteria sortingCriteria){
+		 if (sortingCriteria==null){
+		List<ForumTopic> unPinnedTopics = forumTopicRepository.findByCateogryIdAndSortByPin(categoryId,false);
 		  List<ForumTopic> pinnedTopics = forumTopicRepository.findByCateogryIdAndSortByPin(categoryId,true);
 		  List<ForumTopic> allTopics = new ArrayList<ForumTopic>();
 		  allTopics.addAll(pinnedTopics);
 		  allTopics.addAll(unPinnedTopics);		 
 		 return CustomDataConverters.listToPage(allTopics, page, topicsCountForPage);
+		 }
+		 else{
+			 {
+					Session session = sessionFactory.getCurrentSession();
+					String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumTopic.class);
+					String sortingPart = (sortingParam!=null) ? " ORDER BY t."+sortingParam : "";
+					if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
+					String whereParam = sortingCriteria.getWhereParamNameForClass(ForumTopic.class);
+					String wherePart = "WHERE t.category.id = "+categoryId +" ";
+					if (whereParam!=null)
+					wherePart += " AND "+ whereParam ;
+					String hql = "SELECT t FROM forum_topic t " + " "+wherePart+sortingPart;
+					Query query = session.createQuery(hql);
+					if (whereParam!=null)
+					query.setParameter("dateParam", sortingCriteria.getDateParam());
+					List<ForumTopic> resultList = query.list();
+					Page<ForumTopic> result = CustomDataConverters.listToPage(resultList,page,topicsCountForPage);
+					return  result;
+				}
+		 }
 	}
 	@Transactional
 	public ForumTopic getTopic(Long topicId){

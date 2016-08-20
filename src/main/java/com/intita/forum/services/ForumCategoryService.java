@@ -112,7 +112,7 @@ public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,Use
 		else{
 			Session session = sessionFactory.getCurrentSession();
 			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
-			String sortingPart = (sortingParam!=null) ? "ORDER BY c."+sortingParam : "";
+			String sortingPart = (sortingParam!=null) ? " ORDER BY c."+sortingParam : "";
 			if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
 			String whereParam = sortingCriteria.getWhereParamNameForClass(ForumCategory.class);
 			String wherePart = "WHERE c.category.id = "+id +" ";
