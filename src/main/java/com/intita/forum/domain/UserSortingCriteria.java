@@ -10,13 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.intita.forum.models.ForumCategory;
+import com.intita.forum.models.TopicMessage;
 import com.intita.forum.util.CookieHelper;
 import com.intita.forum.web.ForumController;
 
 public class UserSortingCriteria {
-	private String forumCategoryClassSimpleName = ForumCategory.class.getSimpleName();
-	private String forumTopicClassSimpleName = ForumCategory.class.getSimpleName();
-	private String topicMessageClassSimpleName = ForumCategory.class.getSimpleName();
+	private static String forumCategoryClassSimpleName = ForumCategory.class.getSimpleName();
+	private static String forumTopicClassSimpleName = ForumCategory.class.getSimpleName();
+	private static String topicMessageClassSimpleName = TopicMessage.class.getSimpleName();
 public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH,ONE_YEAR;
 	public static ShowItemsCriteria fromInteger(int x) {
         switch(x) {
@@ -121,7 +122,7 @@ public Date getDateParam(){
 
 public String getSortingParamNameForClass(Class className){
 	if (sortByField==null)return null;
-	if (className.getName().equals("com.intita.forum.models.ForumCategory"))
+	if (className.getSimpleName().equals(forumCategoryClassSimpleName))
 	{
 	switch(sortByField){
 	case DATE: return "date";
@@ -131,7 +132,7 @@ public String getSortingParamNameForClass(Class className){
 		return null;
 	}
 	}
-	else if (className.getName().equals("com.intita.forum.models.ForumTopic")){
+	else if (className.getSimpleName().equals(forumTopicClassSimpleName)){
 			switch(sortByField){
 			case DATE: return "date";
 			case TOPIC: return "name";
@@ -141,15 +142,26 @@ public String getSortingParamNameForClass(Class className){
 				return null;
 			}
 		}
+	else if (className.getSimpleName().equals(topicMessageClassSimpleName)){
+		switch(sortByField){
+		case DATE: return "date";
+		case AUTHOR: return "author.firstName";
+		default:
+			log.error("passed uncorrect field for query sorting !");
+			return null;
+		}
+	}
 	else {
 		log.error("unsuported class");
 		return null;
 	}
 	
 }
-public String getWhereParamNameForClass(Class className){
+public String getDateParamNameForClass(Class className){
 	if (showItemsCriteria==null)return null;
-	if (className.getName().equals("com.intita.forum.models.ForumCategory"))
+	if (className.getSimpleName().equals(forumCategoryClassSimpleName) ||
+			className.getSimpleName().equals(forumTopicClassSimpleName) ||
+			className.getSimpleName().equals(topicMessageClassSimpleName))
 	{
 	switch(showItemsCriteria){
 	case ALL: return null;//we needn't any where clause in this case;
@@ -162,18 +174,6 @@ public String getWhereParamNameForClass(Class className){
 		return null;
 	}
 	}
-	else if (className.getName().equals("com.intita.forum.models.ForumTopic")){
-		switch(showItemsCriteria){
-		case ALL: return null;//we needn't any where clause in this case;
-		case ONE_DAY:
-		case ONE_MONTH:
-		case SEVEN_DAYS:
-			return "date > :dateParam";
-		default:
-			log.error("passed uncorrect field for query sorting !");
-			return null;
-		}
-		}
 	else {
 		log.error("unsuported class");
 		return null;
@@ -182,8 +182,8 @@ public String getWhereParamNameForClass(Class className){
 }
 public void saveToCookie(Class classObj,HttpServletResponse response){
 		String className = classObj.getSimpleName();
-		if (className!=forumCategoryClassSimpleName && className!=forumTopicClassSimpleName &&
-				className != topicMessageClassSimpleName){
+		if (!className.equals(forumCategoryClassSimpleName) && !className.equals(forumTopicClassSimpleName) &&
+				!className.equals(topicMessageClassSimpleName)){
 			log.error("class must be one of those:"+forumCategoryClassSimpleName+","+forumTopicClassSimpleName
 					+","+topicMessageClassSimpleName);
 			return;
@@ -194,7 +194,8 @@ public void saveToCookie(Class classObj,HttpServletResponse response){
 }
 public static UserSortingCriteria loadFromCookie(Class classObj,HttpServletRequest request){
 	String className = classObj.getSimpleName();
-	if (className!="ForumCategory" && className!="ForumTopic" ){
+	if (!className.equals(forumCategoryClassSimpleName) && !className.equals(forumTopicClassSimpleName) 
+			&& !className.equals(topicMessageClassSimpleName) ){
 		log.error("class must be ForumCategory or ForumTopic");
 		return null;
 	}

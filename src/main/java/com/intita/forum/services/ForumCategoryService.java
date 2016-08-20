@@ -114,7 +114,7 @@ public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,Use
 			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
 			String sortingPart = (sortingParam!=null) ? " ORDER BY c."+sortingParam : "";
 			if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
-			String whereParam = sortingCriteria.getWhereParamNameForClass(ForumCategory.class);
+			String whereParam = sortingCriteria.getDateParamNameForClass(ForumCategory.class);
 			String wherePart = "WHERE c.category.id = "+id +" ";
 			if (whereParam!=null)
 			wherePart += " AND "+ whereParam ;

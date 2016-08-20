@@ -61,7 +61,7 @@ public class ForumTopicService {
 					String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumTopic.class);
 					String sortingPart = (sortingParam!=null) ? " ORDER BY t."+sortingParam : "";
 					if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
-					String whereParam = sortingCriteria.getWhereParamNameForClass(ForumTopic.class);
+					String whereParam = sortingCriteria.getDateParamNameForClass(ForumTopic.class);
 					String wherePart = "WHERE t.category.id = "+categoryId +" ";
 					if (whereParam!=null)
 					wherePart += " AND "+ whereParam ;
