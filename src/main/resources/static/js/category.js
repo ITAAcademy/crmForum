@@ -10,4 +10,12 @@ $(document).ready(function() {
         complete: function() {} // Callback for Modal close
     });
       $('select').material_select();
+       $(".tool-bar-wraper").mousewheel(function(event, delta) {
+
+      this.scrollLeft -= (delta * 30);
+    
+      event.preventDefault();
+      debugger;
+
+   });
 });
