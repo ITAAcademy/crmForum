@@ -16,7 +16,7 @@
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <div class="configure-head hide-me">
-                <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
+                <form method="post" th:unless="${topic==null}" th:action="@{/view/topic/__${topic.id}__}">
                     <div class="sort-enter-bnt left">
                         <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
                         </button>
