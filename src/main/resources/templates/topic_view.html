@@ -12,51 +12,6 @@
 </head>
 
 <body>
-<!-- Sorting Modal -->
-  <div id="sorting_modal" class="modal bottom-sheet">
-    <div class="modal-content">
-     <!--Modal content -->
-
-    <form method="post" th:unless="${topic==null}" th:action="@{/view/topic/__${topic.id}__}">
-      <div class="row">
-        <div class="input-field col s6">
-          <!-- -->
-       <span>Показувати елементи за </span>
-          <select name="where">
-      <option value="0" selected="true">Усі повідомлення</option>
-      <option value="1">1 день</option>
-      <option value="2">7 днів</option>
-      <option value="3">1 місяць</option>
-        <option value="4">1 рік</option>
-    </select>
-      <label for="icon_prefix2">First Name</label>
-        
-
-        <span>Сортувати за</span>
-                 <select name="sort">
-      <option value="0">Автор</option>
-      <option value="1" selected="true">Час розміщення</option>
-      <option value="2">Тема</option>
-    </select>
-                <select name="order">
-      <option value="0">За спаданням</option>
-      <option value="1" selected="true">За зростанням</option>    
-    </select>
-    </div>
-       <div class="input-field col s2">
-        <input type="submit" class="waves-effect waves-light btn">button</input>   
-       </div>
-           <!-- -->
-      
-      </div>
-    </form>
-     <!--/Modal content -->
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-    </div>
-  </div>
-  <!-- /Sorting Modal -->
     <div id="forumcontainer" class="container">
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
