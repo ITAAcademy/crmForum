@@ -215,6 +215,8 @@
     margin-left: 40px;
     text-align-last: center;
     text-align: justify;
+    max-height: 40px;
+    white-space: nowrap;
 }
 
 .configure-head.hide-me * {
