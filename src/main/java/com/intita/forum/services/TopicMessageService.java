@@ -151,10 +151,10 @@ public class TopicMessageService {
 			otherMessages=topicMessageRepository.findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(topic.getId(),firstMessage.getId());
 		else{
 			Session session = sessionFactory.getCurrentSession();
-			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
+			String sortingParam = sortingCriteria.getSortingParamNameForClass(TopicMessage.class);
 			String sortingPart = (sortingParam!=null) ? " ORDER BY m."+sortingParam : "";
 			if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
-			String whereParam = sortingCriteria.getWhereParamNameForClass(ForumCategory.class);
+			String whereParam = sortingCriteria.getDateParamNameForClass(TopicMessage.class);
 			String topicIdConditionPrefix = "WHERE m.topic.id = "+topic.getId();
 			String firstMessageExcludeConditionAppendix = " AND m.id<>"+firstMessage.getId();
 			String wherePart = topicIdConditionPrefix +firstMessageExcludeConditionAppendix+" ";

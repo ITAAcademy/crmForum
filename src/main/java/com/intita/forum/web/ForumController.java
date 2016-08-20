@@ -475,25 +475,39 @@ public class ForumController {
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewTopicByIdMapping(RedirectAttributes redirectAttributes, 
 			@RequestParam(required = false) String search, @PathVariable Long topicId,
-			@PathVariable int page, HttpServletRequest request, Authentication auth){
-		return viewTopicById(redirectAttributes,search,topicId,page,request,auth,null);
+			@PathVariable int page, HttpServletRequest request,HttpServletResponse response, Authentication auth){
+		return viewTopicById(redirectAttributes,search,topicId,page,request,response,auth,null);
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.POST)
-	public ModelAndView viewTopicByIdMappingPost(RedirectAttributes redirectAttributes, 
+	public ModelAndView viewTopicByIdMappingPostWithPage(RedirectAttributes redirectAttributes, 
 			@RequestParam(required = false) String search, @PathVariable Long topicId,
-			@PathVariable int page, HttpServletRequest request, Authentication auth,
+			@PathVariable int page, HttpServletRequest request,HttpServletResponse response, Authentication auth,
 			@RequestParam(required = false) int where,@RequestParam(required = false) int sort,
 			@RequestParam(required = false) Boolean order){
 		UserSortingCriteria criteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(where),SortByField.fromInteger(sort),order);
-		return viewTopicById(redirectAttributes,search,topicId,page,request,auth,criteria);
+		return viewTopicById(redirectAttributes,search,topicId,page,request,response,auth,criteria);
 	}
-	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes,  String search,  Long topicId,  int page, HttpServletRequest request, Authentication auth,UserSortingCriteria sortingCriteria){
+	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
+	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.POST)
+	public ModelAndView viewTopicByIdMappingPost(RedirectAttributes redirectAttributes, 
+			@RequestParam(required = false) String search, @PathVariable Long topicId,HttpServletRequest request, HttpServletResponse response,Authentication auth,
+			@RequestParam(required = false) int where,@RequestParam(required = false) int sort,
+			@RequestParam(required = false) Boolean order){
+	return viewTopicByIdMappingPostWithPage(redirectAttributes,search,topicId,1,request,response,auth,where,sort,order);
+	}
+	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes,  String search,  Long topicId,  int page, HttpServletRequest request,HttpServletResponse response, Authentication auth,UserSortingCriteria sortingCriteria){
 		if(search != null)
 		{
 			redirectAttributes.addAttribute("searchvalue", search);
 			redirectAttributes.addAttribute("type", SearchType.TOPIC);
 			return new ModelAndView("redirect:" + "/view/search/" + topicId + "/1");
+		}
+		if (sortingCriteria==null){	
+			sortingCriteria = UserSortingCriteria.loadFromCookie(TopicMessage.class, request);
+		}
+		else{
+			sortingCriteria.saveToCookie(TopicMessage.class, response);
 		}
 		ModelAndView model = new ModelAndView("topic_view");
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1,sortingCriteria);
@@ -529,8 +543,8 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
-	public ModelAndView viewTopicByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long topicId, HttpServletRequest request, Authentication auth){	
-		return viewTopicById(redirectAttributes, search, topicId, 1, request, auth,null);
+	public ModelAndView viewTopicByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long topicId, HttpServletRequest request,HttpServletResponse response, Authentication auth){	
+		return viewTopicById(redirectAttributes, search, topicId, 1, request,response, auth,null);
 	}
 
 	@PreAuthorize("@topicMessageService.checkPostAccessToUser(authentication,#postId)")
