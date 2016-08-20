@@ -90,6 +90,10 @@
                         </th:block>
                     </div>
                 </li>
+                  <li th:if="${categories.getNumberOfElements() == 0}" class="collection-item valign-wrapper row topic-item non-click" style="position: relative; display: table; width: 100%;">
+                    <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
+">Категорії по запиту відсутні</span>
+                </li>
             </ul>
         </div>
         <div class="page-list row">
