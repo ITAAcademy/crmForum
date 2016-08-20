@@ -236,11 +236,13 @@
 .sort-enter-bnt .waves-effect {
     position: static;
 }
-.sort-enter-bnt .btn{
+
+.sort-enter-bnt .btn {
     max-width: 60px;
     padding: 2px;
     background: none;
 }
+
 .sort-enter-bnt .btn i {
     margin: 0px;
     font-size: 25px;
@@ -449,20 +451,23 @@
     font-size: 16px;
 }
 
-.filled_star {
+.star {
     content: "";
-    width: 16px;
-    height: 15px;
-    background-image: url("../images/blue_star_filled_small.png");
-    display: inline-block;
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    right: -5px;
+    top: -2px;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-.unfilled_star {
-    content: "";
-    width: 16px;
-    height: 15px;
+.star.filled {
+    background-image: url("../images/blue_star_filled_small.png");
+}
+
+.star.unfilled {
     background-image: url("../images/blue_star_unfilled_small.png");
-    display: inline-block;
 }
 
 .link_button {

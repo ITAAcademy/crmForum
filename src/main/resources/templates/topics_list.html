@@ -18,7 +18,7 @@
     <div id="forumcontainer" class="container">
         <div class="wraper fixed row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-          <div class="configure-head hide-me">
+            <div class="configure-head hide-me">
                 <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
                     <div class="sort-enter-bnt left">
                         <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
@@ -60,7 +60,22 @@
             <ul class="collection ul-container">
                 <li class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/topic/'+${topic.id}+'\');'" th:each="topic,status  : ${topics}">
                     <div class="icon-container">
-                        <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${topic.author.avatar}__} + ');'" alt=""></div>
+                        <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${topic.author.avatar}__} + ');'" alt="">
+                            <!--For admin -->
+                            <th:block th:if="${isAdmin}">
+                                <form method="post" th:action="@{/operations/topic/__${topic.id}__/toggle_pin}" class="inline">
+                                    <button class="link_button" type="submit" th:if="${topic.pinned}"><span class="filled star"></span></button>
+                                    <button class="link_button" type="submit" th:unless="${topic.pinned}"><span class="unfilled star"></span></button>
+                                </form>
+                            </th:block>
+                            <!--///For admin -->
+                            <!--For regular user -->
+                            <th:block th:unless="${isAdmin}">
+                                <span class="filled star" th:if="${topic.pinned}"></span>
+                                <!--    <span class="unfilled star" th:unless="${topic.pinned}"></span>-->
+                            </th:block>
+                            <!--/For regular user -->
+                        </div>
                     </div>
                     <div class="col s8 m6 topic-info">
                         <p><a class="topic-name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
