@@ -9,10 +9,14 @@ import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.intita.forum.models.ForumCategory;
 import com.intita.forum.util.CookieHelper;
 import com.intita.forum.web.ForumController;
 
 public class UserSortingCriteria {
+	private String forumCategoryClassSimpleName = ForumCategory.class.getSimpleName();
+	private String forumTopicClassSimpleName = ForumCategory.class.getSimpleName();
+	private String topicMessageClassSimpleName = ForumCategory.class.getSimpleName();
 public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH,ONE_YEAR;
 	public static ShowItemsCriteria fromInteger(int x) {
         switch(x) {
@@ -178,8 +182,10 @@ public String getWhereParamNameForClass(Class className){
 }
 public void saveToCookie(Class classObj,HttpServletResponse response){
 		String className = classObj.getSimpleName();
-		if (className!="ForumCategory" && className!="ForumTopic" ){
-			log.error("class must be ForumCategory or ForumTopic");
+		if (className!=forumCategoryClassSimpleName && className!=forumTopicClassSimpleName &&
+				className != topicMessageClassSimpleName){
+			log.error("class must be one of those:"+forumCategoryClassSimpleName+","+forumTopicClassSimpleName
+					+","+topicMessageClassSimpleName);
 			return;
 		}
 		CookieHelper.saveCookie(className+"sorting_where_condition", showItemsCriteria.toString(), 1000, response);

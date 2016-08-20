@@ -301,6 +301,7 @@ public class ForumController {
 	/*******************************
 	 * Category @RequestMapping
 	 ******************************/
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,
 			@PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request,HttpServletResponse response, Authentication auth){
@@ -472,7 +473,22 @@ public class ForumController {
 	 ******************************/
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long topicId, @PathVariable int page, HttpServletRequest request, Authentication auth){
+	public ModelAndView viewTopicByIdMapping(RedirectAttributes redirectAttributes, 
+			@RequestParam(required = false) String search, @PathVariable Long topicId,
+			@PathVariable int page, HttpServletRequest request, Authentication auth){
+		return viewTopicById(redirectAttributes,search,topicId,page,request,auth,null);
+	}
+	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
+	@RequestMapping(value="/view/topic/{topicId}/{page}",method = RequestMethod.POST)
+	public ModelAndView viewTopicByIdMappingPost(RedirectAttributes redirectAttributes, 
+			@RequestParam(required = false) String search, @PathVariable Long topicId,
+			@PathVariable int page, HttpServletRequest request, Authentication auth,
+			@RequestParam(required = false) int where,@RequestParam(required = false) int sort,
+			@RequestParam(required = false) Boolean order){
+		UserSortingCriteria criteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(where),SortByField.fromInteger(sort),order);
+		return viewTopicById(redirectAttributes,search,topicId,page,request,auth,criteria);
+	}
+	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes,  String search,  Long topicId,  int page, HttpServletRequest request, Authentication auth,UserSortingCriteria sortingCriteria){
 		if(search != null)
 		{
 			redirectAttributes.addAttribute("searchvalue", search);
@@ -480,7 +496,7 @@ public class ForumController {
 			return new ModelAndView("redirect:" + "/view/search/" + topicId + "/1");
 		}
 		ModelAndView model = new ModelAndView("topic_view");
-		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1);
+		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1,sortingCriteria);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		int pagesCount = 0;
 		if (messages!=null){
@@ -513,8 +529,8 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)
-	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long topicId, HttpServletRequest request, Authentication auth){	
-		return viewTopicById(redirectAttributes, search, topicId, 1, request, auth);
+	public ModelAndView viewTopicByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search, @PathVariable Long topicId, HttpServletRequest request, Authentication auth){	
+		return viewTopicById(redirectAttributes, search, topicId, 1, request, auth,null);
 	}
 
 	@PreAuthorize("@topicMessageService.checkPostAccessToUser(authentication,#postId)")
@@ -543,7 +559,7 @@ public class ForumController {
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage message = new TopicMessage(currentUser,topic,postText);
 		topicMessageService.addMessage(message);
-		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 0);
+		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, 0,null);
 		HashMap<String,String> messageMap = new HashMap<String,String>();
 		messageMap.put("id", topicId.toString());
 		messageMap.put("page", ""+messages.getTotalPages());

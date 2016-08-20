@@ -1,41 +1,32 @@
 package com.intita.forum.services;
 
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonParser.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.commons.collections4.IteratorUtils;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.TopicMessage;
-import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.repositories.TopicMessageRepository;
+
+import utils.CustomDataConverters;
 
 @Service
 public class TopicMessageService {
@@ -54,6 +45,8 @@ public class TopicMessageService {
 	@Autowired
 	private IntitaUserService intitaUserService;
 
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	@Value("${forum.messagesCountPerPage}")
 	private int messagesCountPerPage;
@@ -147,16 +140,31 @@ public class TopicMessageService {
 	}
 
 	@Transactional
-	public Page<TopicMessage> getAllMessagesAndPinFirst(Long topicId,int page){
+	public Page<TopicMessage> getAllMessagesAndPinFirst(Long topicId,int page,UserSortingCriteria sortingCriteria){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		TopicMessage firstMessage = topicMessageRepository.findFirstByTopicOrderByDateAsc(topic);
 
 		if (firstMessage==null)return null;
-		List<TopicMessage> otherMessages =topicMessageRepository.findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(topic.getId(),firstMessage.getId());
-		for (TopicMessage topicMessage : otherMessages) {
-			IntitaUser q =  topicMessage.getAuthor();
-			System.out.println(q.getLogin());
+		List<TopicMessage> otherMessages;
+		if (sortingCriteria==null)
+			otherMessages=topicMessageRepository.findAllByTopicWhereMessageIdNotEqualOrderByDateAsc(topic.getId(),firstMessage.getId());
+		else{
+			Session session = sessionFactory.getCurrentSession();
+			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
+			String sortingPart = (sortingParam!=null) ? " ORDER BY m."+sortingParam : "";
+			if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
+			String whereParam = sortingCriteria.getWhereParamNameForClass(ForumCategory.class);
+			String topicIdConditionPrefix = "WHERE m.topic.id = "+topic.getId();
+			String firstMessageExcludeConditionAppendix = " AND m.id<>"+firstMessage.getId();
+			String wherePart = topicIdConditionPrefix +firstMessageExcludeConditionAppendix+" ";
+			if (whereParam!=null)
+			wherePart += " AND "+ whereParam ;
+			String hql = "SELECT m FROM topic_message m " + " "+wherePart+sortingPart;
+			Query query = session.createQuery(hql);
+			if (whereParam!=null)
+			query.setParameter("dateParam", sortingCriteria.getDateParam());
+			otherMessages = query.list();
 		}
 		List<TopicMessage> allMessages = new ArrayList<TopicMessage>();
 		if (firstMessage!=null)
