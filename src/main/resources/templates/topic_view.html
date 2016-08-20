@@ -16,8 +16,43 @@
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <div class="configure-head hide-me">
-                <div class=""> Розділи </div>
-                <div class=""> Останній пост </div>
+                <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
+                    <div class="sort-enter-bnt left">
+                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
+                        </button>
+                    </div>
+                    <div class="tool-bar-wraper">
+                        <div class="input-field tool-bar-select">
+                            <select name="where">
+                                <option value="0" selected="true">Усі повідомлення</option>
+                                <option value="1">1 день</option>
+                                <option value="2">7 днів</option>
+                                <option value="3">1 місяць</option>
+                                <option value="4">1 рік</option>
+                            </select>
+                            <label>Показувати елементи за </label>
+                        </div>
+                        <div class="input-field tool-bar-select">
+                            <select name="sort">
+                                <option value="0">Автор</option>
+                                <option value="1" selected="true">Час розміщення</option>
+                                <option value="2">Тема</option>
+                            </select>
+                            <label>Сортувати за</label>
+                        </div>
+                        <div class="input-field tool-bar-select">
+                            <select name="order">
+                                <option value="0">За спаданням</option>
+                                <option value="1" selected="true">За зростанням</option>
+                            </select>
+                            <label>Сортувати за</label>
+                        </div>
+                    </div>
+                    <div class="sort-enter-bnt right">
+                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </form>
             </div>
             <!-- Topic info -->
             <ul class="topic-content">
