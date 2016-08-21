@@ -11,13 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.intita.forum.models.ForumCategory;
+import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.TopicMessage;
 import com.intita.forum.util.CookieHelper;
 import com.intita.forum.web.ForumController;
 
 public class UserSortingCriteria {
 	private final static  String forumCategoryClassSimpleName = ForumCategory.class.getSimpleName();
-	private final static String forumTopicClassSimpleName = ForumCategory.class.getSimpleName();
+	private final static String forumTopicClassSimpleName = ForumTopic.class.getSimpleName();
 	private final static String topicMessageClassSimpleName = TopicMessage.class.getSimpleName();
 public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH,ONE_YEAR;
 	public static ShowItemsCriteria fromInteger(int x) {

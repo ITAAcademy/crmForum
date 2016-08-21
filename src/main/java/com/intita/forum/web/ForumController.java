@@ -347,6 +347,8 @@ public class ForumController {
 			List<ForumCategory> pageCategories = categories.getContent();
 			model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 			model.setViewName("categories_list");
+			model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
+			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class));
 
 		}
 		else{
@@ -372,6 +374,8 @@ public class ForumController {
 			List<ForumTopic> pageTopics = topics.getContent();
 			model.addObject("statistic",forumTopicService.getTopicsStatistic(pageTopics));
 			model.setViewName("topics_list");
+			model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
+			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class));
 		}
 		model.addObject("bbcode", getTextProcessorInstance(request));
 		model.addObject("user", (IntitaUser)auth.getPrincipal());
@@ -510,6 +514,7 @@ public class ForumController {
 			sortingCriteria.saveToCookie(TopicMessage.class,request, response);
 		}
 		model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
+		model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(TopicMessage.class));
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1,sortingCriteria);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		int pagesCount = 0;
@@ -538,7 +543,6 @@ public class ForumController {
 
 		model.addObject("canEditMap", canEditMap);
 		model.addObject("paginationLink", "/view/topic/" + topicId + "/");
-		model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(TopicMessage.class));
 
 		return model;
 	}
