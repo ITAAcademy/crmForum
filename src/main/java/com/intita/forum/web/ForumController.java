@@ -66,7 +66,6 @@ import com.intita.forum.services.ForumTopicService;
 import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.services.LectureService;
 import com.intita.forum.services.TopicMessageService;
-import com.intita.forum.util.CookieHelper;
 import com.intita.forum.util.CustomPrettyTime;
 import com.intita.forum.util.ProfanityChecker;
 
@@ -333,7 +332,7 @@ public class ForumController {
 				sortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
 			}
 			else{
-				sortingCriteria.saveToCookie(ForumCategory.class, response);
+				sortingCriteria.saveToCookie(ForumCategory.class, request,response);
 			}
 			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1,user,sortingCriteria);
 			int pagesCount = categories.getTotalPages();
@@ -355,7 +354,7 @@ public class ForumController {
 				sortingCriteria = UserSortingCriteria.loadFromCookie(ForumTopic.class, request);
 			}
 			else{
-				sortingCriteria.saveToCookie(ForumTopic.class, response);
+				sortingCriteria.saveToCookie(ForumTopic.class,request, response);
 			}
 			Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, page-1,sortingCriteria);
 			int pagesCount = topics.getTotalPages();
@@ -503,13 +502,14 @@ public class ForumController {
 			redirectAttributes.addAttribute("type", SearchType.TOPIC);
 			return new ModelAndView("redirect:" + "/view/search/" + topicId + "/1");
 		}
+		ModelAndView model = new ModelAndView("topic_view");
 		if (sortingCriteria==null){	
 			sortingCriteria = UserSortingCriteria.loadFromCookie(TopicMessage.class, request);
 		}
 		else{
-			sortingCriteria.saveToCookie(TopicMessage.class, response);
+			sortingCriteria.saveToCookie(TopicMessage.class,request, response);
 		}
-		ModelAndView model = new ModelAndView("topic_view");
+		model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1,sortingCriteria);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		int pagesCount = 0;
@@ -538,8 +538,25 @@ public class ForumController {
 
 		model.addObject("canEditMap", canEditMap);
 		model.addObject("paginationLink", "/view/topic/" + topicId + "/");
+		model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(TopicMessage.class));
 
 		return model;
+	}
+	@RequestMapping(value="/operations/clearcookie/sorting_config",method = RequestMethod.GET)
+	public String clearCookiesForSorting( @RequestParam(value="itemType") String itemType,HttpServletResponse response,HttpServletRequest request){
+		String referer = request.getHeader("Referer");
+		String classPrefix = "com.intita.forum.models.";
+		String className = classPrefix+itemType;
+		Class itemClass = null;
+		try {
+			itemClass = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			log.error("class not found:"+className);
+			return "redirect:"+referer;
+		}
+		UserSortingCriteria.removeFromCookie(itemClass,request,response);
+		return "redirect:"+referer;
+		//Cookie cookie = new Cookie
 	}
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/view/topic/{topicId}",method = RequestMethod.GET)

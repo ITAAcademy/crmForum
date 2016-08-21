@@ -1,6 +1,7 @@
 package com.intita.forum.domain;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,9 +16,9 @@ import com.intita.forum.util.CookieHelper;
 import com.intita.forum.web.ForumController;
 
 public class UserSortingCriteria {
-	private static String forumCategoryClassSimpleName = ForumCategory.class.getSimpleName();
-	private static String forumTopicClassSimpleName = ForumCategory.class.getSimpleName();
-	private static String topicMessageClassSimpleName = TopicMessage.class.getSimpleName();
+	private final static  String forumCategoryClassSimpleName = ForumCategory.class.getSimpleName();
+	private final static String forumTopicClassSimpleName = ForumCategory.class.getSimpleName();
+	private final static String topicMessageClassSimpleName = TopicMessage.class.getSimpleName();
 public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH,ONE_YEAR;
 	public static ShowItemsCriteria fromInteger(int x) {
         switch(x) {
@@ -33,7 +34,18 @@ public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH,ONE_YEAR;
         	return ONE_YEAR;
         }
         return null;
-    }};
+    }
+	public static HashMap<Integer,String> toHashMap(){
+		HashMap<Integer,String> datePick = new HashMap<Integer,String>();
+		datePick.put(ShowItemsCriteria.ALL.ordinal(),"all_messages");
+		datePick.put(ShowItemsCriteria.ONE_DAY.ordinal(), "one_day");
+		datePick.put(ShowItemsCriteria.SEVEN_DAYS.ordinal(), "seven_days");
+		datePick.put(ShowItemsCriteria.ONE_MONTH.ordinal(), "one_month");
+		datePick.put(ShowItemsCriteria.ONE_YEAR.ordinal(), "one_year");
+		return datePick;
+	}
+	
+};
 public enum SortByField {AUTHOR,DATE,TOPIC;
 	public static SortByField fromInteger(int x) {
     switch(x) {
@@ -45,10 +57,25 @@ public enum SortByField {AUTHOR,DATE,TOPIC;
         return TOPIC;
     }
     return null;
-}};
+}
+	public static HashMap<Integer,String> toHashMap(){
+		HashMap<Integer,String> datePick = new HashMap<Integer,String>();
+		datePick.put(SortByField.AUTHOR.ordinal(),"author");
+		datePick.put(SortByField.DATE.ordinal(), "date");
+		datePick.put(SortByField.TOPIC.ordinal(), "topic");
+		return datePick;
+	}	
+};
 private ShowItemsCriteria showItemsCriteria;
 private SortByField sortByField;
 private Boolean isAscend;
+public static HashMap<Integer,String> orderOptionsToHashMap(){
+	HashMap<Integer,String> result = new HashMap<Integer,String>();
+	result.put(0, "by_descend");
+	result.put(1, "by_ascend");
+	return result;
+}
+
 private final static Logger log = LoggerFactory.getLogger(ForumController.class);
 public ShowItemsCriteria getShowItemsCriteria() {
 	return showItemsCriteria;
@@ -180,7 +207,7 @@ public String getDateParamNameForClass(Class className){
 	}
 	
 }
-public void saveToCookie(Class classObj,HttpServletResponse response){
+public void saveToCookie(Class classObj,HttpServletRequest request, HttpServletResponse response){
 		String className = classObj.getSimpleName();
 		if (!className.equals(forumCategoryClassSimpleName) && !className.equals(forumTopicClassSimpleName) &&
 				!className.equals(topicMessageClassSimpleName)){
@@ -188,9 +215,21 @@ public void saveToCookie(Class classObj,HttpServletResponse response){
 					+","+topicMessageClassSimpleName);
 			return;
 		}
-		CookieHelper.saveCookie(className+"sorting_where_condition", showItemsCriteria.toString(), 1000, response);
-		CookieHelper.saveCookie(className+"sorting_condition", sortByField.toString(), 1000, response);
-		CookieHelper.saveCookie(className+"sorting_order_is_ascend", isAscend.toString(), 1000, response);		
+		CookieHelper.saveCookie(className+"sorting_where_condition", showItemsCriteria.toString(), 1000,request, response);
+		CookieHelper.saveCookie(className+"sorting_condition", sortByField.toString(), 1000,request, response);
+		CookieHelper.saveCookie(className+"sorting_order_is_ascend", isAscend.toString(), 1000,request, response);		
+}
+public static void removeFromCookie(Class classObj,HttpServletRequest request, HttpServletResponse response){
+	String className = classObj.getSimpleName();
+	if (!className.equals(forumCategoryClassSimpleName) && !className.equals(forumTopicClassSimpleName) &&
+			!className.equals(topicMessageClassSimpleName)){
+		log.error("class must be one of those:"+forumCategoryClassSimpleName+","+forumTopicClassSimpleName
+				+","+topicMessageClassSimpleName);
+		return;
+	}
+	CookieHelper.saveCookie(className+"sorting_where_condition", null, 0,request, response);
+	CookieHelper.saveCookie(className+"sorting_condition", null, 0,request, response);
+	CookieHelper.saveCookie(className+"sorting_order_is_ascend", null, 0,request, response);
 }
 public static UserSortingCriteria loadFromCookie(Class classObj,HttpServletRequest request){
 	String className = classObj.getSimpleName();
@@ -212,6 +251,43 @@ public static UserSortingCriteria loadFromCookie(Class classObj,HttpServletReque
 		else userCriteria.setAscend(false);
 	}
 	return userCriteria;
+}
+/***
+ * for Thymleaf, enum values replaced by ordinal
+ * @return
+ */
+
+public HashMap<String,Integer> convertToOrdinal(){
+	HashMap<String,Integer> map = new HashMap<String,Integer>();
+	map.put("where", showItemsCriteria.ordinal());
+	map.put("sort", sortByField.ordinal());
+	map.put("order", isAscend ? 1 : 0);
+	return map;
+	
+	
+}
+/***
+ * return map in map where first level map represent <select> items
+ * and second level map represent <option> items
+ * @param classObj determine which data to be included in map e.g 
+ * ForumCategory can't be sorted by author because it hasn't author; 
+ * @return
+ */
+public static HashMap<String,HashMap<Integer, String>> getSortingMenuData(Class classObj){
+	HashMap<String,HashMap<Integer, String>> result = new HashMap<String,HashMap<Integer, String>>();
+	String className = classObj.getSimpleName();
+	if (!className.equals(forumCategoryClassSimpleName) && !className.equals(forumTopicClassSimpleName) &&
+			!className.equals(topicMessageClassSimpleName)){
+		log.error("class must be one of those:"+forumCategoryClassSimpleName+","+forumTopicClassSimpleName
+				+","+topicMessageClassSimpleName);
+		return null;
+	}
+	result.put("where", ShowItemsCriteria.toHashMap());
+	result.put("sort", SortByField.toHashMap());
+	result.put("order", orderOptionsToHashMap());
+	return result;
+	
+	
 }
 
 }

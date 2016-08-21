@@ -16,34 +16,31 @@
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <div class="configure-head hide-me">
-                <form method="post" th:unless="${topic==null}" th:action="@{/view/topic/__${topic.id}__}">
+           <form method="GET" th:unless="${topic==null}" th:action="@{/operations/clearcookie/sorting_config}">
+                 <input type="hidden" name="itemType" value="TopicMessage" /> 
                     <div class="sort-enter-bnt left">
                         <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
                         </button>
                     </div>
+            </form>
+                <form method="post" th:unless="${topic==null}" th:action="@{/view/topic/__${topic.id}__}">
                     <div class="tool-bar-wraper">
                         <div class="input-field tool-bar-select">
                             <select name="where">
-                                <option value="0" selected="true">Усі повідомлення</option>
-                                <option value="1">1 день</option>
-                                <option value="2">7 днів</option>
-                                <option value="3">1 місяць</option>
-                                <option value="4">1 рік</option>
+                            <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
+                               <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
                             </select>
                             <label>Показувати елементи за </label>
                         </div>
                         <div class="input-field tool-bar-select">
                             <select name="sort">
-                                <option value="0">Автор</option>
-                                <option value="1" selected="true">Час розміщення</option>
-                                <option value="2">Тема</option>
+                             <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
                             </select>
                             <label>Сортувати за</label>
                         </div>
                         <div class="input-field tool-bar-select">
                             <select name="order">
-                                <option value="0">За спаданням</option>
-                                <option value="1" selected="true">За зростанням</option>
+                                <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
                             </select>
                             <label>Сортувати за</label>
                         </div>
