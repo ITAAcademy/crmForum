@@ -643,19 +643,20 @@ public class ForumController {
 	}
 	@ResponseBody
 	@RequestMapping(value="/operations/message/{messageId}/update",method = RequestMethod.POST)
-	public String getMsg(@PathVariable("messageId") Long msgID,@RequestParam("msg_body") String body,Authentication auth,HttpServletRequest request){
+	public ResponseEntity<String> getMsg(@PathVariable("messageId") Long msgID,@RequestParam("msg_body") String body,Authentication auth,HttpServletRequest request){
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
+		if(body==null || body.length()<1)
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		if(user == null || user.isAnonymous())
-			return "null";//need return code
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		TopicMessage msg = topicMessageService.getMessage(msgID);
 		if(msg == null /*|| !msg.getAuthor().equals(user)*/)
-			return "null";//need return code
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		if(!topicMessageService.canEdit(user, msg))
-			return "null";//need return code
-
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		msg.setBody(body);
 		topicMessageService.addMessage(msg);
-		return "true";
+		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 
 	@RequestMapping(value="/operations/config/update",method = RequestMethod.POST)

@@ -47,6 +47,15 @@ var processSubmitButtonAvailability = function(text) {
             sumbitButton.show();
     }
 }
+var processSubmitEditButtonAvailability = function(text) {
+    var sumbitButton = $('#saveChangesButton');
+    if (sumbitButton != null) {
+        if (text === '')
+            sumbitButton.hide();
+        else
+            sumbitButton.show();
+    }
+}
 $(document).ready(function() {
     processSubmitButtonAvailability('');
 
@@ -57,6 +66,10 @@ $(document).ready(function() {
             config = instance.config;
             initMessages(instance);
         });
+         instance.on('change', function(evt) {
+                processSubmitEditButtonAvailability(evt.editor.getData());
+
+            });
 
         var ckEditor = initCkEditor("ckeditor", 200)
         if (ckEditor != null)
