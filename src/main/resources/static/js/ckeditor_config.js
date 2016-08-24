@@ -6,13 +6,15 @@ var initCkEditor = function(id, iheight) {
         return null;
     
     var editor = CKEDITOR.replace(id, {
+          filebrowserBrowseUrl : URL_PREFIX + 'filebrowser',
+       // filebrowserUploadUrl : URL_PREFIX + 'fileuploader',
         height: iheight,
         //resize_enabled : false,
         // Add plugins providing functionality popular in BBCode environment.
         extraPlugins: 'bbcode,autogrow,smiley,font,colorbutton,spoiler',
         // Remove unused plugins.
         //removePlugins: 'filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
-        removePlugins: 'resize,filebrowser,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
+        removePlugins: 'resize,format,horizontalrule,pastetext,pastefromword,scayt,showborders,stylescombo,table,tabletools,wsc',
         // Remove unused buttons.
         removeButtons: 'Anchor,BGColor,Font,Strike,Subscript,Superscript',
         // Width and height are not supported in the BBCode format, so object resizing is disabled.

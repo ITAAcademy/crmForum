@@ -1,0 +1,14 @@
+<html>
+<head>
+<script th:src="@{/libs/jquery-3.0.0.min.js}"></script>
+<script th:src="@{/js/filebrowser.js}"></script>
+</head>
+	<body>
+		<form id="upload_file_form" enctype="multipart/form-data" th:action="@{'/upload_file'}" method="POST">
+	<input id="file" type="file" name="file[]" multiple="true" />
+  <input type="submit"/>
+  </form>
+  	<a class="file_item" th:if="${user.id!=null}"  th:each="userFile : ${userFiles}" th:href="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFile.value}__}" th:text="${userFile.key}"></a>
+  	Тест
+	</body>
+</html>

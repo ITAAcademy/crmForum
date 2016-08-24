@@ -1,5 +1,6 @@
 package com.intita.forum.services;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,17 @@ public ConfigParam getParam(String param){
 }
 	public List<ConfigParam> getParams(){
 		return (List<ConfigParam>) configParamRepo.findAll();
+	}
+	 HashMap<String,String> cachedConfigMap = new HashMap<String,String>();
+	public HashMap<String, String> getCachedConfigMap() {
+		return cachedConfigMap;
+	}
+	public void setCachedConfigMap(HashMap<String, String> cachedConfigMap) {
+		this.cachedConfigMap = cachedConfigMap;
+	}
+	@Transactional
+	public void refreshCachedConfigFromDb(){
+		List<ConfigParam> config =  getParams();
+		cachedConfigMap = ConfigParam.listAsMap(config);
 	}
 }

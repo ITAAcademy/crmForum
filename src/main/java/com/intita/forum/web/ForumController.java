@@ -98,7 +98,7 @@ public class ForumController {
 	@Autowired private ForumTopicService forumTopicService;
 	@Autowired private TopicMessageService topicMessageService;
 
-	HashMap<String,String> configMap = new HashMap<String,String>();
+	
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -139,6 +139,7 @@ public class ForumController {
 		}
 		listElm.add(value);
 	}	
+
 
 	/********************
 	 * GET CHAT USERS LIST FOR TEST
@@ -263,7 +264,7 @@ public class ForumController {
 		result.addObject("currentPage",1);
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		result.addObject("prettyTime",p);
-		result.addObject("config",configMap);
+		result.addObject("config",configParamService.getCachedConfigMap());
 		result.addObject("user", (IntitaUser)auth.getPrincipal());
 		result.addObject("blockSearch", true);
 		List<ForumCategory> pageCategories = categories.getContent();
@@ -324,7 +325,7 @@ public class ForumController {
 		model.addObject("isCategoriesContainer",category.isCategoriesContainer());
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
-		model.addObject("config",configMap);
+		model.addObject("config",configParamService.getCachedConfigMap());
 
 		if (category.isCategoriesContainer())
 		{
@@ -452,7 +453,7 @@ public class ForumController {
 		model.addObject("prettyTime",p);
 
 		//  System.out.println(p.format(new Date()));
-		model.addObject("config",configMap);
+		model.addObject("config",configParamService.getCachedConfigMap());
 		model.addObject("bbcode", getTextProcessorInstance(request));
 
 		Map<Long, Boolean> canEditMap = new HashMap<>();
@@ -532,7 +533,7 @@ public class ForumController {
 
 		//  System.out.println(p.format(new Date()));
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(topic));
-		model.addObject("config",configMap);
+		model.addObject("config",configParamService.getCachedConfigMap());
 		model.addObject("bbcode", getTextProcessorInstance(request));
 
 		Map<Long, Boolean> canEditMap = new HashMap<>();
@@ -662,13 +663,13 @@ public class ForumController {
 	@RequestMapping(value="/operations/config/update",method = RequestMethod.POST)
 	public void refreshConfigParameters()
 	{
-		List<ConfigParam> config =  configParamService.getParams();
-		configMap = ConfigParam.listAsMap(config);
+	configParamService.refreshCachedConfigFromDb();
 	}
 	@PostConstruct
 	public void initController(){
 		refreshConfigParameters();
 	}
+
 
 
 }
