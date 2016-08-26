@@ -320,3 +320,13 @@ a.redirect {
         display: none;
     }
 }
+.topic_message_text img {
+    max-height: 200px;
+    max-width: 400px;
+}
+
+#cke_ckeditor img {
+    max-height: 200px;
+    max-width: 400px;
+}
+

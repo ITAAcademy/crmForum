@@ -2,13 +2,27 @@
 <head>
 <script th:src="@{/libs/jquery-3.0.0.min.js}"></script>
 <script th:src="@{/js/filebrowser.js}"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link type="text/css" th:href="@{/css/materialize.min.css}" rel="stylesheet" />
+<script type="text/javascript" th:src="@{/js/materialize.min.js}"></script>
 </head>
 	<body>
 		<form id="upload_file_form" enctype="multipart/form-data" th:action="@{'/upload_file'}" method="POST">
-	<input id="file" type="file" name="file[]" multiple="true" />
-  <input type="submit"/>
+		    <div class="file-field input-field">
+      <div class="btn">
+        <span>File</span>
+        <input  id="file" type="file" name="file[]" multiple="true" />
+      </div>
+      <div class="file-path-wrapper">     
+        <input class="file-path validate" type="text" placeholder="Upload one or more files"/>
+      </div>
+    </div>
+	
+  <input class="waves-effect waves-light btn" type="submit"/>
   </form>
-  	<a class="file_item" th:if="${user.id!=null}"  th:each="userFile : ${userFiles}" th:href="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFile.value}__}" th:text="${userFile.key}"></a>
-  	Тест
+  <div class="collection">
+  	<a class="file_item collection-item" th:if="${user.id!=null}"  th:each="userFile : ${userFiles}" th:href="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFile.getSecond()}__}" th:text="${userFile.getFirst()}"></a>
+  	</div>
+  	 <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link=${paginationLink}">...</span>
 	</body>
 </html>

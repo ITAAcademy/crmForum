@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.Principal;
+import java.net.FileNameMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,11 +19,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,18 +38,20 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intita.forum.domain.Pair;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.services.ConfigParamService;
 import com.intita.forum.services.ForumLangService;
 import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.util.Transliterator;
 
+import utils.CustomDataConverters;
 import utils.RandomString;
 
 @Service
 @Controller
 public class FileController {
-
+	private final int FILES_COUNT_PER_PAGE = 5;
 	private final static Logger log = LoggerFactory.getLogger(FileController.class);
 	private final int DEFAULT_FILE_PREFIX_LENGTH = 15;
 	static final private ObjectMapper mapper = new ObjectMapper();
@@ -235,38 +241,56 @@ public class FileController {
 	    mav.addObject("errorMessage", e.getMessage());
 	    return mav;
 	}
-	@RequestMapping(method = RequestMethod.GET, value="/filebrowser")
-	public ModelAndView fileBrowserMapping(Authentication auth){
+	@RequestMapping(method = RequestMethod.GET, value="/filebrowser/{page}")
+	public ModelAndView fileBrowserMapping(Authentication auth, @PathVariable(value="page") Integer page, 
+			@RequestParam(required=false,value="CKEditorFuncNum") String ckFunctionNumber,
+			@RequestParam(required=false,value="CKEditor") String ckeditorName){
+		if (page==null) page = 0;
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView mav = new ModelAndView(); 
+		Page pageObj = getUserFilesList(user,page-1);
 		mav.setViewName("filebrowser");
-		mav.addObject("userFiles", getUserFilesList(user));
+		mav.addObject("userFiles", pageObj);
 		mav.addObject("user", user);
 		mav.addObject("config",configParamService.getCachedConfigMap());
+		mav.addObject("pagesCount",pageObj.getTotalPages());
+		mav.addObject("currentPage",page);
+		mav.addObject("paginationLink","/filebrowser/");
 		return mav;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/filebrowser")
+	public ModelAndView fileBrowserMapping(Authentication auth, 
+			@RequestParam(required=false,value="CKEditorFuncNum") String ckFunctionNumber,
+			@RequestParam(required=false,value="CKEditor") String ckeditorName){
+		return fileBrowserMapping(auth,1,ckFunctionNumber,ckeditorName);
 	}
 	/**
 	 * keys of Map represent short file names without random symbols, values of map represent real names;
 	 * @param user
 	 * @return
 	 */
-	private HashMap<String,String> getUserFilesList(IntitaUser user){
-		HashMap<String,String> filesNames = new HashMap<String,String>();
-		if (user==null) return filesNames;
+	private Page<Pair<String,String>> getUserFilesList(IntitaUser user,int page){
+		ArrayList<Pair<String,String>> filesNamesPairs = new ArrayList<Pair<String,String>>();
+		Page<Pair<String,String>> pageObj  = new PageImpl<Pair<String,String>>(filesNamesPairs);
+		
+		if (user==null) return pageObj;
 		File folder = new File(uploadDir+File.separator+user.getId());
-		if (!folder.exists()) return filesNames;
+		if (!folder.exists()) return pageObj;
 		File[] listOfFiles = folder.listFiles();
-		if (listOfFiles==null) return filesNames;
+		if (listOfFiles==null) return pageObj;
 		    for (int i = 0; i < listOfFiles.length; i++) {
 		      if (listOfFiles[i].isFile()) {
 		    	  String fileName = listOfFiles[i].getName();
-		    	  filesNames.put(deRandomizeFileName(fileName),fileName);
+		    	  Pair<String,String> pair = new Pair<String,String>(deRandomizeFileName(fileName),fileName);
+		    	  filesNamesPairs.add(pair);
 		      } 
 		      /*else if (listOfFiles[i].isDirectory()) {
 		        System.out.println("Directory " + listOfFiles[i].getName());
 		      }*/
 		    }
-		    return filesNames;
+		    pageObj = CustomDataConverters.listToPage(filesNamesPairs, page, FILES_COUNT_PER_PAGE);
+		    return pageObj;
 	
 	}
 	private String randomizeFileName(String fileName){
