@@ -185,39 +185,57 @@ public void initCategoriesByRoles(){
 	forumCategoryRepository.save(accountantCategory);
 	forumCategoryRepository.save(teacgersCategory);
 }
-
-public void initEducationCategory(){
-	ArrayList<Course> courses = courseService.getAll();
-	ForumCategory educationCategory = new ForumCategory("Навчання","Для студентів",true);
-	ForumCategory courseCategory = new ForumCategory("Курси","Обговорення курсів",true);
-
-	
-	educationCategory = forumCategoryRepository.save(educationCategory);
-	courseCategory.setCategory(educationCategory);
-
-	courseCategory = forumCategoryRepository.save(courseCategory);
-
-
-	for (Course course : courses){
-		
-		ForumCategory category = new ForumCategory(course.getTitleUa(),course.getAlias(),true);
-		category.setCategory(courseCategory);
+public void saveCourseAsCategory(Course course,ForumCategory parentCategory){		
+	final String MODULES_CATEGORY_NAME = "Модулі";
+	  
+	ForumCategory category = new ForumCategory(course.getTitleUa(),course.getAlias(),true);
+		category.setCategory(parentCategory);
 		category = forumCategoryRepository.save(category);
 		
+		ForumCategory moduleCategory = getOrCreateForumCategory(MODULES_CATEGORY_NAME,category,"Обговорення модулів");
+	
 		ArrayList<Module> modules = moduleService.getAllFromCourse(course);
-		ForumCategory moduleCategory = new ForumCategory("Модулі","Обговорення модулів",false,true);
-		moduleCategory.setCategory(category);
-		moduleCategory = forumCategoryRepository.save(moduleCategory);
-		
+
 		for (Module module : modules){
 			ForumCategory c = new ForumCategory(module.getTitleUa(),module.getAlias(),true);
 			c.setCategory(moduleCategory);
 			forumCategoryRepository.save(c);
+		}			
+}
+public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description){
+	return getOrCreateForumCategory(name,parent,description,null);
+}
+public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,Long courseOrModuleId){
+	ForumCategory targetCategory = null;
+	ArrayList<ForumCategory> categoriesTemp;
+	if (forumCategoryRepository.countByName(name)==0){
+		targetCategory = new ForumCategory(name,description,false,true);
+		targetCategory.setCategory(parent);
+		targetCategory = forumCategoryRepository.save(targetCategory);
+	}
+	else{
+		if (courseOrModuleId==null)
+			categoriesTemp = forumCategoryRepository.findFirstByNameWhereDateEqualMinDate(name);
+		else
+			categoriesTemp = forumCategoryRepository.findFirstByNameAndCourseOrModuleIdWhereDateEqualMinDate(name, courseOrModuleId);
+		if (categoriesTemp != null && categoriesTemp.size()>0){
+			targetCategory = categoriesTemp.get(0);
 		}
-		
 	}
 	
-	
+	return targetCategory;
+}
+
+public void initEducationCategory(){
+	final String EDUCATION_CATEGORY_NAME = "Навчання";
+	final String COURSE_CATEGORY_NAME = "Курси";
+	ArrayList<Course> courses = courseService.getAll();
+	//if categories doesn't excist we create them and store id Database
+	ForumCategory educationCategory = getOrCreateForumCategory(EDUCATION_CATEGORY_NAME, null, "Для студентів");
+	ForumCategory courseCategory = getOrCreateForumCategory(COURSE_CATEGORY_NAME, educationCategory, "Обговорення курсів");;
+	for (Course c : courses){
+		saveCourseAsCategory(c,courseCategory);
+	}
 }
 
 public LinkedList<ForumTreeNode> getCategoriesTree(ForumCategory lastCategory){

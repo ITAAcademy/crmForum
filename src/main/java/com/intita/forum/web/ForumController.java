@@ -110,6 +110,7 @@ public class ForumController {
 	@PostConstruct
 	private void initTextProcessoe() {
 		processorFactory = BBProcessorFactory.getInstance();
+		refreshConfigParameters();
 	}
 	public TextProcessor getTextProcessorInstance(HttpServletRequest request){
 		if(bbCodeProcessor == null)//recreate bbCode processor?
@@ -665,10 +666,7 @@ public class ForumController {
 	{
 	configParamService.refreshCachedConfigFromDb();
 	}
-	@PostConstruct
-	public void initController(){
-		refreshConfigParameters();
-	}
+
 
 
 
