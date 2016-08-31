@@ -169,14 +169,14 @@ public void initDatabase(){
 }
 
 public void initCategoriesByRoles(){
-	ForumCategory roleCategory = new ForumCategory("Розділ по ролях","для адміністраторів, бухгалтерів, вчителів",true);
+	ForumCategory roleCategory = ForumCategory.createInstance("Розділ по ролях","для адміністраторів, бухгалтерів, вчителів",true);
 	roleCategory = forumCategoryRepository.save(roleCategory);
 	
-	ForumCategory adminCategory = new ForumCategory("Адміністратори","Для адмінчиків",false,true);
+	ForumCategory adminCategory = ForumCategory.createInstance("Адміністратори","Для адмінчиків",true);
 	adminCategory.addRoleDemand(IntitaUserRoles.ADMIN);
-	ForumCategory accountantCategory = new ForumCategory("Бухгалтери","Для бухгалтерів",false,true);
+	ForumCategory accountantCategory = ForumCategory.createInstance("Бухгалтери","Для бухгалтерів",true);
 	accountantCategory.addRoleDemand(IntitaUserRoles.ACCOUNTANT);
-	ForumCategory teacgersCategory = new ForumCategory("Вчителі","Для вчителів",false,true);
+	ForumCategory teacgersCategory =  ForumCategory.createInstance("Вчителі","Для вчителів",true);
 	teacgersCategory.addRoleDemand(IntitaUserRoles.TEACHER);
 	adminCategory.setCategory(roleCategory);
 	accountantCategory.setCategory(roleCategory);
@@ -188,39 +188,45 @@ public void initCategoriesByRoles(){
 public void saveCourseAsCategory(Course course,ForumCategory parentCategory){		
 	final String MODULES_CATEGORY_NAME = "Модулі";
 	  
-	ForumCategory category = new ForumCategory(course.getTitleUa(),course.getAlias(),true);
+	ForumCategory category =  ForumCategory.createInstanceForCourse(course.getTitleUa(),course.getAlias(),true,course.getId());
 		category.setCategory(parentCategory);
-		category = forumCategoryRepository.save(category);
-		
-		ForumCategory moduleCategory = getOrCreateForumCategory(MODULES_CATEGORY_NAME,category,"Обговорення модулів");
-	
+		category = forumCategoryRepository.save(category);	
+		ForumCategory moduleCategory = getOrCreateForumCategory(MODULES_CATEGORY_NAME,category,"Обговорення модулів");	
 		ArrayList<Module> modules = moduleService.getAllFromCourse(course);
-
 		for (Module module : modules){
-			ForumCategory c = new ForumCategory(module.getTitleUa(),module.getAlias(),true);
+			ForumCategory c = ForumCategory.createInstanceForModule(module.getTitleUa(),module.getAlias(),true,module.getId());
 			c.setCategory(moduleCategory);
 			forumCategoryRepository.save(c);
 		}			
 }
 public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description){
-	return getOrCreateForumCategory(name,parent,description,null);
+	return getOrCreateForumCategory(name,parent,description,null,null);
 }
-public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,Long courseOrModuleId){
+public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,
+		Long courseOrModuleId,Boolean derivedFromCourse){
 	ForumCategory targetCategory = null;
 	ArrayList<ForumCategory> categoriesTemp;
-	if (forumCategoryRepository.countByName(name)==0){
-		targetCategory = new ForumCategory(name,description,false,true);
+	boolean isDerivedFromCourseOrCategory = derivedFromCourse!=null && courseOrModuleId !=null;
+	// if category created for module or course already excist
+	if(isDerivedFromCourseOrCategory){
+	if (forumCategoryRepository.countByCourseModuleIdAndIsCourseCategory(
+			courseOrModuleId,derivedFromCourse)==0){
+			if (derivedFromCourse)
+		targetCategory = ForumCategory.createInstanceForCourse(name,description,true,courseOrModuleId);
+		else
+			targetCategory = ForumCategory.createInstanceForModule(name,description,false,courseOrModuleId);	
 		targetCategory.setCategory(parent);
 		targetCategory = forumCategoryRepository.save(targetCategory);
 	}
 	else{
-		if (courseOrModuleId==null)
-			categoriesTemp = forumCategoryRepository.findFirstByNameWhereDateEqualMinDate(name);
-		else
 			categoriesTemp = forumCategoryRepository.findFirstByNameAndCourseOrModuleIdWhereDateEqualMinDate(name, courseOrModuleId);
 		if (categoriesTemp != null && categoriesTemp.size()>0){
 			targetCategory = categoriesTemp.get(0);
 		}
+	}
+	}
+	else{
+		categoriesTemp = forumCategoryRepository.findFirstByNameWhereDateEqualMinDate(name);
 	}
 	
 	return targetCategory;
