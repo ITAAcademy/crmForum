@@ -25,9 +25,17 @@ public interface ForumCategoryRepository  extends CrudRepository<ForumCategory, 
 	int countByCourseModuleIdAndIsCourseCategory(Long id,Boolean isCourseCategory);
 	@Query(value = "SELECT c from forum_category c WHERE c.name = (:name) AND c.date = (select MIN(date) from forum_category)")
 	ArrayList<ForumCategory> findFirstByNameWhereDateEqualMinDate(@Param(value = "name") String name);
-	@Query(value = "SELECT c from forum_category c WHERE c.name = (:name) AND c.courseModuleId = (:courseOrModuleId) AND c.date = (select MIN(date) from forum_category)")
-	ArrayList<ForumCategory> findFirstByNameAndCourseOrModuleIdWhereDateEqualMinDate(@Param(value = "name") String name,@Param(value = "courseOrModuleId") Long courseOrModuleId);
+	@Query(value = "SELECT COUNT(c) from forum_category c WHERE c.courseModuleId = (:courseOrModuleId) AND c.isCourseCategory = (:isCourseCategory)")
+	int countByCourseOrModuleIdAndIsCourseCategory(@Param(value = "courseOrModuleId") Long courseOrModuleId,@Param(value="isCourseCategory") boolean isCourseCategory);
+	@Query(value = "SELECT c from forum_category c WHERE c.courseModuleId = (:courseOrModuleId) AND c.isCourseCategory = (:isCourseCategory)")
+	ArrayList<ForumCategory> findByCourseOrModuleIdAndIsCourseCategory(@Param(value = "courseOrModuleId") Long courseOrModuleId,@Param(value="isCourseCategory") boolean isCourseCategory);
+	ArrayList<ForumCategory> findByNameAndCategoryId(String name,Long categoryId);
+	ArrayList<ForumCategory> findByNameAndCategoryIdIsNull(String name);
+	@Query(value = "SELECT COUNT(c) from forum_category c WHERE c.name = (:name) AND c.category.id = (:categoryId)")
+	int countByNameAndCategoryId(@Param(value = "name") String name,@Param(value = "categoryId") Long categoryId);
 	@Query(value = "SELECT COUNT(c) from forum_category c WHERE (name = (:name) AND courseModuleId = (:courseOrModuleId) AND date = (select MIN(date) from forum_category))")
 	int countByNameAndCourseOrModuleId(@Param(value = "name") String name,@Param(value = "courseOrModuleId") Long courseOrModuleId);
+	@Query(value = "SELECT c from forum_category c WHERE c.name = (:name) AND c.courseModuleId = (:courseOrModuleId) AND c.date = (select MIN(date) from forum_category)")
+	ArrayList<ForumCategory> findFirstByNameAndCourseOrModuleIdWhereDateEqualMinDate(@Param(value = "name") String name,@Param(value = "courseOrModuleId") Long courseOrModuleId);
 }
 

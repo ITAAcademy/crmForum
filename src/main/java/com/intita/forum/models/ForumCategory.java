@@ -53,26 +53,22 @@ public static ForumCategory createInstance(String name,String description,boolea
 	return instance;
 }
 
-public static ForumCategory createInstanceForCourse(String name,String description,boolean containSubCategories,Long courseId){
+public static ForumCategory createInstanceForCourse(String name,String description,Long courseId){
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-	if (containSubCategories)
 		instance.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
-	else instance.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
 	instance.date = new Date();
 	instance.courseModuleId = courseId;
 	instance.isCourseCategory=true;
 	return instance;
 }
 
-public static ForumCategory createInstanceForModule(String name,String description,boolean containSubCategories,Long moduleId){
+public static ForumCategory createInstanceForModule(String name,String description,Long moduleId){
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-	if (containSubCategories)
-		instance.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
-	else instance.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
+	instance.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
 	instance.date = new Date();
 	instance.courseModuleId = moduleId;
 	instance.isCourseCategory=false;

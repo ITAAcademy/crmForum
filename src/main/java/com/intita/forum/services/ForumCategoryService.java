@@ -1,6 +1,7 @@
 package com.intita.forum.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +66,8 @@ public class ForumCategoryService {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	final private Long EDUCATIONAL_CATEGORY_ID = 1L;
+	
 
 public Page<ForumCategory> getAllCategories(int page){
 	return forumCategoryRepository.findAll(new PageRequest(page,categoriesCountForPage)); 
@@ -80,13 +83,23 @@ public ForumCategory getCategoryById(Long id){
 public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user,int page){
 	if (pageObj==null)return null;
 	List<ForumCategory> pageContent = pageObj.getContent();
-	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
+	List<ForumCategory> accessibleCategoriesList = filterNotAccesibleCategories(pageContent,user,page);
 	for (ForumCategory category : pageContent){
 		if(checkCategoryAccessToUser(user, category.getId())){
 			accessibleCategoriesList.add(category);	
 		}
 	}
 	return CustomDataConverters.listToPage(accessibleCategoriesList, page, topicsCountForPage);
+}
+public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,IntitaUser user,int page){
+	if (pageContent==null)return null;
+	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
+	for (ForumCategory category : pageContent){
+		if(checkCategoryAccessToUser(user, category.getId())){
+			accessibleCategoriesList.add(category);	
+		}
+	}
+	return accessibleCategoriesList;
 }
 public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user){
 	List<ForumCategory> pageContent = pageObj.getContent();
@@ -99,16 +112,16 @@ public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
 	return accessibleCategoriesList;
 }
 @Transactional
-public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
+public List<ForumCategory> getSubCategoriesList(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
 	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
-	Page<ForumCategory> result;
+	List<ForumCategory> result = null;
 	switch(childrensType){
 	case ChildrenTopic: result = null;
 	break;
 	case ChildrenCategory:
 		if (sortingCriteria==null)
-		result = forumCategoryRepository.findByCategory(rootCategory, new PageRequest(page,categoriesCountForPage));
+		result = forumCategoryRepository.findByCategory(rootCategory, new PageRequest(page,categoriesCountForPage)).getContent();
 		else{
 			Session session = sessionFactory.getCurrentSession();
 			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
@@ -122,8 +135,7 @@ public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,Use
 			Query query = session.createQuery(hql);
 			if (whereParam!=null)
 			query.setParameter("dateParam", sortingCriteria.getDateParam());
-			List<ForumCategory> resultList = query.list();
-			result =  CustomDataConverters.listToPage(resultList,page,categoriesCountForPage);
+			result = query.list();
 		}
 		
 		break;
@@ -132,7 +144,15 @@ public Page<ForumCategory> getSubCategories(Long id,int page,IntitaUser user,Use
 	}
 	return filterNotAccesibleCategories(result,user,page);
 }
-
+@Transactional
+public Page<ForumCategory> getSubCategoriesPage(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
+List<ForumCategory> subCategoriesList = getSubCategoriesList(id,page,user,sortingCriteria);
+if (subCategoriesList==null) 
+	return null;
+Page<ForumCategory> result = CustomDataConverters.listToPage(subCategoriesList,page,categoriesCountForPage,subCategoriesList.size());
+return result;
+}
+@Transactional
 public ArrayList<ForumCategory> getSubCategories(Long id){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
 	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
@@ -162,48 +182,102 @@ public ArrayList<ForumTopic> getAllInludeSubCategoriesArray(ForumCategory rootCa
 }
 
 @PostConstruct
-public void initDatabase(){
-	if (forumCategoryRepository.count()>0) return;
+public void updateCategoriesFromCourses(){
+	initEducationCategory();//must be called first to set proper Id for educational category
 	initCategoriesByRoles();
-	initEducationCategory();
+	
 }
 
+@Transactional
 public void initCategoriesByRoles(){
-	ForumCategory roleCategory = ForumCategory.createInstance("Розділ по ролях","для адміністраторів, бухгалтерів, вчителів",true);
-	roleCategory = forumCategoryRepository.save(roleCategory);
+	final String ROLES_CATEGORY_NAME = "Розділ по ролях";
+	final String ROLES_ADMINISTRATORS_CATEGORY_NAME = "Адміністратори";
+	final String ROLES_ACCOUNTANTS_CATEGORY_NAME = "Бухгалтери";
+	final String ROLES_TEACHERS_CATEGORY_NAME = "Вчителі";
 	
-	ForumCategory adminCategory = ForumCategory.createInstance("Адміністратори","Для адмінчиків",true);
-	adminCategory.addRoleDemand(IntitaUserRoles.ADMIN);
-	ForumCategory accountantCategory = ForumCategory.createInstance("Бухгалтери","Для бухгалтерів",true);
-	accountantCategory.addRoleDemand(IntitaUserRoles.ACCOUNTANT);
-	ForumCategory teacgersCategory =  ForumCategory.createInstance("Вчителі","Для вчителів",true);
-	teacgersCategory.addRoleDemand(IntitaUserRoles.TEACHER);
-	adminCategory.setCategory(roleCategory);
-	accountantCategory.setCategory(roleCategory);
-	teacgersCategory.setCategory(roleCategory);
-	forumCategoryRepository.save(adminCategory);
-	forumCategoryRepository.save(accountantCategory);
-	forumCategoryRepository.save(teacgersCategory);
+	/*ForumCategory roleCategory = null;
+	ArrayList<ForumCategory> categories = forumCategoryRepository.findByNameAndCategoryIdWhereDateEqualMinDate(ROLES_CATEGORY_NAME,
+			null);
+	if (categories.size()>0){
+		roleCategory = categories.get(0);
+	}
+	if (roleCategory == null)
+		roleCategory = ForumCategory.createInstance(ROLES_CATEGORY_NAME,"для адміністраторів, бухгалтерів, вчителів",true);
+	roleCategory = forumCategoryRepository.save(roleCategory);*/
+	ForumCategory roleCategory = getOrCreateForumCategory(ROLES_CATEGORY_NAME,null,"для адміністраторів, бухгалтерів, вчителів",true);
+	
+	//ForumCategory adminCategory = ForumCategory.createInstance(ROLES_ADMINISTRATORS_CATEGORY_NAME,"Для адмінчиків",false);
+	ForumCategory adminCategory = getOrCreateForumCategory(ROLES_ADMINISTRATORS_CATEGORY_NAME,roleCategory,"Для адмінчиків",false,IntitaUserRoles.ADMIN);
+	
+	//ForumCategory accountantCategory = ForumCategory.createInstance(ROLES_ACCOUNTANTS_CATEGORY_NAME,"Для бухгалтерів",false);
+	ForumCategory accountantCategory =  getOrCreateForumCategory(ROLES_ACCOUNTANTS_CATEGORY_NAME,roleCategory,"Для бухгалтерів",false,IntitaUserRoles.ACCOUNTANT);
+
+	//ForumCategory teacgersCategory =  ForumCategory.createInstance(ROLES_TEACHERS_CATEGORY_NAME,"Для вчителів",false);
+	ForumCategory teacgersCategory =  getOrCreateForumCategory(ROLES_TEACHERS_CATEGORY_NAME,roleCategory,"Для вчителів",false,IntitaUserRoles.TEACHER);
 }
+@Transactional
 public void saveCourseAsCategory(Course course,ForumCategory parentCategory){		
-	final String MODULES_CATEGORY_NAME = "Модулі";
-	  
-	ForumCategory category =  ForumCategory.createInstanceForCourse(course.getTitleUa(),course.getAlias(),true,course.getId());
+
+	ForumCategory category =  getForumCategoryByCourseOrModule(course.getId(),true);
+	if (category == null)
+	{
+		category  = ForumCategory.createInstanceForCourse(course.getTitleUa(),course.getAlias(),course.getId());
 		category.setCategory(parentCategory);
-		category = forumCategoryRepository.save(category);	
-		ForumCategory moduleCategory = getOrCreateForumCategory(MODULES_CATEGORY_NAME,category,"Обговорення модулів");	
+		category = forumCategoryRepository.save(category);
+	}
 		ArrayList<Module> modules = moduleService.getAllFromCourse(course);
 		for (Module module : modules){
-			ForumCategory c = ForumCategory.createInstanceForModule(module.getTitleUa(),module.getAlias(),true,module.getId());
-			c.setCategory(moduleCategory);
+			ForumCategory c = getForumCategoryByCourseOrModule(module.getId(),false);
+			if (c == null){
+			//module isn't already excist
+			c = ForumCategory.createInstanceForModule(module.getTitleUa(),module.getAlias(),module.getId());
+			c.setCategory(category);
 			forumCategoryRepository.save(c);
-		}			
+			}
+		}	
 }
-public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description){
-	return getOrCreateForumCategory(name,parent,description,null,null);
+@Transactional
+public ForumCategory getForumCategoryByCourseOrModule(Long id,boolean isCourse){
+	List<ForumCategory> list = forumCategoryRepository.findByCourseOrModuleIdAndIsCourseCategory(id,true);
+	if (list.size()>0) return list.get(0);
+	return null;
 }
+
+@Transactional
+public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,boolean containSubCategories,IntitaUserRoles role){
+	//return getOrCreateForumCategory(name,parent,description,null,null,containSubCategories);
+	ForumCategory roleCategory = null;
+	Long parentId = (parent==null) ? null : parent.getId();
+	ForumCategory parentCategory = null;
+	if (parentId!=null)parentCategory = forumCategoryRepository.findOne(parentId);
+	ArrayList<ForumCategory> categories = null;
+	if (parentId == null)
+	categories = forumCategoryRepository.findByNameAndCategoryIdIsNull(name);
+	else categories = forumCategoryRepository.findByNameAndCategoryId(name,parentId);
+	if (categories.size()>0){
+		roleCategory = categories.get(0);
+	}
+	if (roleCategory == null)
+	{
+		roleCategory = ForumCategory.createInstance(name,description,containSubCategories);
+		if (role!=null)
+		roleCategory.addRoleDemand(role);
+		roleCategory.setCategory(parentCategory);
+	}
+	roleCategory = forumCategoryRepository.save(roleCategory);
+	return roleCategory;
+}
+@Transactional
 public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,
-		Long courseOrModuleId,Boolean derivedFromCourse){
+		boolean containSubCategories){
+	return getOrCreateForumCategory(name, parent,description,containSubCategories,null);
+}
+//IntitaUserRoles
+
+@Transactional
+public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,
+		Long courseOrModuleId,Boolean derivedFromCourse,boolean containSubCategories ){
+	
 	ForumCategory targetCategory = null;
 	ArrayList<ForumCategory> categoriesTemp;
 	boolean isDerivedFromCourseOrCategory = derivedFromCourse!=null && courseOrModuleId !=null;
@@ -212,9 +286,9 @@ public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,S
 	if (forumCategoryRepository.countByCourseModuleIdAndIsCourseCategory(
 			courseOrModuleId,derivedFromCourse)==0){
 			if (derivedFromCourse)
-		targetCategory = ForumCategory.createInstanceForCourse(name,description,true,courseOrModuleId);
+		targetCategory = ForumCategory.createInstanceForCourse(name,description,courseOrModuleId);
 		else
-			targetCategory = ForumCategory.createInstanceForModule(name,description,false,courseOrModuleId);	
+			targetCategory = ForumCategory.createInstanceForModule(name,description,courseOrModuleId);	
 		targetCategory.setCategory(parent);
 		targetCategory = forumCategoryRepository.save(targetCategory);
 	}
@@ -226,19 +300,28 @@ public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,S
 	}
 	}
 	else{
-		categoriesTemp = forumCategoryRepository.findFirstByNameWhereDateEqualMinDate(name);
+	//categoriesTemp = forumCategoryRepository.findFirstByNameWhereDateEqualMinDate(name);
+		targetCategory = ForumCategory.createInstance(name, description, containSubCategories);
+		targetCategory.setCategory(parent);
+		targetCategory = forumCategoryRepository.save(targetCategory);
 	}
 	
 	return targetCategory;
 }
-
+@Transactional
 public void initEducationCategory(){
 	final String EDUCATION_CATEGORY_NAME = "Навчання";
 	final String COURSE_CATEGORY_NAME = "Курси";
 	ArrayList<Course> courses = courseService.getAll();
 	//if categories doesn't excist we create them and store id Database
-	ForumCategory educationCategory = getOrCreateForumCategory(EDUCATION_CATEGORY_NAME, null, "Для студентів");
-	ForumCategory courseCategory = getOrCreateForumCategory(COURSE_CATEGORY_NAME, educationCategory, "Обговорення курсів");;
+	ForumCategory educationCategory =forumCategoryRepository.findOne(EDUCATIONAL_CATEGORY_ID);
+	if (educationCategory==null){
+		educationCategory = getOrCreateForumCategory(EDUCATION_CATEGORY_NAME, null, "Для студентів",true);
+	educationCategory.setId(EDUCATIONAL_CATEGORY_ID);
+	educationCategory = forumCategoryRepository.save(educationCategory);
+	}
+	ForumCategory courseCategory =   getOrCreateForumCategory(COURSE_CATEGORY_NAME, educationCategory, "Обговорення курсів",true);
+
 	for (Course c : courses){
 		saveCourseAsCategory(c,courseCategory);
 	}

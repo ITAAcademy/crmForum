@@ -31,5 +31,7 @@ function topicAdditionFail(){
 }
 function addTopic(event,url){
     event.preventDefault();
+    for (instance in CKEDITOR.instances)
+        CKEDITOR.instances[instance].updateElement();
 submitForm('#addTopicForm',url,topicAdditionSuccess,topicAdditionFail);
 }

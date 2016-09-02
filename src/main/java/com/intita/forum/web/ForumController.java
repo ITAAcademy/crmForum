@@ -157,6 +157,13 @@ public class ForumController {
 		}
 		return  new ObjectMapper().writeValueAsString(userList);
 	}
+	@RequestMapping(value = "/operations/category/update_all_from_courses", method = RequestMethod.GET)
+	public String updateCategoriesFromCourses(HttpServletRequest request){
+		String referer = request.getHeader("Referer");
+		forumCategoryService.updateCategoriesFromCourses();
+		if (referer==null) return "redirect:/";
+		return "redirect:"+referer;
+	}
 
 	@RequestMapping(value = "/chat/lectures/getfivelike/", method = RequestMethod.POST)
 	@ResponseBody
@@ -336,7 +343,7 @@ public class ForumController {
 			else{
 				sortingCriteria.saveToCookie(ForumCategory.class, request,response);
 			}
-			Page<ForumCategory> categories = forumCategoryService.getSubCategories(categoryId, page-1,user,sortingCriteria);
+			Page<ForumCategory> categories = forumCategoryService.getSubCategoriesPage(categoryId, page-1,user,sortingCriteria);
 			int pagesCount = categories.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
 			model.addObject("pagesCount",pagesCount);
