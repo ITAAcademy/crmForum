@@ -220,6 +220,10 @@
     overflow-x: auto;
 }
 
+.row.menu .tool-bar-wraper::-webkit-scrollbar {
+    display: none;
+}
+
 .configure-head.hide-me * {
     /*max-height: 0px !important;
     max-width: 0px !important;

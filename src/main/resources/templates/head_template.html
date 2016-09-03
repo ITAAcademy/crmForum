@@ -13,8 +13,8 @@
             ============================ -->
             <div class="tool-bar">
                 <div th:if="${blockSearch == null}" class="search-container input-field" style="">
-                    <input class="search-input" placeholder="Пошук" autocomplete="off" id="last_name" type="text" />
-                    <i style="position: absolute;bottom: 0px;left: -30px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
+                    <input class="search-input" placeholder="Пошук" autocomplete="off" id="search-input" type="text" />
+                    <i onclick="focusSearchInput()" style="position: absolute;bottom: 0px;left: -30px;line-height: 40px;height: 40px;" class="small material-icons">search</i>
                     <div th:if="${topic == null}" class="check-box">
                         <div>
                             <input class="checkbox" type="checkbox" id="findbybody" checked="true" /> Шукати в тілі
