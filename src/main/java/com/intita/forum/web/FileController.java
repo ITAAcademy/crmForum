@@ -5,11 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.FileNameMap;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -38,22 +37,20 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intita.forum.domain.Pair;
+import com.intita.forum.models.FileInfo;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.services.ConfigParamService;
 import com.intita.forum.services.ForumLangService;
 import com.intita.forum.services.IntitaUserService;
-import com.intita.forum.util.Transliterator;
 
 import utils.CustomDataConverters;
-import utils.RandomString;
 
 @Service
 @Controller
 public class FileController {
 	private final int FILES_COUNT_PER_PAGE = 5;
 	private final static Logger log = LoggerFactory.getLogger(FileController.class);
-	private final int DEFAULT_FILE_PREFIX_LENGTH = 15;
+	
 	static final private ObjectMapper mapper = new ObjectMapper();
 	@Value("${crmchat.upload_dir}")
 	private String uploadDir;
@@ -131,13 +128,11 @@ public class FileController {
 			boolean exists = dir.exists();
 			if(!exists)
 				dir.mkdirs();
-			String orgName=null;
+			String originalName=mpf.getOriginalFilename();
+			FileInfo fileInfo = FileInfo.createFileInfoFromShortName(originalName, new Date());
 			try {
 				//just temporary save file info into ufile
-
-				orgName = randomizeFileName(mpf.getOriginalFilename());
-				String filePath = realPathtoUploads + orgName;
-				File dest = new File(filePath);
+				File dest = new File(realPathtoUploads+fileInfo.getFileName());
 				mpf.transferTo(dest);
 
 			} catch (IOException e) {
@@ -146,7 +141,7 @@ public class FileController {
 
 			}
 			String hostPart = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
-			String downloadLink =  hostPart+"/"+ String.format("download_file?owner_id=%1$sfile_name=%2$s",user.getId(),orgName);
+			String downloadLink =  hostPart+"/"+ String.format("download_file?owner_id=%1$sfile_name=%2$s",user.getId(),fileInfo.getFileName());
 			downloadLinks.add(downloadLink);
 			log.info("downloadLink:"+downloadLink);
 		}
@@ -212,9 +207,10 @@ public class FileController {
 
 		// set headers for the response
 		String headerKey = "Content-Disposition";
-		
+
+		FileInfo fileInfo = FileInfo.createFileInfoFromFile(downloadFile);
 		String headerValue = String.format("attachment; filename='%s\'",
-				deRandomizeFileName(Transliterator.transliterate(downloadFile.getName())));
+				fileInfo.getShortName());
 		response.setHeader(headerKey, headerValue);
 
 		// get output stream of the response
@@ -270,10 +266,9 @@ public class FileController {
 	 * @param user
 	 * @return
 	 */
-	private Page<Pair<String,String>> getUserFilesList(IntitaUser user,int page){
-		ArrayList<Pair<String,String>> filesNamesPairs = new ArrayList<Pair<String,String>>();
-		Page<Pair<String,String>> pageObj  = new PageImpl<Pair<String,String>>(filesNamesPairs);
-		
+	private Page<FileInfo> getUserFilesList(IntitaUser user,int page){
+		ArrayList<FileInfo> filesInfo = new ArrayList<FileInfo>();
+		Page<FileInfo> pageObj  = new PageImpl<FileInfo>(filesInfo);
 		if (user==null) return pageObj;
 		File folder = new File(uploadDir+File.separator+user.getId());
 		if (!folder.exists()) return pageObj;
@@ -281,25 +276,19 @@ public class FileController {
 		if (listOfFiles==null) return pageObj;
 		    for (int i = 0; i < listOfFiles.length; i++) {
 		      if (listOfFiles[i].isFile()) {
-		    	  String fileName = listOfFiles[i].getName();
-		    	  Pair<String,String> pair = new Pair<String,String>(deRandomizeFileName(fileName),fileName);
-		    	  filesNamesPairs.add(pair);
+		    	  File file = listOfFiles[i];
+		    	  FileInfo fInfo = FileInfo.createFileInfoFromFile(file);
+		    	  filesInfo.add(fInfo);
 		      } 
 		      /*else if (listOfFiles[i].isDirectory()) {
 		        System.out.println("Directory " + listOfFiles[i].getName());
 		      }*/
 		    }
-		    pageObj = CustomDataConverters.listToPage(filesNamesPairs, page, FILES_COUNT_PER_PAGE);
+		    Collections.sort(filesInfo);
+		    pageObj = CustomDataConverters.listToPage(filesInfo, page, FILES_COUNT_PER_PAGE);
 		    return pageObj;
 	
 	}
-	private String randomizeFileName(String fileName){
-		RandomString randString = new RandomString(DEFAULT_FILE_PREFIX_LENGTH);
-		String nameSufix = randString.nextString();
-		return fileName + nameSufix;
-	}
-	private String deRandomizeFileName(String randomizedFileName){
-		return randomizedFileName.substring(0,randomizedFileName.length()-DEFAULT_FILE_PREFIX_LENGTH);
-	}
+	
 
 }

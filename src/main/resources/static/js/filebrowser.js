@@ -87,6 +87,7 @@ function getXmlHttp() {
                    uploadProgress = Math.floor((event.loaded / event.totalSize) * 100);
                 });
         }
+        setTimeout(function () { window.location.reload(); }, 500);
         return false;
     });
 });

@@ -21,7 +21,7 @@
   <input class="waves-effect waves-light btn" type="submit"/>
   </form>
   <div class="collection">
-  	<a class="file_item collection-item" th:if="${user.id!=null}"  th:each="userFile : ${userFiles}" th:href="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFile.getSecond()}__}" th:text="${userFile.getFirst()}"></a>
+  	<a class="file_item collection-item" th:if="${user.id!=null}"  th:each="userFile : ${userFiles}" th:href="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFile.fileName}__}" th:text="${userFile.shortName}"></a>
   	</div>
   	 <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link=${paginationLink}">...</span>
 	</body>
