@@ -464,6 +464,7 @@ $(document).ready(function() {
         myHilitor = new Hilitor();
         myHilitor.apply(search_param);
     }
+    menu_upate();
 
 });
 
@@ -478,8 +479,6 @@ function onDivLinkClick(event, url) {
 function GoToUrl(url) {
     window.location.href = url;
 }
-
-menu_upate();
 
 function submitForm(formId, url, successCallback, failCallback) {
     var serialized = $(formId).serialize();
@@ -523,4 +522,9 @@ function openDialog(event) {
         win.close();
     })
     return false;
+}
+
+function focusSearchInput()
+{
+    $("#search-input").focus();
 }
