@@ -215,7 +215,7 @@
     margin-left: 40px;
     text-align-last: center;
     text-align: justify;
-    height: 400px;
+    height: auto;
     white-space: nowrap;
     overflow-x: auto;
 }

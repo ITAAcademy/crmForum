@@ -105,9 +105,19 @@ function messageAdditionSuccess(message) {
 function messageAdditionFail() {
     Materialize.toast('Не вдалось додати повідомлення', 4000, 'red-toast') // 4000 is the duration of the toast
 }
+function maximalSizeOfMessageReachedErrorAlert(){
+    Materialize.toast('Розмір повідомлення перевищує допустимий обсяг', 4000, 'red-toast'); 
+}
 
 function addMessage(event, url) {
     event.preventDefault();
+    var dataLength = CKEDITOR.instances.ckeditor.getData().length;
+    var MAXIMAL_MESSAGE_SIZE = 1000;
+    if (dataLength>MAXIMAL_MESSAGE_SIZE){
+        maximalSizeOfMessageReachedErrorAlert();
+        return;
+    }
+
     for (instance in CKEDITOR.instances)
         CKEDITOR.instances[instance].updateElement();
     submitForm('#addMessageForm', url, messageAdditionSuccess, messageAdditionFail);
