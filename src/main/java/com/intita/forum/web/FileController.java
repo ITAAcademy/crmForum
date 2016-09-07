@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,16 +52,16 @@ import utils.CustomDataConverters;
 public class FileController {
 	private final int FILES_COUNT_PER_PAGE = 5;
 	private final static Logger log = LoggerFactory.getLogger(FileController.class);
-	
+
 	static final private ObjectMapper mapper = new ObjectMapper();
 	@Value("${crmchat.upload_dir}")
 	private String uploadDir;
 	@Value("${multipart.max-file-size}")
 	private String MaxFileSizeString;
-	
+
 	@Autowired
 	ConfigParamService configParamService;
-	
+
 	//File Size string looks like 100Mb, so wee need check ending, remove last two symbols and convert to bytes count
 	private int convertFileSizeStringToBytes(String size){
 		int maxFileLength = Integer.parseInt(size.substring(0, size.length()-2));//Remove 'Mb' at end
@@ -232,19 +234,26 @@ public class FileController {
 	@ResponseStatus(value = HttpStatus.NOT_FOUND)
 	public ModelAndView handleException(FileNotFoundException e) {
 		ModelAndView mav = new ModelAndView();
-	    mav.setViewName("errorpage");
-	    mav.addObject("errorName", ((HashMap<String,String>)forumLangService.getLocalization().get("fileOperations")).get("fileNotFound"));
-	    mav.addObject("errorMessage", e.getMessage());
-	    return mav;
+		mav.setViewName("errorpage");
+		mav.addObject("errorName", ((HashMap<String,String>)forumLangService.getLocalization().get("fileOperations")).get("fileNotFound"));
+		mav.addObject("errorMessage", e.getMessage());
+		return mav;
 	}
+	private final String[] supportedFormat = new String[]{"png", "jpg", "gif", "tif"};
+	
 	@RequestMapping(method = RequestMethod.GET, value="/filebrowser/{page}")
 	public ModelAndView fileBrowserMapping(Authentication auth, @PathVariable(value="page") Integer page, 
 			@RequestParam(required=false,value="CKEditorFuncNum") String ckFunctionNumber,
-			@RequestParam(required=false,value="CKEditor") String ckeditorName){
+			@RequestParam(required=false,value="CKEditor") String ckeditorName, @RequestParam(required=false,value="isImageLoader") Boolean isImageLoader){
 		if (page==null) page = 0;
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView mav = new ModelAndView(); 
-		Page pageObj = getUserFilesList(user,page-1);
+		
+		Page pageObj ;
+		if(isImageLoader)
+			pageObj = getUserFilesList(user, new ArrayList<>(Arrays.asList(supportedFormat)), page-1);
+		else
+			pageObj = getUserFilesList(user, null, page-1);
 		mav.setViewName("filebrowser");
 		mav.addObject("userFiles", pageObj);
 		mav.addObject("user", user);
@@ -254,19 +263,19 @@ public class FileController {
 		mav.addObject("paginationLink","/filebrowser/");
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET, value="/filebrowser")
 	public ModelAndView fileBrowserMapping(Authentication auth, 
 			@RequestParam(required=false,value="CKEditorFuncNum") String ckFunctionNumber,
-			@RequestParam(required=false,value="CKEditor") String ckeditorName){
-		return fileBrowserMapping(auth,1,ckFunctionNumber,ckeditorName);
+			@RequestParam(required=false,value="CKEditor") String ckeditorName, @RequestParam(required=false,value="isImageLoader") Boolean isImageLoader){
+		return fileBrowserMapping(auth,1,ckFunctionNumber,ckeditorName, isImageLoader);
 	}
 	/**
 	 * keys of Map represent short file names without random symbols, values of map represent real names;
 	 * @param user
 	 * @return
 	 */
-	private Page<FileInfo> getUserFilesList(IntitaUser user,int page){
+	private Page<FileInfo> getUserFilesList(IntitaUser user, ArrayList<String> supportedFormat,int page){
 		ArrayList<FileInfo> filesInfo = new ArrayList<FileInfo>();
 		Page<FileInfo> pageObj  = new PageImpl<FileInfo>(filesInfo);
 		if (user==null) return pageObj;
@@ -274,21 +283,26 @@ public class FileController {
 		if (!folder.exists()) return pageObj;
 		File[] listOfFiles = folder.listFiles();
 		if (listOfFiles==null) return pageObj;
-		    for (int i = 0; i < listOfFiles.length; i++) {
-		      if (listOfFiles[i].isFile()) {
-		    	  File file = listOfFiles[i];
-		    	  FileInfo fInfo = FileInfo.createFileInfoFromFile(file);
-		    	  filesInfo.add(fInfo);
-		      } 
-		      /*else if (listOfFiles[i].isDirectory()) {
+		for (int i = 0; i < listOfFiles.length; i++) {
+			if (listOfFiles[i].isFile()) {
+				File file = listOfFiles[i];
+				FileInfo fInfo = FileInfo.createFileInfoFromFile(file);
+				
+				String extension = FilenameUtils.getExtension(fInfo.getShortName());
+				if(supportedFormat != null && !supportedFormat.contains(extension))
+					continue;
+				
+				filesInfo.add(fInfo);
+			} 
+			/*else if (listOfFiles[i].isDirectory()) {
 		        System.out.println("Directory " + listOfFiles[i].getName());
 		      }*/
-		    }
-		    Collections.sort(filesInfo);
-		    pageObj = CustomDataConverters.listToPage(filesInfo, page, FILES_COUNT_PER_PAGE);
-		    return pageObj;
-	
+		}
+		Collections.sort(filesInfo);
+		pageObj = CustomDataConverters.listToPage(filesInfo, page, FILES_COUNT_PER_PAGE);
+		return pageObj;
+
 	}
-	
+
 
 }

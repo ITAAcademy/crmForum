@@ -10777,6 +10777,11 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
             b.CKEditor = c.name;
             b.CKEditorFuncNum = c._.filebrowserFn;
             b.langCode || (b.langCode = c.langCode);
+            b.isImageLoader = false;
+            debugger;
+            if(this.getDialog().isImageLoader != undefined)
+                 b.isImageLoader = this.getDialog().isImageLoader;
+
             b = g(this.filebrowser.url, b);
             c.popup(b, d, a, c.config.filebrowserWindowFeatures || c.config.fileBrowserWindowFeatures)
         }
