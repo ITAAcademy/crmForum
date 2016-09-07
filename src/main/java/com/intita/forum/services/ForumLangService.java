@@ -61,7 +61,6 @@ public Map<String,Map<String,Object>> getLocalizationMap(){
 }
 public Map<String, Object> getLocalization()
 {
-	
 	return (Map<String, Object>) getLocalizationMap().get(ForumController.getCurrentLang());
 }
 @PostConstruct

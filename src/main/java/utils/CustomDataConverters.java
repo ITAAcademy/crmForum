@@ -20,4 +20,9 @@ public class CustomDataConverters {
 	public static <T> Page<T> listToPage( List<T> list,int page,int itemsCountForPage){
 		return listToPage(list,page,itemsCountForPage,null);
 	}
+	public static long millisecondsToMinutes(long ms){
+		long seconds = ms / 1000;
+		long minutes = seconds / 60;
+		return minutes;
+	}
 }
