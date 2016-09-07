@@ -1,8 +1,10 @@
 package com.intita.forum.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -49,12 +52,12 @@ import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.domain.SessionProfanity;
+import com.intita.forum.domain.UserActionInfo;
 import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.domain.UserSortingCriteria.ShowItemsCriteria;
 import com.intita.forum.domain.UserSortingCriteria.SortByField;
 import com.intita.forum.event.LoginEvent;
 import com.intita.forum.event.ParticipantRepository;
-import com.intita.forum.models.ConfigParam;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
@@ -68,6 +71,8 @@ import com.intita.forum.services.LectureService;
 import com.intita.forum.services.TopicMessageService;
 import com.intita.forum.util.CustomPrettyTime;
 import com.intita.forum.util.ProfanityChecker;
+
+import utils.CustomDataConverters;
 
 /**
  * Controller that handles WebSocket chat messages
@@ -98,19 +103,20 @@ public class ForumController {
 	@Autowired private ForumTopicService forumTopicService;
 	@Autowired private TopicMessageService topicMessageService;
 
-	
-
 	@PersistenceContext
 	EntityManager entityManager;
 
 	private static final String KEFIRCONFIG_PATH = "bbcode/kefirconfig.xml";
-
+	
+	private static int MAXIMAL_USER_INACTIVE_TIME_MINUTES = 2; 
 	private TextProcessor bbCodeProcessor = null;
 	private BBProcessorFactory processorFactory;
+	
+	private HashMap<Long,UserActionInfo> onlineUsersActivity = new HashMap<Long,UserActionInfo>() ;
 	@PostConstruct
 	private void initTextProcessoe() {
 		processorFactory = BBProcessorFactory.getInstance();
-		refreshConfigParameters();
+		refreshConfigParameters();	
 	}
 	public TextProcessor getTextProcessorInstance(HttpServletRequest request){
 		if(bbCodeProcessor == null)//recreate bbCode processor?
@@ -157,6 +163,7 @@ public class ForumController {
 		}
 		return  new ObjectMapper().writeValueAsString(userList);
 	}
+
 	@RequestMapping(value = "/operations/category/update_all_from_courses", method = RequestMethod.GET)
 	public String updateCategoriesFromCourses(HttpServletRequest request){
 		String referer = request.getHeader("Referer");
@@ -231,6 +238,10 @@ public class ForumController {
 			return "ua";
 		return lg;
 	}
+	@RequestMapping(value="/operations/leave_site", method = RequestMethod.POST)
+	public void userLeaveSiteMapping(){
+		//TODO 
+	}
 
 	@RequestMapping(value="/login", method = RequestMethod.GET)
 	public ModelAndView  getLoginPage(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
@@ -247,7 +258,7 @@ public class ForumController {
 	@RequestMapping(value="/", method = RequestMethod.GET)
 	public ModelAndView  getIndex(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
 		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
-
+		
 		//chatLangService.updateDataFromDatabase();
 		if(before != null)
 		{
@@ -262,8 +273,10 @@ public class ForumController {
 		for (ForumCategory category : categories){
 			lastTopics.add(forumCategoryService.getLastTopic(category.getId()));
 		}
-		if (intitaUser!=null)
+		if (intitaUser!=null){
 			result.addObject("username",intitaUser.getNickName());
+			onlineUsersActivity.put(intitaUser.getId(), UserActionInfo.forEmptyAction());
+		}
 		result.addObject("categories",categories);
 		result.addObject("lastTopics",lastTopics);
 		int pagesCount = categories.getTotalPages();
@@ -296,7 +309,11 @@ public class ForumController {
 		model.addObject("currentPage",page);
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
-		model.addObject("user", (IntitaUser)auth.getPrincipal());
+		IntitaUser user = (IntitaUser)auth.getPrincipal();
+		if (user!=null){
+		model.addObject("user", user);
+		onlineUsersActivity.put(user.getId(), UserActionInfo.forEmptyAction());
+		}
 		List<ForumCategory> pageCategories = categoriesPage.getContent();
 		model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 		return model;
@@ -387,7 +404,10 @@ public class ForumController {
 			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class));
 		}
 		model.addObject("bbcode", getTextProcessorInstance(request));
+		if (user!=null){		
 		model.addObject("user", (IntitaUser)auth.getPrincipal());
+		onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
+		}
 
 		return model;
 	}
@@ -456,7 +476,11 @@ public class ForumController {
 		if(pagesCount<1)pagesCount=1;
 		model.addObject("pagesCount",pagesCount);
 		model.addObject("currentPage",page);
-		model.addObject("user", (IntitaUser)auth.getPrincipal());
+		IntitaUser user = (IntitaUser)auth.getPrincipal();
+		if(user !=null){
+		onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
+		model.addObject("user", user);
+		}
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
 
@@ -535,7 +559,11 @@ public class ForumController {
 		model.addObject("pagesCount",pagesCount);
 		model.addObject("currentPage",page);
 		model.addObject("topic",topic);
-		model.addObject("user", (IntitaUser)auth.getPrincipal());
+		IntitaUser user = (IntitaUser)auth.getPrincipal();
+		if (user!=null){
+		model.addObject("user", user);
+		onlineUsersActivity.put(user.getId(), UserActionInfo.forTopic(topicId));
+		}
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
 
@@ -549,12 +577,31 @@ public class ForumController {
 			for (TopicMessage topicMessage : messages) {
 				canEditMap.put(topicMessage.getId(), topicMessageService.canEdit((IntitaUser)auth.getPrincipal(), topicMessage));
 			}
-
+		model.addObject("onlineUsers", onlineUsersActivity);
 		model.addObject("canEditMap", canEditMap);
 		model.addObject("paginationLink", "/view/topic/" + topicId + "/");
 
 		return model;
 	}
+	  @Scheduled(fixedRate = 120000)
+	    public void reportCurrentTime() {
+	      log.info("removing offline users from online users list...");
+	      Iterator<Long> i = onlineUsersActivity.keySet().iterator();
+	      while (i.hasNext() ){
+	    	  Long key = i.next();
+	    	  UserActionInfo info = onlineUsersActivity.get(key);
+	    	  long currentTime = new Date().getTime();
+	    	  long delta =  currentTime - info.getLastActionTime();
+	    	  long minutesDelta = CustomDataConverters.millisecondsToMinutes(delta);
+	    	  //log.info(key+" "+info + " "+minutesDelta);
+	    	  if (minutesDelta>=MAXIMAL_USER_INACTIVE_TIME_MINUTES){
+	    		  i.remove();
+	    		  //log.info("removed");
+	    	  }
+	      }
+	      log.info("...done");
+	    }
+	
 	@RequestMapping(value="/operations/clearcookie/sorting_config",method = RequestMethod.GET)
 	public String clearCookiesForSorting( @RequestParam(value="itemType") String itemType,HttpServletResponse response,HttpServletRequest request){
 		String referer = request.getHeader("Referer");
@@ -592,6 +639,7 @@ public class ForumController {
 
 
 	@ResponseBody
+	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/messages/add/{topicId}",method = RequestMethod.POST)
 	public ResponseEntity<Map<String,String>> addNewMessage(@RequestParam("text") String postText,@PathVariable Long topicId,HttpServletRequest request, Authentication auth){
 		String referer = request.getHeader("Referer");
@@ -613,6 +661,7 @@ public class ForumController {
 
 
 	@ResponseBody
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
 	public ResponseEntity<Long> addTopic(@RequestParam(value = "topic_name") String topicName,@RequestParam(value = "topic_text") String topicText,@PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
 		if (topicName==null || topicName.length()<=0 || topicText==null || topicText.length()<=0) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
@@ -627,6 +676,7 @@ public class ForumController {
 		return new ResponseEntity<Long>(topic.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
 	}
 
+	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/operations/topic/{topicId}/toggle_pin",method = RequestMethod.POST)
 	public String togglePinTopic(@PathVariable Long topicId,Authentication auth,HttpServletRequest request){
 		String referer = request.getHeader("Referer");

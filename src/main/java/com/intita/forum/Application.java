@@ -16,12 +16,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.RequestContextListener;
 
 
 @SpringBootApplication
 @EnableAutoConfiguration
+@EnableScheduling
 //@Import({WebSocketTraceChannelInterceptor.class, WebSocketTraceChannelInterceptorAutoConfiguration.class})
 //@ComponentScan("org.springframework.boot.actuate.trace")
 public class Application extends SpringBootServletInitializer  implements AsyncConfigurer  {
