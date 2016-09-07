@@ -219,6 +219,9 @@
     white-space: nowrap;
     overflow-x: auto;
 }
+.configure-head:hover .tool-bar-wraper{
+    height: 400px; 
+}
 
 .row.menu .tool-bar-wraper::-webkit-scrollbar {
     display: none;
