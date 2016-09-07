@@ -65,6 +65,7 @@ import com.intita.forum.models.Lecture;
 import com.intita.forum.models.TopicMessage;
 import com.intita.forum.services.ConfigParamService;
 import com.intita.forum.services.ForumCategoryService;
+import com.intita.forum.services.ForumLangService;
 import com.intita.forum.services.ForumTopicService;
 import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.services.LectureService;
@@ -102,6 +103,7 @@ public class ForumController {
 	@Autowired private ForumCategoryService forumCategoryService;
 	@Autowired private ForumTopicService forumTopicService;
 	@Autowired private TopicMessageService topicMessageService;
+	@Autowired private ForumLangService forumLangService;
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -374,7 +376,7 @@ public class ForumController {
 			model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 			model.setViewName("categories_list");
 			model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
-			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class));
+			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));
 
 		}
 		else{
@@ -401,7 +403,7 @@ public class ForumController {
 			model.addObject("statistic",forumTopicService.getTopicsStatistic(pageTopics));
 			model.setViewName("topics_list");
 			model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
-			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class));
+			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class,forumLangService.getLocalization()));
 		}
 		model.addObject("bbcode", getTextProcessorInstance(request));
 		if (user!=null){		
@@ -547,7 +549,7 @@ public class ForumController {
 			sortingCriteria.saveToCookie(TopicMessage.class,request, response);
 		}
 		model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
-		model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(TopicMessage.class));
+		model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(TopicMessage.class,forumLangService.getLocalization()));
 		Page<TopicMessage> messages = topicMessageService.getAllMessagesAndPinFirst(topicId, page-1,sortingCriteria);
 		ForumTopic topic = forumTopicService.getTopic(topicId);
 		int pagesCount = 0;
@@ -580,6 +582,7 @@ public class ForumController {
 		model.addObject("onlineUsers", onlineUsersActivity);
 		model.addObject("canEditMap", canEditMap);
 		model.addObject("paginationLink", "/view/topic/" + topicId + "/");
+		model.addObject("localization",forumLangService.getLocalizationMap());
 
 		return model;
 	}
