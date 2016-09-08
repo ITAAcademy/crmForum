@@ -2,6 +2,7 @@ package com.intita.forum.domain;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,13 +37,13 @@ public enum ShowItemsCriteria {ALL,ONE_DAY,SEVEN_DAYS,ONE_MONTH,ONE_YEAR;
         }
         return null;
     }
-	public static HashMap<Integer,String> toHashMap(){
+	public static HashMap<Integer,String> toHashMap(Map<String, Object> localization){
 		HashMap<Integer,String> datePick = new HashMap<Integer,String>();
-		datePick.put(ShowItemsCriteria.ALL.ordinal(),"all_messages");
-		datePick.put(ShowItemsCriteria.ONE_DAY.ordinal(), "one_day");
-		datePick.put(ShowItemsCriteria.SEVEN_DAYS.ordinal(), "seven_days");
-		datePick.put(ShowItemsCriteria.ONE_MONTH.ordinal(), "one_month");
-		datePick.put(ShowItemsCriteria.ONE_YEAR.ordinal(), "one_year");
+		datePick.put(ShowItemsCriteria.ALL.ordinal(),(String)((HashMap)localization.get("topicOperations")).get("all_messages"));
+		datePick.put(ShowItemsCriteria.ONE_DAY.ordinal(), (String)((HashMap)localization.get("topicOperations")).get("one_day"));
+		datePick.put(ShowItemsCriteria.SEVEN_DAYS.ordinal(), (String)((HashMap)localization.get("topicOperations")).get("seven_days"));
+		datePick.put(ShowItemsCriteria.ONE_MONTH.ordinal(), (String)((HashMap)localization.get("topicOperations")).get("one_month"));
+		datePick.put(ShowItemsCriteria.ONE_YEAR.ordinal(), (String)((HashMap)localization.get("topicOperations")).get("one_year"));
 		return datePick;
 	}
 	
@@ -59,21 +60,21 @@ public enum SortByField {AUTHOR,DATE,TOPIC;
     }
     return null;
 }
-	public static HashMap<Integer,String> toHashMap(){
+	public static HashMap<Integer,String> toHashMap(Map<String, Object> localization){
 		HashMap<Integer,String> datePick = new HashMap<Integer,String>();
-		datePick.put(SortByField.AUTHOR.ordinal(),"author");
-		datePick.put(SortByField.DATE.ordinal(), "date");
-		datePick.put(SortByField.TOPIC.ordinal(), "topic");
+		datePick.put(SortByField.AUTHOR.ordinal(),(String)((HashMap)localization.get("topicOperations")).get("author"));
+		datePick.put(SortByField.DATE.ordinal(), (String)((HashMap)localization.get("topicOperations")).get("date"));
+		datePick.put(SortByField.TOPIC.ordinal(), (String)((HashMap)localization.get("topicOperations")).get("topic"));
 		return datePick;
 	}	
 };
 private ShowItemsCriteria showItemsCriteria;
 private SortByField sortByField;
 private Boolean isAscend;
-public static HashMap<Integer,String> orderOptionsToHashMap(){
+public static HashMap<Integer,String> orderOptionsToHashMap(Map<String, Object> localization){
 	HashMap<Integer,String> result = new HashMap<Integer,String>();
-	result.put(0, "by_descend");
-	result.put(1, "by_ascend");
+	result.put(0, (String)((HashMap)localization.get("topicOperations")).get("by_descend"));
+	result.put(1, (String)((HashMap)localization.get("topicOperations")).get("by_ascend"));
 	return result;
 }
 
@@ -274,7 +275,8 @@ public HashMap<String,Integer> convertToOrdinal(){
  * ForumCategory can't be sorted by author because it hasn't author; 
  * @return
  */
-public static HashMap<String,HashMap<Integer, String>> getSortingMenuData(Class classObj){
+public static HashMap<String,HashMap<Integer, String>> getSortingMenuData(Class classObj,
+		Map<String, Object> localization){
 	HashMap<String,HashMap<Integer, String>> result = new HashMap<String,HashMap<Integer, String>>();
 	String className = classObj.getSimpleName();
 	if (!className.equals(forumCategoryClassSimpleName) && !className.equals(forumTopicClassSimpleName) &&
@@ -283,9 +285,9 @@ public static HashMap<String,HashMap<Integer, String>> getSortingMenuData(Class 
 				+","+topicMessageClassSimpleName);
 		return null;
 	}
-	result.put("where", ShowItemsCriteria.toHashMap());
-	result.put("sort", SortByField.toHashMap());
-	result.put("order", orderOptionsToHashMap());
+	result.put("where", ShowItemsCriteria.toHashMap(localization));
+	result.put("sort", SortByField.toHashMap(localization));
+	result.put("order", orderOptionsToHashMap(localization));
 	return result;
 	
 	

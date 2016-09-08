@@ -59,7 +59,8 @@ public class ForumTopicService {
 			 {
 					Session session = sessionFactory.getCurrentSession();
 					String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumTopic.class);
-					String sortingPart = (sortingParam!=null) ? " ORDER BY t."+sortingParam : "";
+					String defaultOrder = "ORDER BY t.pinned desc";
+					String sortingPart = (sortingParam!=null) ? defaultOrder+",  t."+sortingParam : defaultOrder;
 					if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
 					String whereParam = sortingCriteria.getDateParamNameForClass(ForumTopic.class);
 					String wherePart = "WHERE t.category.id = "+categoryId +" ";

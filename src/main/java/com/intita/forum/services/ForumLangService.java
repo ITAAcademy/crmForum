@@ -29,6 +29,7 @@ public class ForumLangService {
 private ForumLangRepository chatLangRepository;
 	private Map<String,Map<String,Object>> localizationMap = new HashMap<>();
 
+	@PostConstruct
 public  Map<String,Map<String,Object>> updateDataFromDatabase()
 {
 	 Map<String,Map<String,Object>> langMap = new HashMap<>();
