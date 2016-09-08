@@ -88,7 +88,7 @@
 		<code name="img">
 		<pattern ignoreCase="true">[img]<var name="src" inherit="true" />[/img]</pattern>
 		<template>
-		    	&lt;img src="<var name="src"/>";&quot;&gt;&lt;/img&gt;
+		    	&lt;img class="materialboxed" src="<var name="src"/>";&quot;&gt;&lt;/img&gt;
 		</template>
 	</code>				
 	
