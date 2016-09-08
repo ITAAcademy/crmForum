@@ -251,10 +251,16 @@ public class FileController {
 		
 		Page pageObj ;
 		if(isImageLoader)
+		{
 			pageObj = getUserFilesList(user, new ArrayList<>(Arrays.asList(supportedFormat)), page-1);
+			mav.setViewName("imagebrowser.html");
+		}
 		else
+		{
 			pageObj = getUserFilesList(user, null, page-1);
-		mav.setViewName("filebrowser");
+			mav.setViewName("filebrowser");
+		}
+		
 		mav.addObject("userFiles", pageObj);
 		mav.addObject("user", user);
 		mav.addObject("config",configParamService.getCachedConfigMap());
