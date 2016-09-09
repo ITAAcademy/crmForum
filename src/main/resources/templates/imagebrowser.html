@@ -6,23 +6,9 @@
     <script type="text/javascript" th:src="@{/js/filebrowser.js}"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link type="text/css" th:href="@{/css/forum.css}" rel="stylesheet" />
+    <link type="text/css" th:href="@{/css/filemanager.css}" rel="stylesheet" />
     <script type="text/javascript" th:src="@{/js/materialize.min.js}"></script>
     <script type="text/javascript" th:src="@{/modules/slider/jquery.easing.1.3.js}"></script>
-    <style type="text/css">
-    html,
-    body {
-        height: 100%
-    }
-    
-    body {
-        margin: 0;
-        padding: 0;
-        background: #042a31 url(modules/slider/sw_page_bg.png);
-        overflow: hidden;
-        font-family: Helvetica, Arial, sans-serif;
-        font-size: 16px;
-    }
-    </style>
 </head>
 
 <body>
@@ -46,7 +32,7 @@
                     </form>
                    <!-- <div id="toolbar"></div> -->
                     <div class="clear"></div>
-                    <a th:each="userFile : ${userFiles}" th:href="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFile.fileName}__}" class="thumb_link col s12 m3"><span class="selected"></span><img th:src="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFile.fileName}__}" th:title="${userFile.shortName}" th:alt="${userFile.shortName}" class="thumb" /></a>
+                    <a th:each="userFile : ${userFiles}" th:href="@{/download_file/__${user.id}__?file_name=__${userFile.fileName}__}" class="thumb_link col s12 m3"><span class="selected"></span><img th:src="@{/download_file/__${user.id}__?file_name=__${userFile.fileName}__}" th:title="${userFile.shortName}" th:alt="${userFile.shortName}" class="thumb" /></a>
                     <p class="clear"></p>
                     <span th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link=${paginationLink}">...</span>
                 </div>
@@ -56,12 +42,14 @@
             </div>
         </div>
     </div>
+    <!-- -->>
     <div id="bg" class="col s0 m12">
-        <img th:if="${userFiles.size > 0}" th:src="@{/download_file?owner_id=__${user.id}__&amp;file_name=__${userFiles.getContent()[0].fileName}__}" id="bgimg" />
+        <img th:if="${userFiles.size > 0}" th:src="@{/download_file/__${user.id}__?file_name=__${userFiles.getContent()[0].fileName}__}" id="bgimg" />
         <div id="preloader"><img src="modules/slider/ajax-loader_dark.gif" width="32" height="32" align="absmiddle" />LOADING...</div>
         <div id="arrow_indicator"><img src="modules/slider/sw_arrow_indicator.png" width="50" height="50" /></div>
         <div id="nextimage_tip">Click for next image</div>
     </div>
+    
     <script type="text/javascript" th:src="@{/modules/slider/slider.js}"></script>
 </body>
 

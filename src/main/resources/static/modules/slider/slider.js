@@ -24,7 +24,7 @@
 	    function CustomScroller() {
 	        outerMargin = 0;
 	        innerMargin = 20;
-	       // $customScrollBox.height($(window).height() - outerMargin);
+	        // $customScrollBox.height($(window).height() - outerMargin);
 	        $dragger_container.height($(window).height() - innerMargin);
 	        visibleHeight = $(window).height() - outerMargin;
 	        if ($customScrollBox_container.height() > visibleHeight) { //custom scroll depends on content height
@@ -170,7 +170,7 @@
 	        browerCall(event);
 	    }
 
-	   // $bgimg.css("opacity", "0");
+	    // $bgimg.css("opacity", "0");
 	    $preloader.fadeIn("fast"); //show preloader
 	    //style clicked thumbnail
 	    $outer_container_a.each(function() {
@@ -273,11 +273,16 @@
 	    var winHeight = $(window).height();
 	    var imageWidth = $(theItem).width();
 	    var imageHeight = $(theItem).height();
-	    if ($toolbar.data("imageViewMode") != "original") { //scale
+	    var mode = "full";
+	    if (imageWidth < winWidth)
+	        mode ="original";
+
+
+	    if (mode != "original") { //scale
 	        $(theItem).removeClass("with_border").removeClass("with_shadow"); //remove extra styles of orininal view mode
 	        var picHeight = imageHeight / imageWidth;
 	        var picWidth = imageWidth / imageHeight;
-	        if ($toolbar.data("imageViewMode") != "fit") { //image view mode: full
+	        if (mode != "fit") { //image view mode: full
 	            if ((winHeight / winWidth) < picHeight) {
 	                $(theItem).css("width", winWidth).css("height", picHeight * winWidth);
 	            } else {

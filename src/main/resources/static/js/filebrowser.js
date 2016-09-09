@@ -61,8 +61,9 @@
 
    var uploadProgress = 0;
    $(document).ready(function() {
-       $('a.file_item').click(function(e) {
+       $('.file_item a').click(function(e) {
            e.preventDefault();
+           e.stopPropagation();
            insertLinkToFileInCkEditor(e.target.href);
            return false;
        })

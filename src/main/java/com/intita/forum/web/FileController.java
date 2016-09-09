@@ -50,7 +50,7 @@ import utils.CustomDataConverters;
 @Service
 @Controller
 public class FileController {
-	private final int FILES_COUNT_PER_PAGE = 5;
+	private final int FILES_COUNT_PER_PAGE = 20;
 	private final static Logger log = LoggerFactory.getLogger(FileController.class);
 
 	static final private ObjectMapper mapper = new ObjectMapper();
@@ -131,7 +131,7 @@ public class FileController {
 			if(!exists)
 				dir.mkdirs();
 			String originalName=mpf.getOriginalFilename();
-			FileInfo fileInfo = FileInfo.createFileInfoFromShortName(originalName, new Date());
+			FileInfo fileInfo = FileInfo.createFileInfoFromShortName(originalName, new Date(), mpf.getSize());
 			try {
 				//just temporary save file info into ufile
 				File dest = new File(realPathtoUploads+fileInfo.getFileName());
@@ -176,9 +176,9 @@ public class FileController {
 	/**
 	 * Method for handling file download request from client
 	 */
-	@RequestMapping(method = RequestMethod.GET, value="/download_file")
+	@RequestMapping(method = RequestMethod.GET, value="/download_file/{owner_id}")
 	public void doDownload(HttpServletRequest request,
-			HttpServletResponse response,@RequestParam Long owner_id,@RequestParam String file_name) throws IOException {
+			HttpServletResponse response,@PathVariable Long owner_id,@RequestParam String file_name) throws IOException {
 
 		// get absolute path of the application
 		ServletContext context = request.getServletContext();
@@ -239,7 +239,7 @@ public class FileController {
 		mav.addObject("errorMessage", e.getMessage());
 		return mav;
 	}
-	private final String[] supportedFormat = new String[]{"png", "jpg", "gif", "tif"};
+	
 	
 	@RequestMapping(method = RequestMethod.GET, value="/filebrowser/{page}")
 	public ModelAndView fileBrowserMapping(Authentication auth, @PathVariable(value="page") Integer page, 
@@ -252,8 +252,8 @@ public class FileController {
 		Page pageObj ;
 		if(isImageLoader)
 		{
-			pageObj = getUserFilesList(user, new ArrayList<>(Arrays.asList(supportedFormat)), page-1);
-			mav.setViewName("imagebrowser.html");
+			pageObj = getUserFilesList(user, FileInfo.supportedImgFormat, page-1);
+			mav.setViewName("imagebrowser");
 		}
 		else
 		{
