@@ -4,7 +4,7 @@
     <!--   <li class="waves-effect" th:each="page: ${#numbers.sequence(1, pagesCount)}" th:classappend="${page} == ${currentPage} ? 'active blue darken-3'">-->
     <li class="waves-effect">
         <!-- First Page -->
-        <a th:classappend="1 == ${currentPage} ? 'active blue darken-3'" href="#" th:if="${pagesCount} >= 0" th:href="@{__${link}____1__?__${linkEnd}__}">
+        <a th:classappend="1 == ${currentPage} ? 'active blue darken-3'" href="#" th:if="${pagesCount >= 0}" th:href="@{__${link}____1__?__${linkEnd}__}">
             <span th:text="1"></span>
         </a>
     </li>

@@ -1,5 +1,7 @@
 package com.intita.forum.web;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +55,7 @@ import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.domain.SessionProfanity;
+import com.intita.forum.domain.TreeNodeStatistic;
 import com.intita.forum.domain.UserActionInfo;
 import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.domain.UserSortingCriteria.ShowItemsCriteria;
@@ -268,7 +272,7 @@ public class ForumController {
 		}
 		//if(auth != null)
 		//addLocolization(model, forumUsersService.getForumUser(auth));
-		ModelAndView result = new ModelAndView("categories_list");
+		ModelAndView result = new ModelAndView("category_view");
 		IntitaUser intitaUser = (IntitaUser) auth.getPrincipal();
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
@@ -279,25 +283,28 @@ public class ForumController {
 			result.addObject("username",intitaUser.getNickName());
 			onlineUsersActivity.put(intitaUser.getId(), UserActionInfo.forEmptyAction());
 		}
-		result.addObject("categories",categories);
-		result.addObject("lastTopics",lastTopics);
+		ModelMap categoriesModelMap = new ModelMap();
+		categoriesModelMap.addAttribute("items",categories);
+		categoriesModelMap.addAttribute("lastTopics",lastTopics);
+		List<ForumCategory> pageCategories = categories.getContent();
+		List<TreeNodeStatistic> categoriesStatistic = forumCategoryService.getCategoriesStatistic(pageCategories);
+		categoriesModelMap.addAttribute("statistic",categoriesStatistic);
 		int pagesCount = categories.getTotalPages();
 		if(pagesCount<1)pagesCount=1;
-		result.addObject("pagesCount",pagesCount);
-		result.addObject("currentPage",1);
+		categoriesModelMap.addAttribute("pagesCount",pagesCount);
+		categoriesModelMap.addAttribute("currentPage",1);
+		result.addObject("categoriesModel",categoriesModelMap);
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		result.addObject("prettyTime",p);
 		result.addObject("config",configParamService.getCachedConfigMap());
-		result.addObject("user", (IntitaUser)auth.getPrincipal());
+		result.addObject("user", intitaUser);
 		result.addObject("blockSearch", true);
-		List<ForumCategory> pageCategories = categories.getContent();
-		result.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 		return result;
 	}
 	//@author zinhcuk roman
-	@RequestMapping(value="/categories_list", method = RequestMethod.GET)
+	/*@RequestMapping(value="/category_view", method = RequestMethod.GET)
 	public ModelAndView getAllCategories(@RequestParam int page, Authentication auth){
-		ModelAndView model = new ModelAndView("categories_list");
+		ModelAndView model = new ModelAndView("category_view");
 		Page<ForumCategory> categoriesPage = forumCategoryService.getMainCategories(page-1);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
 		for (ForumCategory category : categoriesPage){
@@ -319,7 +326,7 @@ public class ForumController {
 		List<ForumCategory> pageCategories = categoriesPage.getContent();
 		model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
 		return model;
-	}
+	}*/
 	@RequestMapping(value="/test",method = RequestMethod.GET)
 	@ResponseBody 
 	public String testMapping(){
@@ -329,13 +336,14 @@ public class ForumController {
 	 * Category @RequestMapping
 	 ******************************/
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
-	@RequestMapping(value="/view/category/{categoryId}/{page}",method = RequestMethod.GET)
+	@RequestMapping(value="/view/category/{categoryId}/{pageOfTopic}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,
-			@PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request,HttpServletResponse response, Authentication auth){
-		return viewCategoryById(redirectAttributes,search,categoryId,page,request,response,auth,null);
+			@PathVariable Long categoryId, @PathVariable int pageOfTopic, HttpServletRequest request,HttpServletResponse response, Authentication auth){
+		return viewCategoryById(redirectAttributes,search,categoryId,pageOfTopic,request,response,auth,null,null);
 	}
 	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, String search,  Long categoryId, 
-			 int page, HttpServletRequest request,HttpServletResponse response, Authentication auth,UserSortingCriteria sortingCriteria){
+			 int pageOfTopic, HttpServletRequest request,HttpServletResponse response, 
+			 Authentication auth,UserSortingCriteria categoriesSortingCriteria, UserSortingCriteria topicsSortingCriteria){
 		if(search != null)
 		{
 			redirectAttributes.addAttribute("searchvalue", search);
@@ -346,83 +354,92 @@ public class ForumController {
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView model = new ModelAndView();
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-		model.addObject("currentPage",page);
+		if (user!=null){		
+			model.addObject("user", (IntitaUser)auth.getPrincipal());
+			onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
+			}
 		model.addObject("currentCategory",category);
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
-		model.addObject("isCategoriesContainer",category.isCategoriesContainer());
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
 		model.addObject("config",configParamService.getCachedConfigMap());
-
-		if (category.isCategoriesContainer())
-		{
-			if (sortingCriteria==null){	
-				sortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
+		model.setViewName("category_view");
+		model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
+		model.addObject("bbcode", getTextProcessorInstance(request));
+		//Categories model configuring
+			if (categoriesSortingCriteria==null){	
+				categoriesSortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
 			}
 			else{
-				sortingCriteria.saveToCookie(ForumCategory.class, request,response);
+				categoriesSortingCriteria.saveToCookie(ForumCategory.class, request,response);
 			}
-			Page<ForumCategory> categories = forumCategoryService.getSubCategoriesPage(categoryId, page-1,user,sortingCriteria);
-			int pagesCount = categories.getTotalPages();
-			if(pagesCount<1)pagesCount=1;
-			model.addObject("pagesCount",pagesCount);
-			model.addObject("categories",categories);
+			ModelMap categoriesModelMap = new ModelMap();
+			Page<ForumCategory> categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,user,categoriesSortingCriteria);
+			categoriesModelMap.addAttribute("items",categories);
 			ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
 			for (ForumCategory c : categories){
 				lastTopics.add(forumCategoryService.getLastTopic(c.getId()));
 			}
-			model.addObject("lastTopics",lastTopics);
-			List<ForumCategory> pageCategories = categories.getContent();
-			model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
-			model.setViewName("categories_list");
-			model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
-			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));
-
-		}
-		else{
-			if (sortingCriteria==null){	
-				sortingCriteria = UserSortingCriteria.loadFromCookie(ForumTopic.class, request);
+			categoriesModelMap.addAttribute("lastTopics",lastTopics);
+			categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories.getContent()));
+			
+			categoriesModelMap.addAttribute("sortingCriteria",categoriesSortingCriteria.convertToOrdinal());
+			categoriesModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));
+			model.addObject("categoriesModel",categoriesModelMap);
+		// Topics model configuring
+			if (topicsSortingCriteria==null){	
+				topicsSortingCriteria = UserSortingCriteria.loadFromCookie(ForumTopic.class, request);
 			}
 			else{
-				sortingCriteria.saveToCookie(ForumTopic.class,request, response);
+				topicsSortingCriteria.saveToCookie(ForumTopic.class,request, response);
 			}
-			Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, page-1,sortingCriteria);
+			Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, pageOfTopic-1,topicsSortingCriteria);
 			int pagesCount = topics.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
 			ArrayList<TopicMessage> lastMessages = new ArrayList<TopicMessage>();
 			for (ForumTopic t : topics){
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
-			}
-
-			model.addObject("lastMessages",lastMessages);
-			model.addObject("pagesCount",pagesCount);
-			model.addObject("topics",topics);
-			model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
+			}		
+			ModelMap topicsModelMap = new ModelMap();
+			topicsModelMap.addAttribute("lastMessages",lastMessages);
+			topicsModelMap.addAttribute("items",topics);
+			
 			List<ForumTopic> pageTopics = topics.getContent();
-			model.addObject("statistic",forumTopicService.getTopicsStatistic(pageTopics));
-			model.setViewName("topics_list");
-			model.addObject("sortingCriteria",sortingCriteria.convertToOrdinal());
-			model.addObject("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class,forumLangService.getLocalization()));
-		}
-		model.addObject("bbcode", getTextProcessorInstance(request));
-		if (user!=null){		
-		model.addObject("user", (IntitaUser)auth.getPrincipal());
-		onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
-		}
-
+			topicsModelMap.addAttribute("statistic",forumTopicService.getTopicsStatistic(pageTopics));
+			topicsModelMap.addAttribute("sortingCriteria",topicsSortingCriteria.convertToOrdinal());
+			topicsModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class,forumLangService.getLocalization()));
+			model.addObject("currentPage",pageOfTopic);
+			model.addObject("pagesCount",pagesCount);
+			model.addObject("topicsModel",topicsModelMap);		
 		return model;
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset,HttpServletResponse response, Authentication principal){
-		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset,response, principal,null);
+		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset,response, principal,null,null);
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.POST)
-	public ModelAndView viewCategoryByIdMappingPost(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset,HttpServletResponse response, Authentication principal,@RequestParam(required = false) int where,@RequestParam(required = false) int sort,@RequestParam(required = false) Boolean order){
-		UserSortingCriteria criteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(where),SortByField.fromInteger(sort),order);
-		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset,response, principal,criteria);
+	public ModelAndView viewCategoryByIdMappingPost(RedirectAttributes redirectAttributes, 
+		@RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest request,HttpServletResponse response, 
+		Authentication principal){
+		Integer categoriesWhere = Integer.getInteger(request.getParameter("categories_where"));
+		Integer categoriesSort = Integer.getInteger(request.getParameter("categories_sort"));
+		Boolean categoriesOrder = Boolean.getBoolean(request.getParameter("categories_order"));
+		
+		Integer topicsWhere = Integer.getInteger(request.getParameter("topics_where"));
+		Integer topicsSort = Integer.getInteger(request.getParameter("topics_sort"));
+		Boolean topicsOrder = Boolean.getBoolean(request.getParameter("topics_order"));
+		
+		UserSortingCriteria categoriesCriteria = null,topicsCriteria=null;
+		if (categoriesWhere!=null && categoriesSort!=null && categoriesOrder!=null)
+			categoriesCriteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(categoriesWhere),SortByField.fromInteger(categoriesSort),categoriesOrder);
+		if (topicsWhere!=null && topicsSort!=null && topicsOrder!=null)
+			topicsCriteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(topicsWhere),SortByField.fromInteger(topicsSort),topicsOrder);
+		
+		
+		return viewCategoryById(redirectAttributes, search, categoryId, 1, request,response, principal,categoriesCriteria,topicsCriteria);
 	}
 	/******************************
 	 * REDIRECT @RequestMapping 

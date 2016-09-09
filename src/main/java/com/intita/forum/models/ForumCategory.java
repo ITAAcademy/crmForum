@@ -29,8 +29,6 @@ public class ForumCategory {
 	@GeneratedValue
 	private Long id;
 	
-	public enum CategoryChildrensType {ChildrenCategory,ChildrenTopic};
-private CategoryChildrensType categoryChildrensType;
 private String name;
 private String description;
 private Date date;
@@ -46,9 +44,6 @@ public static ForumCategory createInstance(String name,String description,boolea
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-	if (containSubCategories)
-		instance.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
-	else instance.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
 	instance.date = new Date();
 	return instance;
 }
@@ -57,7 +52,6 @@ public static ForumCategory createInstanceForCourse(String name,String descripti
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-		instance.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
 	instance.date = new Date();
 	instance.courseModuleId = courseId;
 	instance.isCourseCategory=true;
@@ -68,7 +62,6 @@ public static ForumCategory createInstanceForModule(String name,String descripti
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-	instance.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
 	instance.date = new Date();
 	instance.courseModuleId = moduleId;
 	instance.isCourseCategory=false;
@@ -90,15 +83,6 @@ private List<ForumCategory> categories;
 @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
 private List<ForumTopic> topics;
 
-public CategoryChildrensType getCategoryChildrensType() {
-	return categoryChildrensType;
-}
-public boolean isCategoriesContainer(){
-	return categoryChildrensType == CategoryChildrensType.ChildrenCategory;
-}
-public void setCategoryChildrensType(CategoryChildrensType categoryChildrensType) {
-	this.categoryChildrensType = categoryChildrensType;
-}
 public String getName() {
 	return name;
 }

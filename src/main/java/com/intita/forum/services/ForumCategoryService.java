@@ -1,7 +1,6 @@
 package com.intita.forum.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +27,6 @@ import com.intita.forum.domain.TreeNodeStatistic;
 import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.models.Course;
 import com.intita.forum.models.ForumCategory;
-import com.intita.forum.models.ForumCategory.CategoryChildrensType;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
@@ -83,7 +81,7 @@ public ForumCategory getCategoryById(Long id){
 public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user,int page){
 	if (pageObj==null)return null;
 	List<ForumCategory> pageContent = pageObj.getContent();
-	List<ForumCategory> accessibleCategoriesList = filterNotAccesibleCategories(pageContent,user,page);
+	List<ForumCategory> accessibleCategoriesList = filterNotAccesibleCategories(pageContent,user);
 	for (ForumCategory category : pageContent){
 		if(checkCategoryAccessToUser(user, category.getId())){
 			accessibleCategoriesList.add(category);	
@@ -91,7 +89,7 @@ public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
 	}
 	return CustomDataConverters.listToPage(accessibleCategoriesList, page, topicsCountForPage);
 }
-public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,IntitaUser user,int page){
+public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,IntitaUser user){
 	if (pageContent==null)return null;
 	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
 	for (ForumCategory category : pageContent){
@@ -112,16 +110,14 @@ public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
 	return accessibleCategoriesList;
 }
 @Transactional
-public List<ForumCategory> getSubCategoriesList(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
+public List<ForumCategory> getSubCategoriesList(Long id,IntitaUser user,UserSortingCriteria sortingCriteria,Integer page){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
-	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
 	List<ForumCategory> result = null;
-	switch(childrensType){
-	case ChildrenTopic: result = null;
-	break;
-	case ChildrenCategory:
-		if (sortingCriteria==null)
+		if (sortingCriteria==null){
+			if (page!=null)
 		result = forumCategoryRepository.findByCategory(rootCategory, new PageRequest(page,categoriesCountForPage)).getContent();
+			else result = forumCategoryRepository.findByCategory(rootCategory);
+		}
 		else{
 			Session session = sessionFactory.getCurrentSession();
 			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
@@ -137,47 +133,39 @@ public List<ForumCategory> getSubCategoriesList(Long id,int page,IntitaUser user
 			query.setParameter("dateParam", sortingCriteria.getDateParam());
 			result = query.list();
 		}
-		
-		break;
-	default:
-		result = null;
-	}
-	return filterNotAccesibleCategories(result,user,page);
+	return filterNotAccesibleCategories(result,user);
 }
 @Transactional
-public Page<ForumCategory> getSubCategoriesPage(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
-List<ForumCategory> subCategoriesList = getSubCategoriesList(id,page,user,sortingCriteria);
+public Page<ForumCategory> getSubCategoriesSinglePage(Long id,IntitaUser user,UserSortingCriteria sortingCriteria){
+List<ForumCategory> subCategoriesList = getSubCategoriesList(id,user,sortingCriteria,null);
 if (subCategoriesList==null) 
-	return null;
+	subCategoriesList = new ArrayList<ForumCategory>();
+Page<ForumCategory> result = CustomDataConverters.listToPage(subCategoriesList,0,subCategoriesList.size());
+return result;
+}
+
+@Transactional
+public Page<ForumCategory> getSubCategoriesPage(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
+List<ForumCategory> subCategoriesList = getSubCategoriesList(id,user,sortingCriteria,null);
+if (subCategoriesList==null) 
+	subCategoriesList = new ArrayList<ForumCategory>();
 Page<ForumCategory> result = CustomDataConverters.listToPage(subCategoriesList,page,categoriesCountForPage,subCategoriesList.size());
 return result;
 }
 @Transactional
 public ArrayList<ForumCategory> getSubCategories(Long id){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
-	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
-	switch(childrensType){
-	case ChildrenTopic: return null;
-	case ChildrenCategory:
-		return forumCategoryRepository.findByCategory(rootCategory);
-	default:
-		return null;
-	}
+	return forumCategoryRepository.findByCategory(rootCategory);
 }
 @Transactional
 public ArrayList<ForumTopic> getAllInludeSubCategoriesArray(ForumCategory rootCategory){
 	ArrayList<ForumTopic> array = new ArrayList<>();
-	CategoryChildrensType childrensType = rootCategory.getCategoryChildrensType();
-	switch(childrensType){
-	case ChildrenTopic: array.addAll(rootCategory.getTopics());
-	case ChildrenCategory:
 		ArrayList<ForumCategory> t_array = new ArrayList<>(rootCategory.getCategories());
 		for (ForumCategory forumCategory : t_array) {
 			ArrayList<ForumTopic> tt_array = getAllInludeSubCategoriesArray(forumCategory);
 			if(tt_array != null)
 				array.addAll(tt_array);
 		}
-	}
 	return array;
 }
 
@@ -352,7 +340,7 @@ public LinkedList<ForumTreeNode> getCategoriesTree(ForumCategory lastCategory){
  */
 
 public LinkedList<ForumCategory> getAllSubCategories(ForumCategory category,HashSet<Long> idsParam){
-	if (category==null || !category.isCategoriesContainer())return null;
+	if (category==null)return null;
 	LinkedList<ForumCategory> tree = new LinkedList<ForumCategory>();
 	HashSet<Long> ids = idsParam;
 	if(ids==null)ids =  new HashSet<Long>();
@@ -375,7 +363,7 @@ public LinkedList<ForumCategory> getAllSubCategories(ForumCategory category,Hash
 	return tree;
 }
 public HashSet<Long> getAllSubCategoriesIds(ForumCategory category,HashSet<Long> idsParam){
-	if (category==null || !category.isCategoriesContainer())return null;
+	if (category==null)return null;
 	HashSet<Long> ids = idsParam;
 	if(ids==null)ids =  new HashSet<Long>();
 	List<ForumCategory> subcategories = category.getCategories();

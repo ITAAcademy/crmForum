@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CrmForum</title>
+    <div th:include="includes">...</div>
+    <script th:src="@{/libs/xbbcode.js}"></script>
+    <script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
+    <link type="text/css" th:href="@{/libs/css/xbbcode.css}" rel="stylesheet" />
+    <link type="text/css" th:href="@{/libs/css/spoiler.css}" rel="stylesheet" />
+    <script th:src="@{/js/ckeditor_config.js}"></script>
+    <script th:src="@{/libs/textchangejquery.js}"></script>
+    <script th:src="@{/js/category_view.js}"></script>
+    <script th:src="@{/libs/spoiler.js}"></script>
+</head>
+
+<body>
+    <div id="forumcontainer" class="container">
+        <div class="wraper fixed row">
+            <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
+            <!--Categories configuration header -->
+            <div th:if="${categoriesModel!=null}" class="configure-head hide-me" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu=${categoriesModel['sortingMenu']}">
+                <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
+                    <div class="sort-enter-bnt left">
+                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
+                        </button>
+                    </div>
+                    <div class="tool-bar-wraper">
+                        <div class="input-field tool-bar-select">
+                            <select name="categories_where">
+                                <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
+                                <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
+                            </select>
+                            <label>Показувати елементи за </label>
+                        </div>
+                        <div class="input-field tool-bar-select">
+                            <select name="categories_sort">
+                                <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
+                            </select>
+                            <label>Сортувати за</label>
+                        </div>
+                        <div class="input-field tool-bar-select">
+                            <select name="categories_order">
+                                <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
+                            </select>
+                            <label>Сортувати за</label>
+                        </div>
+                    </div>
+                    <div class="sort-enter-bnt right">
+                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!--/Categories configuration header -->
+            <div class="ul-container-sh"></div>
+            <ul class="collection ul-container" th:with="items=${categoriesModel['items']},lastTopics=${categoriesModel['lastTopics']},statistic=${categoriesModel['statistic']}">
+                <!--Categories List-->
+                <li th:if="${categoriesModel!=null}" class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${items}">
+                    <div class="icon-container">
+                        <i class="medium material-icons">label_outline</i>
+                    </div>
+                    <div class="col s8 m6 topic-info">
+                        <p><a class="topic-name" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
+                            Назва розділу
+                        </a></p>
+                        <p th:text="${category.description}">
+                        </p>
+                    </div>
+                    <div th:if="${lastTopics[status.index]!=null}" class="col s4 m2 topic-statistic">
+                        <p>
+                            <a th:text="${statistic[status.index].topicsCount}">13245</a>
+                            <b>теми</b>
+                        </p>
+                        <p>
+                            <a th:text="${statistic[status.index].messagesCount}">54545</a>
+                            <b>повідомлень</b>
+                        </p>
+                    </div>
+                    <div class="col m0 l4 topic-last">
+                        <th:block th:if="${lastTopics[status.index]!=null}">
+                            <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${lastTopics[status.index].author.avatar}__} + ');'" alt=""></div>
+                            <div class="msg">
+                                <p> <span th:text="${prettyTime.format(lastTopics[status.index].date)}"></span></p>
+                                <p> <b>Тема: </b>
+                                    <a th:href="@{/view/topic/__${lastTopics[status.index].id}__}" th:text="${lastTopics[status.index].name}"></a>
+                                </p>
+                                <p><b>Автор: </b>
+                                    <a th:href="@{__${config['baseUrl']}__/profile/__${lastTopics[status.index].author.id}__}" th:text="${lastTopics[status.index].author.getNickName()}"></a>
+                                </p>
+                            </div>
+                        </th:block>
+                        <th:block th:unless="${lastTopics[status.index]!=null}">
+                            <p style="text-align: center;"><b>Топіки відсутні</b></p>
+                        </th:block>
+                    </div>
+                </li>
+                <li th:if="${categoriesModel==null || items.getNumberOfElements() == 0}" class="collection-item valign-wrapper row topic-item non-click" style="position: relative; display: table; width: 100%;">
+                    <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
+">Категорії по запиту відсутні</span>
+                </li>
+                </ul>
+                <!--/Categories List-->
+
+                <!--Topics view-->
+                <ul th:if="${topicsModel!=null}"  class="collection ul-container" th:with="items=${topicsModel['items']},lastTopics=${topicsModel['lastTopics']},statistic=${topicsModel['statistic']},lastMessages=${topicsModel['lastMessages']}">
+                <!--Topics configuration header -->
+                <div th:if="${sortingMenu!=null &amp;&amp; sortingCriteria!=null}"  class="configure-head hide-me" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu=${topicsModel['sortingMenu']}">
+                    <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
+                        <div class="sort-enter-bnt left">
+                            <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
+                            </button>
+                        </div>
+                        <div class="tool-bar-wraper">
+                            <div class="input-field tool-bar-select">
+                                <select name="topics_where">
+                                    <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
+                                    <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
+                                </select>
+                                <label>Показувати елементи за </label>
+                            </div>
+                            <div class="input-field tool-bar-select">
+                                <select name="topics_sort">
+                                    <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
+                                </select>
+                                <label>Сортувати за</label>
+                            </div>
+                            <div class="input-field tool-bar-select">
+                                <select name="topics_order">
+                                    <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
+                                </select>
+                                <label>Сортувати за</label>
+                            </div>
+                        </div>
+                        <div class="sort-enter-bnt right">
+                            <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!--/Topics configuration header -->
+                <!--Topics List-->
+                <li th:if="${topicsModel!=null}" class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/topic/'+${topic.id}+'\');'" th:each="topic,status  : ${items}">
+                    <div class="icon-container">
+                        <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${topic.author.avatar}__} + ');'" alt="">
+                            <!--For admin -->
+                            <th:block th:if="${isAdmin}">
+                                <form method="post" th:action="@{/operations/topic/__${topic.id}__/toggle_pin}" class="inline">
+                                    <button class="link_button" type="submit" th:if="${topic.pinned}"><span class="filled star"></span></button>
+                                    <button class="link_button" type="submit" th:unless="${topic.pinned}"><span class="unfilled star"></span></button>
+                                </form>
+                            </th:block>
+                            <!--///For admin -->
+                            <!--For regular user -->
+                            <th:block th:unless="${isAdmin}">
+                                <span class="filled star" th:if="${topic.pinned}"></span>
+                                <!--    <span class="unfilled star" th:unless="${topic.pinned}"></span>-->
+                            </th:block>
+                            <!--/For regular user -->
+                        </div>
+                    </div>
+                    <div class="col s8 m6 topic-info">
+                        <p><a class="topic-name" th:href="@{/view/topic/__${topic.id}__}" th:text="${topic.name}">
+                            Назва розділу
+                        </a></p>
+                        <p>
+                            <a th:href="@{__${config['baseUrl']}__/profile/__${topic.author.id}__}" th:text="${topic.author.getNickName()}"></a>
+                        </p>
+                    </div>
+                    <div th:if="${lastMessages[status.index]!=null}" class="col s4 m2 topic-statistic">
+                        <p>
+                            <a>13245</a>
+                            <b>відвідувань</b>
+                        </p>
+                        <p>
+                            <a th:text="${statistic[status.index].messagesCount}">54545</a>
+                            <b>повідомлень</b>
+                        </p>
+                    </div>
+                    <div class="col m0 l4 topic-last">
+                        <th:block th:if="${lastMessages[status.index]!=null}">
+                            <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${lastMessages[status.index].author.avatar}__} + ');'" alt=""></div>
+                            <div class="msg">
+                                <p> <b>Останнє повідомлення: </b>
+                                    <a th:text="${prettyTime.format(lastMessages[status.index].date)}"></a>
+                                </p>
+                                <p><b>Від: </b>
+                                    <a th:href="@{__${config['baseUrl']}__/profile/__${lastMessages[status.index].author.id}__}" th:text="${lastMessages[status.index].author.getNickName()}"></a>
+                                </p>
+                            </div>
+                        </th:block>
+                        <th:block th:unless="${lastMessages[status.index]!=null}">
+                            <p style="text-align: center;"><b>Повідомлення відсутні</b></p>
+                        </th:block>
+                    </div>
+                </li>
+                <!--/Topics List -->
+            </ul>
+             <!--/Topics view-->
+                         <div class="page-list row">
+            <span th:unless="${currentCategory==null}" th:include="pagination_template" th:with="pagesCount=${pagesCount}, currentPage=${currentPage}, link='/view/category/__${currentCategory.id}__/'">...</span>
+            </div>
+        </div>
+    </div>
+</body>
+<div th:if="${!user.isAnonymous()}" class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
+</div>
+<!-- Modal Structure -->
+<div id="modal1" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
+    <form id="addTopicForm" method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
+        <div class="modal-content">
+            <h4>Створити новий топік</h4>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="topic_name" name="topic_name" type="text" class="validate" />
+                    <label for="topic_name">Заголовок</label>
+                </div>
+                <div class="input-field col s12" style="postition: absolute; min-height: 70%;overflow: hidden">
+                    <textarea cols="20" id="ckeditor" name="topic_text" rows="10">
+                    </textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="addTopicButton" style="" class=" modal-action modal-close waves-effect waves-green btn-flat" value="Додати" th:onclick="@{'javascript:addTopic(event,\'__${#httpServletRequest.getContextPath()}__/operations/category/__${currentCategory.id}__/add_topic\')'}">Додати</button>
+        </div>
+    </form>
+</div>
+</html>

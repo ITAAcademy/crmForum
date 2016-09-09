@@ -4,6 +4,20 @@ if ( CKEDITOR.instances.ckeditor.getData() ==='' ||  $('#topic_name').val()===''
     submitButton.hide();
 else submitButton.show();
 }
+function topicAdditionSuccess(topicId){
+  Materialize.toast('Тему успішно додано', 4000,'green-toast') // 4000 is the duration of the toast
+  GoToUrl(serverPrefix+'/view/topic/'+topicId);
+}
+function topicAdditionFail(){
+ Materialize.toast('Не вдалось додати тему', 4000,'red-toast') // 4000 is the duration of the toast
+}
+function addTopic(event,url){
+    event.preventDefault();
+    for (instance in CKEDITOR.instances)
+        CKEDITOR.instances[instance].updateElement();
+submitForm('#addTopicForm',url,topicAdditionSuccess,topicAdditionFail);
+}
+
 
 $(document).ready(function() {
     var cke = initCkEditor("ckeditor", 200);
@@ -22,16 +36,3 @@ $(document).ready(function() {
 
 
 });
-function topicAdditionSuccess(topicId){
-  Materialize.toast('Тему успішно додано', 4000,'green-toast') // 4000 is the duration of the toast
-  GoToUrl(serverPrefix+'/view/topic/'+topicId);
-}
-function topicAdditionFail(){
- Materialize.toast('Не вдалось додати тему', 4000,'red-toast') // 4000 is the duration of the toast
-}
-function addTopic(event,url){
-    event.preventDefault();
-    for (instance in CKEDITOR.instances)
-        CKEDITOR.instances[instance].updateElement();
-submitForm('#addTopicForm',url,topicAdditionSuccess,topicAdditionFail);
-}
