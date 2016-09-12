@@ -132,8 +132,9 @@ public class TopicMessageService {
 		{
 			Date msg_date = message.getDate();
 			Date now_date = new Date();
-			System.out.println(msg_date.getTime() - now_date.getTime() + 60000*15);
-			if(msg_date.getTime() - now_date.getTime() + 60000*EDIT_TIME_MINUTES > 0)
+			long timeDelta = now_date.getTime() - msg_date.getTime();
+			//System.out.println("time delta:"+timeDelta);
+			if(timeDelta < 60000*EDIT_TIME_MINUTES)
 				return true;
 		}	
 		return false;

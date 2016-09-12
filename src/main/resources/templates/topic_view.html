@@ -100,7 +100,7 @@
                             <!--Social Separator -->
                             <li th:if="${!user.isAnonymous() &amp;&amp; topic != null}" style="font-size: 33px; line-height: 24px; vertical-align: middle;">|</li>
                             <!--/Social Separator -->
-                            <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
+                            <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
                             <li th:if="${!user.isAnonymous() &amp;&amp; topic != null}"><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>
