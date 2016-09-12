@@ -210,14 +210,16 @@
 .configure-head * {}
 
 .tool-bar-wraper {
-    position: absolute;
+    display:inline-block;
+    text-align:left;
+   /* position: absolute;
     width: calc(100% - 80px);
     margin-left: 40px;
     text-align-last: center;
     text-align: justify;
     height: auto;
     white-space: nowrap;
-    overflow-x: auto;
+    overflow-x: auto;*/
 }
 .configure-head:hover .tool-bar-wraper{
     height: 400px; 
@@ -264,6 +266,19 @@
 
 .sort-enter-bnt.right {
     right: 0px;
+}
+.sorting_menu_button_wrapper{
+    display: inline-block;
+}
+.sorting_menu_button_wrapper .btn {
+    max-width: 60px;
+    padding: 2px;
+    background: none;
+}
+
+.sorting_menu_button_wrapper .btn i {
+    margin: 0px;
+    font-size: 25px;
 }
 
 
@@ -704,4 +719,13 @@
 
 .btn-floating img {
     width: 100%;
+}
+.sorting_head{
+    width:100%;
+    background-color:#01579B;
+    color: white;
+    text-align:center;
+}
+.sorting_menu_button_wrapper{
+
 }

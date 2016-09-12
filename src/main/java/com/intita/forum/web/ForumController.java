@@ -421,16 +421,27 @@ public class ForumController {
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.POST)
-	public ModelAndView viewCategoryByIdMappingPost(RedirectAttributes redirectAttributes, 
-		@RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest request,HttpServletResponse response, 
+	public ModelAndView viewCategoryByIdMappingPost(@RequestParam Map<String,String> requestParams,RedirectAttributes redirectAttributes,@PathVariable Long categoryId, HttpServletRequest request,HttpServletResponse response, 
 		Authentication principal){
-		Integer categoriesWhere = Integer.getInteger(request.getParameter("categories_where"));
-		Integer categoriesSort = Integer.getInteger(request.getParameter("categories_sort"));
-		Boolean categoriesOrder = Boolean.getBoolean(request.getParameter("categories_order"));
-		
-		Integer topicsWhere = Integer.getInteger(request.getParameter("topics_where"));
-		Integer topicsSort = Integer.getInteger(request.getParameter("topics_sort"));
-		Boolean topicsOrder = Boolean.getBoolean(request.getParameter("topics_order"));
+		String search = requestParams.get("search");
+		Integer categoriesWhere = null,categoriesSort=null,topicsWhere=null,topicsSort=null;
+		Boolean categoriesOrder=null,topicsOrder=null;
+		try{
+		 categoriesWhere = Integer.parseInt(requestParams.get("categories_where"));
+		 categoriesSort = Integer.parseInt(requestParams.get("categories_sort"));
+		 categoriesOrder = Boolean.parseBoolean(requestParams.get("categories_order"));
+		}
+		catch(NumberFormatException e){
+			log.error(e.getMessage());
+		}
+		try{
+		 topicsWhere = Integer.parseInt(requestParams.get("topics_where"));
+		 topicsSort = Integer.parseInt(requestParams.get("topics_sort"));
+		 topicsOrder = Boolean.parseBoolean(requestParams.get("topics_order"));
+		}
+		catch(NumberFormatException e){
+			log.error(e.getMessage());
+		}
 		
 		UserSortingCriteria categoriesCriteria = null,topicsCriteria=null;
 		if (categoriesWhere!=null && categoriesSort!=null && categoriesOrder!=null)

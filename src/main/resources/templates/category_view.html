@@ -18,10 +18,14 @@
     <div id="forumcontainer" class="container">
         <div class="wraper fixed row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <!--Categories configuration header -->
-            <div th:if="${categoriesModel!=null}" class="configure-head hide-me" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu=${categoriesModel['sortingMenu']}">
+           
+            <div class="ul-container-sh"></div>
+            <ul class="collection ul-container" th:with="items=${categoriesModel['items']},lastTopics=${categoriesModel['lastTopics']},statistic=${categoriesModel['statistic']}">
+
+             <!--Categories configuration header -->
+            <div th:if="${categoriesModel!=null &amp;&amp; currentCategory!=null}" class="sorting_head" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu=${categoriesModel['sortingMenu']}">
                 <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
-                    <div class="sort-enter-bnt left">
+                    <div class="sorting_menu_button_wrapper">
                         <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
                         </button>
                     </div>
@@ -46,15 +50,14 @@
                             <label>Сортувати за</label>
                         </div>
                     </div>
-                    <div class="sort-enter-bnt right">
+                    <div class="sorting_menu_button_wrapper">
                         <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
                         </button>
                     </div>
                 </form>
             </div>
             <!--/Categories configuration header -->
-            <div class="ul-container-sh"></div>
-            <ul class="collection ul-container" th:with="items=${categoriesModel['items']},lastTopics=${categoriesModel['lastTopics']},statistic=${categoriesModel['statistic']}">
+            
                 <!--Categories List-->
                 <li th:if="${categoriesModel!=null}" class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${items}">
                     <div class="icon-container">
@@ -105,39 +108,39 @@
                 <!--Topics view-->
                 <ul th:if="${topicsModel!=null}"  class="collection ul-container" th:with="items=${topicsModel['items']},lastTopics=${topicsModel['lastTopics']},statistic=${topicsModel['statistic']},lastMessages=${topicsModel['lastMessages']}">
                 <!--Topics configuration header -->
-                <div th:if="${sortingMenu!=null &amp;&amp; sortingCriteria!=null}"  class="configure-head hide-me" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu=${topicsModel['sortingMenu']}">
-                    <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
-                        <div class="sort-enter-bnt left">
-                            <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
-                            </button>
+               <div th:if="${topicsModel!=null &amp;&amp; currentCategory!=null}" class="sorting_head" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu=${topicsModel['sortingMenu']}">
+                <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
+                    <div class="sorting_menu_button_wrapper">
+                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
+                        </button>
+                    </div>
+                    <div class="tool-bar-wraper">
+                        <div class="input-field tool-bar-select">
+                            <select name="topics_where">
+                                <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
+                                <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
+                            </select>
+                            <label>Показувати елементи за </label>
                         </div>
-                        <div class="tool-bar-wraper">
-                            <div class="input-field tool-bar-select">
-                                <select name="topics_where">
-                                    <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
-                                    <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
-                                </select>
-                                <label>Показувати елементи за </label>
-                            </div>
-                            <div class="input-field tool-bar-select">
-                                <select name="topics_sort">
-                                    <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
-                                </select>
-                                <label>Сортувати за</label>
-                            </div>
-                            <div class="input-field tool-bar-select">
-                                <select name="topics_order">
-                                    <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
-                                </select>
-                                <label>Сортувати за</label>
-                            </div>
+                        <div class="input-field tool-bar-select">
+                            <select name="topics_sort">
+                                <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
+                            </select>
+                            <label>Сортувати за</label>
                         </div>
-                        <div class="sort-enter-bnt right">
-                            <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
-                            </button>
+                        <div class="input-field tool-bar-select">
+                            <select name="topics_order">
+                                <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
+                            </select>
+                            <label>Сортувати за</label>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="sorting_menu_button_wrapper">
+                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </form>
+            </div>
                 <!--/Topics configuration header -->
                 <!--Topics List-->
                 <li th:if="${topicsModel!=null}" class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/topic/'+${topic.id}+'\');'" th:each="topic,status  : ${items}">
@@ -203,11 +206,11 @@
         </div>
     </div>
 </body>
-<div th:if="${!user.isAnonymous()}" class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+<div th:if="${!user.isAnonymous() &amp;&amp; currentCategory != null }" class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
 </div>
 <!-- Modal Structure -->
-<div id="modal1" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
+<div th:if="${currentCategory != null}" id="modal1" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
     <form id="addTopicForm" method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
         <div class="modal-content">
             <h4>Створити новий топік</h4>
