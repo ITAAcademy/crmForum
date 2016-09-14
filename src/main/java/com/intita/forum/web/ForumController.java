@@ -423,30 +423,33 @@ public class ForumController {
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.POST)
 	public ModelAndView viewCategoryByIdMappingPost(@RequestParam Map<String,String> requestParams,RedirectAttributes redirectAttributes,@PathVariable Long categoryId, HttpServletRequest request,HttpServletResponse response, 
 		Authentication principal){
+		boolean isCategoriesCriteriaSet = true, isTopicsCriteriaSet = true;
 		String search = requestParams.get("search");
 		Integer categoriesWhere = null,categoriesSort=null,topicsWhere=null,topicsSort=null;
 		Boolean categoriesOrder=null,topicsOrder=null;
 		try{
 		 categoriesWhere = Integer.parseInt(requestParams.get("categories_where"));
 		 categoriesSort = Integer.parseInt(requestParams.get("categories_sort"));
-		 categoriesOrder = Boolean.parseBoolean(requestParams.get("categories_order"));
+		 categoriesOrder = Integer.parseInt(requestParams.get("categories_order")) > 0 ;
 		}
 		catch(NumberFormatException e){
 			log.error(e.getMessage());
+			isCategoriesCriteriaSet = false;
 		}
 		try{
 		 topicsWhere = Integer.parseInt(requestParams.get("topics_where"));
 		 topicsSort = Integer.parseInt(requestParams.get("topics_sort"));
-		 topicsOrder = Boolean.parseBoolean(requestParams.get("topics_order"));
+		 topicsOrder = Integer.parseInt(requestParams.get("topics_order")) > 0;
 		}
 		catch(NumberFormatException e){
 			log.error(e.getMessage());
+			isTopicsCriteriaSet = false;
 		}
 		
 		UserSortingCriteria categoriesCriteria = null,topicsCriteria=null;
-		if (categoriesWhere!=null && categoriesSort!=null && categoriesOrder!=null)
+		if (isCategoriesCriteriaSet)
 			categoriesCriteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(categoriesWhere),SortByField.fromInteger(categoriesSort),categoriesOrder);
-		if (topicsWhere!=null && topicsSort!=null && topicsOrder!=null)
+		if (isTopicsCriteriaSet)
 			topicsCriteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(topicsWhere),SortByField.fromInteger(topicsSort),topicsOrder);
 		
 		
