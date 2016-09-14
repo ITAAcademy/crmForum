@@ -277,7 +277,7 @@ public class ForumController {
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
 		for (ForumCategory category : categories){
-			lastTopics.add(forumCategoryService.getLastTopic(category.getId()));
+			lastTopics.add(forumCategoryService.getLastTopic(category.getId(),intitaUser));
 		}
 		if (intitaUser!=null){
 			result.addObject("username",intitaUser.getNickName());
@@ -378,7 +378,7 @@ public class ForumController {
 			categoriesModelMap.addAttribute("items",categories);
 			ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
 			for (ForumCategory c : categories){
-				lastTopics.add(forumCategoryService.getLastTopic(c.getId()));
+				lastTopics.add(forumCategoryService.getLastTopic(c.getId(),user));
 			}
 			categoriesModelMap.addAttribute("lastTopics",lastTopics);
 			categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories.getContent()));
@@ -619,7 +619,7 @@ public class ForumController {
 	}
 	  @Scheduled(fixedRate = 120000)
 	    public void reportCurrentTime() {
-	      log.info("removing offline users from online users list...");
+	      //log.info("removing offline users from online users list...");
 	      Iterator<Long> i = onlineUsersActivity.keySet().iterator();
 	      while (i.hasNext() ){
 	    	  Long key = i.next();
@@ -633,7 +633,7 @@ public class ForumController {
 	    		  //log.info("removed");
 	    	  }
 	      }
-	      log.info("...done");
+	      //log.info("...done");
 	    }
 	
 	@RequestMapping(value="/operations/clearcookie/sorting_config",method = RequestMethod.GET)
