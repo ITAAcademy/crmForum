@@ -530,6 +530,7 @@ public class ForumController {
 		model.addObject("canEditMap", canEditMap);
 		model.addObject("blockSearch", true);
 		model.addObject("paginationLink", "/view/search/" + categoryId + "/");
+		model.addObject("onlineUsers", onlineUsersActivity);
 
 
 		return model;

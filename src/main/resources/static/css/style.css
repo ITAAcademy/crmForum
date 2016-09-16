@@ -207,12 +207,14 @@
     max-height: 0px;
 }
 
-.configure-head * {}
+.configure-head * {
+    vertical-align: top; /* here */
+}
 
 .tool-bar-wraper {
-    display:inline-block;
-    text-align:left;
-   /* position: absolute;
+    display: inline-block;
+    text-align: left;
+    /* position: absolute;
     width: calc(100% - 80px);
     margin-left: 40px;
     text-align-last: center;
@@ -220,11 +222,18 @@
     height: auto;
     white-space: nowrap;
     overflow-x: auto;*/
-}
-.configure-head:hover .tool-bar-wraper{
-    height: 400px; 
+    max-width: 70%;
+    overflow-x: hidden;
+    white-space: nowrap;
 }
 
+.configure-head:hover .tool-bar-wraper {
+    height: 400px;
+}
+
+.no-scroll::-webkit-scrollbar{
+    display: none;
+}
 .row.menu .tool-bar-wraper::-webkit-scrollbar {
     display: none;
 }
@@ -237,7 +246,7 @@
 }
 
 .row.menu:hover .configure-head.hide-me {
-    max-height: 40px;
+    
 }
 
 .sort-enter-bnt {
@@ -267,9 +276,12 @@
 .sort-enter-bnt.right {
     right: 0px;
 }
-.sorting_menu_button_wrapper{
+
+.sorting_menu_button_wrapper {
     display: inline-block;
+    overflow: hidden;
 }
+
 .sorting_menu_button_wrapper .btn {
     max-width: 60px;
     padding: 2px;
@@ -380,6 +392,7 @@
 .page-list {
     text-align: center;
     margin-bottom: 0px;
+    padding-top: 20px;
 }
 
 .page-list ul {
@@ -397,12 +410,17 @@
 
 .ul-container {
     margin-top: 0px;
-    max-height: calc(100% - 70px);
+    max-height: calc(100% - 110px);
     overflow-y: scroll;
     border: none;
     margin-right: -300px;
     padding-right: 300px;
+    margin-bottom: 0px;
     position: relative;
+}
+
+.ul-container.half {
+    max-height: calc(50% - 60px);
 }
 
 .ul-container::-webkit-scrollbar {
@@ -720,12 +738,11 @@
 .btn-floating img {
     width: 100%;
 }
-.sorting_head{
-    width:100%;
-    background-color:#01579B;
-    color: white;
-    text-align:center;
-}
-.sorting_menu_button_wrapper{
 
+.sorting_head {
+    width: 100%;
+    background-color: #01579B;
+    color: white;
+    text-align: center;
+    /* display: -webkit-box; */
 }

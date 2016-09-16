@@ -199,6 +199,7 @@ public class TopicMessageService {
 	public Page<TopicMessage> searchInCategory (ForumCategory categoryObj, String search, int page){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ArrayList<ForumTopic> array = new ArrayList<>();
+		array.addAll(categoryObj.getTopics());
 		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(categoryObj);
 		if(list != null)
 			array.addAll(list);
@@ -217,6 +218,7 @@ public class TopicMessageService {
 	public Page<TopicMessage> searchByTopicNameAndBodyAndAsAndInCategory (String search,ForumCategory category, int page){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ArrayList<ForumTopic> array = new ArrayList<>();
+		array.addAll(category.getTopics());
 		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(category);
 		if(list != null)
 			array.addAll(list);
@@ -228,6 +230,7 @@ public class TopicMessageService {
 	public Page<TopicMessage> searchByTopicNameAsAndInCategory (String search,ForumCategory category, int page){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ArrayList<ForumTopic> array = new ArrayList<>();
+		array.addAll(category.getTopics());
 		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(category);
 		if(list != null)
 			array.addAll(list);
