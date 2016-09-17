@@ -203,12 +203,14 @@
     transition: all 1.0s;
 }
 
-.configure-head.hide-me {
+.ul-container.hide-me ,.configure-head.hide-me {
     max-height: 0px;
+    overflow: hidden;
 }
 
 .configure-head * {
-    vertical-align: top; /* here */
+    vertical-align: top;
+    /* here */
 }
 
 .tool-bar-wraper {
@@ -231,9 +233,10 @@
     height: 400px;
 }
 
-.no-scroll::-webkit-scrollbar{
+.no-scroll::-webkit-scrollbar {
     display: none;
 }
+
 .row.menu .tool-bar-wraper::-webkit-scrollbar {
     display: none;
 }
@@ -245,9 +248,7 @@
     min-height: 0px !important;*/
 }
 
-.row.menu:hover .configure-head.hide-me {
-    
-}
+.row.menu:hover .configure-head.hide-me {}
 
 .sort-enter-bnt {
     position: absolute;
@@ -417,6 +418,10 @@
     padding-right: 300px;
     margin-bottom: 0px;
     position: relative;
+    -webkit-transition: max-height 0.5s;
+    -moz-transition: max-height 0.5s;
+    -o-transition: max-height 0.5s;
+    transition: max-height 0.5s;
 }
 
 .ul-container.half {

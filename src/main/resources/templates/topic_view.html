@@ -15,40 +15,7 @@
     <div id="forumcontainer" class="container">
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <div class="configure-head sorting_head hide-me">
-                <form method="post" th:unless="${topic==null}" th:action="@{/view/topic/__${topic.id}__}">
-                    <div class="sorting_menu_button_wrapper">
-                        <form method="GET" th:unless="${topic==null}" th:action="@{/operations/clearcookie/sorting_config}">
-                            <button class="btn" type="submit" name="action"><i class="material-icons right">delete</i></button>
-                        </form>
-                    </div>
-                    <div class="tool-bar-wraper no-scroll">
-                        <div class="input-field tool-bar-select">
-                            <select name="where">
-                                <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
-                                <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
-                            </select>
-                            <label>Показувати елементи за </label>
-                        </div>
-                        <div class="input-field tool-bar-select">
-                            <select name="sort">
-                                <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
-                            </select>
-                            <label>Сортувати за</label>
-                        </div>
-                        <div class="input-field tool-bar-select">
-                            <select name="order">
-                                <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
-                            </select>
-                            <label>Сортувати за</label>
-                        </div>
-                    </div>
-                    <div class="sorting_menu_button_wrapper">
-                        <button class="btn" type="submit" name="action"><i class="material-icons right">delete</i>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <div th:include="sort_template" th:with="prefix = '',clearType='TopicMessage', link=@{/view/topic/__${topic.id}__}">...</div>
             <!-- Topic info -->
             <ul class="topic-content">
                 <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2},postLink='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" th:id="@{'msg__${message.id}__'}">

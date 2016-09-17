@@ -20,42 +20,12 @@
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <div class="ul-container-sh"></div>
             <!--Categories configuration header -->
-            <span th:if="${categoriesModel!=null &amp;&amp; categoriesModel['items'].getNumberOfElements() > 0}">
-                <div th:if="${categoriesModel!=null &amp;&amp; currentCategory!=null}" class="configure-head sorting_head hide-me" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu=${categoriesModel['sortingMenu']}">
-                    <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
-                        <div class="sorting_menu_button_wrapper">
-                            <button class="btn" type="submit" name="action"><i class="material-icons right">delete</i>
-                            </button>
-                        </div>
-                        <div class="tool-bar-wraper no-scroll">
-                            <div class="input-field tool-bar-select">
-                                <select name="categories_where">
-                                    <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
-                                    <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
-                                </select>
-                                <label>Показувати елементи за </label>
-                            </div>
-                            <div class="input-field tool-bar-select">
-                                <select name="categories_sort">
-                                    <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
-                                </select>
-                                <label>Сортувати за</label>
-                            </div>
-                            <div class="input-field tool-bar-select">
-                                <select name="categories_order">
-                                    <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
-                                </select>
-                                <label>Сортувати за</label>
-                            </div>
-                        </div>
-                        <div class="sorting_menu_button_wrapper">
-                            <button class="btn" type="submit" name="action"><i class="material-icons right">send</i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            <span>
+            <div  target="categories" class="light-blue darken-4 topic-divided"> <span>Категорії</span></div>
+                     <div th:include="sort_template" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu= ${categoriesModel['sortingMenu']},clearType='ForumCategory', prefix='categories_', link=@{/view/category/__${currentCategory.id}__}">...</div>
+
                 <!--/Categories configuration header -->
-            <ul th:classappend="${showFull} ? half" class="collection ul-container " th:with="items=${categoriesModel['items']},lastTopics=${categoriesModel['lastTopics']},statistic=${categoriesModel['statistic']}">
+            <ul id="categories" th:classappend="${showFull} ? half" class="collection ul-container " th:with="items=${categoriesModel['items']},lastTopics=${categoriesModel['lastTopics']},statistic=${categoriesModel['statistic']}">
                 <!--Categories List-->
                 <li th:if="${categoriesModel!=null}" class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${items}">
                     <div class="icon-container">
@@ -105,43 +75,12 @@
     </span>
     <!--Topics view-->
     <!--Topics configuration header -->
-    <span th:if="${topicsModel!=null &amp;&amp; topicsModel['items'].getNumberOfElements() > 0}">
-                <div th:if="${showFull}" class="light-blue darken-4 topic-divided"> Топіки</div>
-                <div th:if="${currentCategory!=null}" class="configure-head sorting_head hide-me" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu=${topicsModel['sortingMenu']}">
-                    <form method="post" th:unless="${currentCategory==null}" th:action="@{/view/category/__${currentCategory.id}__}">
-                        <div class="sorting_menu_button_wrapper">
-                            <button class="btn" type="submit" name="action"><i class="material-icons right">delete</i>
-                            </button>
-                        </div>
-                        <div class="tool-bar-wraper no-scroll">
-                            <div class="input-field tool-bar-select">
-                                <select name="topics_where">
-                                    <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
-                                    <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
-                                </select>
-                                <label>Показувати елементи за </label>
-                            </div>
-                            <div class="input-field tool-bar-select">
-                                <select name="topics_sort">
-                                    <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
-                                </select>
-                                <label>Сортувати за</label>
-                            </div>
-                            <div class="input-field tool-bar-select">
-                                <select name="topics_order">
-                                    <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
-                                </select>
-                                <label>Сортувати за</label>
-                            </div>
-                        </div>
-                        <div class="sorting_menu_button_wrapper">
-                            <button class="btn" type="submit" name="action"><i class="material-icons right">send</i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+    <span >
+                <div target="topics" class="light-blue darken-4 topic-divided"> <span>Топіки</span>
+                <span ng:if="${topicsModel['items'].getNumberOfElements() == 0}">Топіки по запиту відсутні</span></div>
+                    <div th:include="sort_template" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu= ${topicsModel['sortingMenu']},clearType='ForumTopic', prefix='topics_', link=@{/view/category/__${currentCategory.id}__}">...</div>
                 <!--/Topics configuration header -->
-            <ul  th:classappend="${showFull} ? half" th:if="${topicsModel!=null}" class="collection ul-container" th:with="items=${topicsModel['items']},lastTopics=${topicsModel['lastTopics']},statistic=${topicsModel['statistic']},lastMessages=${topicsModel['lastMessages']}">
+            <ul id="topics" th:classappend="${showFull} ? half" th:if="${topicsModel!=null}" class="collection ul-container" th:with="items=${topicsModel['items']},lastTopics=${topicsModel['lastTopics']},statistic=${topicsModel['statistic']},lastMessages=${topicsModel['lastMessages']}">
                 <!--Topics List-->
                 <li th:if="${topicsModel!=null}" class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/topic/'+${topic.id}+'\');'" th:each="topic,status  : ${items}">
                     <div class="icon-container">
@@ -196,10 +135,6 @@
             <p style="text-align: center;"><b>Повідомлення відсутні</b></p>
         </th:block>
     </div>
-    </li>
-    <li th:if="${topicsModel==null || items.getNumberOfElements() == 0}" class="collection-item valign-wrapper row topic-item non-click" style="position: relative; display: table; width: 100%;">
-        <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
-">Топіки по запиту відсутні</span>
     </li>
     <!--/Topics List -->
     </ul>
