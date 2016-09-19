@@ -12,19 +12,18 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.intita.forum.config.CustomAuthenticationProvider;
-import com.intita.forum.domain.TreeNodeStatistic;
 import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
+import com.intita.forum.models.ForumCategoryStatistic;
 import com.intita.forum.repositories.ForumTopicRepository;
 
 import utils.CustomDataConverters;
@@ -38,7 +37,8 @@ public class ForumTopicService {
 	@Autowired TopicMessageService topicMessageService;
 	@Autowired IntitaUserService intitaUserService;
 	@Autowired private CustomAuthenticationProvider authenticationProvider;
-	@Autowired
+	@Autowired private ForumCategoryStatisticService forumCategoryStatisticService;
+	@Autowired 
 	private SessionFactory sessionFactory;
 	
 	@Transactional
@@ -98,7 +98,11 @@ public class ForumTopicService {
 		topic.setName(name);
 		topic.setAuthor(author);
 		topic.setCategory(category);
-		return forumTopicRepository.save(topic);
+		topic = forumTopicRepository.save(topic);
+		forumCategoryService.updateLastTopic(category, topic);
+		ArrayList<Long> res = forumCategoryService.getParentCategoriesIdsIncludeTarget(topic.getCategory());
+		forumCategoryStatisticService.incrementTopicsCount(res);
+		return topic ;
 	}
 	public LinkedList<Set<IntitaUserRoles>> getDemandsForTopic(Long topicId){
 		if (topicId==null)return null;
@@ -130,28 +134,29 @@ public class ForumTopicService {
 		}
 		return false;
 	}
-	public HashSet<Long> getAllSubTopicsIds(ForumCategory category){
-		HashSet<Long> categories = forumCategoryService.getAllSubCategoriesIds(category, null);
+	public HashSet<Long> getAllSubTopicsIds(ForumCategory category,HashSet<Long> cachedAllSubcategories){
+		HashSet<Long> categories = cachedAllSubcategories != null ? cachedAllSubcategories : forumCategoryService.getAllSubCategoriesIds(category, null);
 		if (categories==null) categories = new HashSet<Long>();
 		categories.add(category.getId());
 		HashSet<Long> topicIds = forumTopicRepository.findIdsByCategoryIds(categories);
 		return topicIds;
 	}
-	public List<TreeNodeStatistic> getTopicsStatisticByIds(List<Long> topicsIds){
+	
+	public List<ForumCategoryStatistic> getTopicsStatisticByIds(List<Long> topicsIds){
 		
-		List<TreeNodeStatistic> topicsStatistic = new ArrayList<TreeNodeStatistic>();
+		List<ForumCategoryStatistic> topicsStatistic = new ArrayList<ForumCategoryStatistic>();
 		for (Long topicId : topicsIds){
 			int messagesCount = topicMessageService.getMessageCountByTopicId(topicId);
-			topicsStatistic.add(new TreeNodeStatistic(0,messagesCount));
+			topicsStatistic.add(new ForumCategoryStatistic(0,0,messagesCount));
 		}
 		return topicsStatistic;
 	}
-	public List<TreeNodeStatistic> getTopicsStatistic(List<ForumTopic> topics){
+	public List<ForumCategoryStatistic> getTopicsStatistic(List<ForumTopic> topics){
 		
-		List<TreeNodeStatistic> topicsStatistic = new ArrayList<TreeNodeStatistic>();
+		List<ForumCategoryStatistic> topicsStatistic = new ArrayList<ForumCategoryStatistic>();
 		for (ForumTopic topic : topics){
 			int messagesCount = topicMessageService.getMessageCountByTopicId(topic.getId());
-			topicsStatistic.add(new TreeNodeStatistic(0,messagesCount));
+			topicsStatistic.add(new ForumCategoryStatistic(0,0,messagesCount));
 		}
 		return topicsStatistic;
 	}

@@ -17,13 +17,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 
 @Entity(name="forum_category")
 public class ForumCategory {
 	public ForumCategory(){
-		
+
 	}
 	@Id
 	@GeneratedValue
@@ -34,6 +35,10 @@ private String description;
 private Date date;
 private Long courseModuleId;
 private Boolean isCourseCategory;
+@OneToOne
+private ForumTopic lastTopic;
+@OneToOne
+private ForumCategoryStatistic statistic;
 @ElementCollection(targetClass = IntitaUserRoles.class)
 @Enumerated(EnumType.STRING)
 @CollectionTable(name="forum_categories_roles",joinColumns = {@JoinColumn(name="category_id")}) // use default join column name
@@ -142,6 +147,22 @@ public Boolean getIsCourseCategory() {
 }
 public void setIsCourseCategory(Boolean isCourseCategory) {
 	this.isCourseCategory = isCourseCategory;
+}
+
+public ForumTopic getLastTopic() {
+	return lastTopic;
+}
+
+public void setLastTopic(ForumTopic lastTopic) {
+	this.lastTopic = lastTopic;
+}
+
+public ForumCategoryStatistic getStatistic() {
+	return statistic;
+}
+
+public void setStatistic(ForumCategoryStatistic statistic) {
+	this.statistic = statistic;
 }
 
 

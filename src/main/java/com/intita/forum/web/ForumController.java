@@ -55,7 +55,6 @@ import com.intita.forum.config.CustomAuthenticationProvider;
 import com.intita.forum.domain.ForumTreeNode;
 import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.domain.SessionProfanity;
-import com.intita.forum.domain.TreeNodeStatistic;
 import com.intita.forum.domain.UserActionInfo;
 import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.domain.UserSortingCriteria.ShowItemsCriteria;
@@ -67,8 +66,10 @@ import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.Lecture;
 import com.intita.forum.models.TopicMessage;
+import com.intita.forum.models.ForumCategoryStatistic;
 import com.intita.forum.services.ConfigParamService;
 import com.intita.forum.services.ForumCategoryService;
+import com.intita.forum.services.ForumCategoryStatisticService;
 import com.intita.forum.services.ForumLangService;
 import com.intita.forum.services.ForumTopicService;
 import com.intita.forum.services.IntitaUserService;
@@ -108,6 +109,7 @@ public class ForumController {
 	@Autowired private ForumTopicService forumTopicService;
 	@Autowired private TopicMessageService topicMessageService;
 	@Autowired private ForumLangService forumLangService;
+	@Autowired private ForumCategoryStatisticService forumCategoryStatisticService;
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -122,7 +124,10 @@ public class ForumController {
 	@PostConstruct
 	private void initTextProcessoe() {
 		processorFactory = BBProcessorFactory.getInstance();
-		refreshConfigParameters();	
+		refreshConfigParameters();
+		forumCategoryService.updateCategoriesFromCourses();
+		//forumCategoryStatisticService.createEmptyCategoriesStatisticForAllCategories();
+		forumCategoryStatisticService.updateAllCategoriesStatistic();
 	}
 	public TextProcessor getTextProcessorInstance(HttpServletRequest request){
 		if(bbCodeProcessor == null)//recreate bbCode processor?
@@ -287,7 +292,7 @@ public class ForumController {
 		categoriesModelMap.addAttribute("items",categories);
 		categoriesModelMap.addAttribute("lastTopics",lastTopics);
 		List<ForumCategory> pageCategories = categories.getContent();
-		List<TreeNodeStatistic> categoriesStatistic = forumCategoryService.getCategoriesStatistic(pageCategories);
+		List<ForumCategoryStatistic> categoriesStatistic = forumCategoryService.getCategoriesStatistic(pageCategories);
 		categoriesModelMap.addAttribute("statistic",categoriesStatistic);
 		int pagesCount = categories.getTotalPages();
 		if(pagesCount<1)pagesCount=1;
@@ -344,12 +349,16 @@ public class ForumController {
 	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, String search,  Long categoryId, 
 			 int pageOfTopic, HttpServletRequest request,HttpServletResponse response, 
 			 Authentication auth,UserSortingCriteria categoriesSortingCriteria, UserSortingCriteria topicsSortingCriteria){
+		long beginTime = new Date().getTime();
+		long totalFuncTime = beginTime;
+		int currentLogString = 0;
 		if(search != null)
 		{
 			redirectAttributes.addAttribute("searchvalue", search);
 			redirectAttributes.addAttribute("type", SearchType.CATEGORY);
 			return new ModelAndView("redirect:" + "/view/search/" + categoryId + "/1");
 		}
+		totalFuncTime = new Date().getTime() - beginTime;
 		
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView model = new ModelAndView();
@@ -358,7 +367,9 @@ public class ForumController {
 			model.addObject("user", (IntitaUser)auth.getPrincipal());
 			onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
 			}
-		model.addObject("currentCategory",category);
+		totalFuncTime = new Date().getTime() - beginTime;
+		
+		model.addObject("currentCategory",category);		
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
@@ -366,6 +377,7 @@ public class ForumController {
 		model.setViewName("category_view");
 		model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
 		model.addObject("bbcode", getTextProcessorInstance(request));
+		totalFuncTime = new Date().getTime() - beginTime;
 		//Categories model configuring
 			if (categoriesSortingCriteria==null){	
 				categoriesSortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
@@ -373,16 +385,18 @@ public class ForumController {
 			else{
 				categoriesSortingCriteria.saveToCookie(ForumCategory.class, request,response);
 			}
+			totalFuncTime = new Date().getTime() - beginTime;
 			ModelMap categoriesModelMap = new ModelMap();
 			Page<ForumCategory> categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,user,categoriesSortingCriteria);
+			totalFuncTime = new Date().getTime() - beginTime;
 			categoriesModelMap.addAttribute("items",categories);
 			ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
 			for (ForumCategory c : categories){
-				lastTopics.add(forumCategoryService.getLastTopic(c.getId(),user));
+				lastTopics.add(c.getLastTopic());
 			}
+			totalFuncTime = new Date().getTime() - beginTime;
 			categoriesModelMap.addAttribute("lastTopics",lastTopics);
 			categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories.getContent()));
-			
 			categoriesModelMap.addAttribute("sortingCriteria",categoriesSortingCriteria.convertToOrdinal());
 			categoriesModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));
 			model.addObject("categoriesModel",categoriesModelMap);
@@ -393,6 +407,7 @@ public class ForumController {
 			else{
 				topicsSortingCriteria.saveToCookie(ForumTopic.class,request, response);
 			}
+			totalFuncTime = new Date().getTime() - beginTime;
 			Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, pageOfTopic-1,topicsSortingCriteria);
 			int pagesCount = topics.getTotalPages();
 			if(pagesCount<1)pagesCount=1;
@@ -400,7 +415,8 @@ public class ForumController {
 			for (ForumTopic t : topics){
 				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 				lastMessages.add(lastMessage);
-			}		
+			}
+			totalFuncTime = new Date().getTime() - beginTime;
 			ModelMap topicsModelMap = new ModelMap();
 			topicsModelMap.addAttribute("lastMessages",lastMessages);
 			topicsModelMap.addAttribute("items",topics);
@@ -409,9 +425,11 @@ public class ForumController {
 			topicsModelMap.addAttribute("statistic",forumTopicService.getTopicsStatistic(pageTopics));
 			topicsModelMap.addAttribute("sortingCriteria",topicsSortingCriteria.convertToOrdinal());
 			topicsModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class,forumLangService.getLocalization()));
+			totalFuncTime = new Date().getTime() - beginTime;
 			model.addObject("currentPage",pageOfTopic);
 			model.addObject("pagesCount",pagesCount);
-			model.addObject("topicsModel",topicsModelMap);		
+			model.addObject("topicsModel",topicsModelMap);
+			totalFuncTime = new Date().getTime() - beginTime;
 		return model;
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
@@ -619,7 +637,6 @@ public class ForumController {
 	}
 	  @Scheduled(fixedRate = 120000)
 	    public void reportCurrentTime() {
-	      //log.info("removing offline users from online users list...");
 	      Iterator<Long> i = onlineUsersActivity.keySet().iterator();
 	      while (i.hasNext() ){
 	    	  Long key = i.next();
@@ -627,13 +644,10 @@ public class ForumController {
 	    	  long currentTime = new Date().getTime();
 	    	  long delta =  currentTime - info.getLastActionTime();
 	    	  long minutesDelta = CustomDataConverters.millisecondsToMinutes(delta);
-	    	  //log.info(key+" "+info + " "+minutesDelta);
 	    	  if (minutesDelta>=MAXIMAL_USER_INACTIVE_TIME_MINUTES){
 	    		  i.remove();
-	    		  //log.info("removed");
 	    	  }
 	      }
-	      //log.info("...done");
 	    }
 	
 	@RequestMapping(value="/operations/clearcookie/sorting_config",method = RequestMethod.GET)
@@ -692,6 +706,13 @@ public class ForumController {
 		messageMap.put("topic", topicId.toString());
 		return new ResponseEntity<Map<String,String>>(messageMap,HttpStatus.OK);//"redirect:/view/topic/" + topicId + "/" + messages.getTotalPages();//go to last				
 	}
+	public void updateCategoriesStatistic(){
+		List<ForumCategory> categories = forumCategoryService.getAllCategories();
+		for(ForumCategory categorie : categories){
+			//TODO
+		}
+	}
+	
 
 
 	@ResponseBody

@@ -47,6 +47,9 @@ public class TopicMessageService {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private ForumCategoryStatisticService forumCategoryStatisticService;
 
 	@Value("${forum.messagesCountPerPage}")
 	private int messagesCountPerPage;
@@ -90,6 +93,12 @@ public class TopicMessageService {
 	public boolean addMessage(TopicMessage message) {
 		if (message==null) return false;
 		topicMessageRepository.save(message);
+		Long topicId = message.getTopic().getId();
+		ForumCategory parentCategory = forumTopicService.getTopic(topicId).getCategory();
+		if (parentCategory==null) return true;
+		ArrayList<Long> res = forumCategoryService.getParentCategoriesIdsIncludeTarget(parentCategory);
+		forumCategoryStatisticService.incrementTopicMessagesCount(res);
+		//forumCategoryStatisticService.incrementTopicMessagesCount(categoryId);
 		return true;
 	}
 	@Transactional()
