@@ -282,7 +282,7 @@ public class ForumController {
 		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
 		for (ForumCategory category : categories){
-			lastTopics.add(forumCategoryService.getLastTopic(category.getId(),intitaUser));
+			lastTopics.add(category.getLastTopic());
 		}
 		if (intitaUser!=null){
 			result.addObject("username",intitaUser.getNickName());
@@ -306,32 +306,7 @@ public class ForumController {
 		result.addObject("blockSearch", true);
 		return result;
 	}
-	//@author zinhcuk roman
-	/*@RequestMapping(value="/category_view", method = RequestMethod.GET)
-	public ModelAndView getAllCategories(@RequestParam int page, Authentication auth){
-		ModelAndView model = new ModelAndView("category_view");
-		Page<ForumCategory> categoriesPage = forumCategoryService.getMainCategories(page-1);
-		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
-		for (ForumCategory category : categoriesPage){
-			lastTopics.add(forumCategoryService.getLastTopic(category.getId()));
-		}
-		model.addObject("categories",categoriesPage);
-		model.addObject("lastTopics",lastTopics);
-		int pagesCount = categoriesPage.getTotalPages();
-		if(pagesCount<1)pagesCount=1;
-		model.addObject("pagesCount",pagesCount);
-		model.addObject("currentPage",page);
-		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
-		model.addObject("prettyTime",p);
-		IntitaUser user = (IntitaUser)auth.getPrincipal();
-		if (user!=null){
-		model.addObject("user", user);
-		onlineUsersActivity.put(user.getId(), UserActionInfo.forEmptyAction());
-		}
-		List<ForumCategory> pageCategories = categoriesPage.getContent();
-		model.addObject("statistic",forumCategoryService.getCategoriesStatistic(pageCategories));
-		return model;
-	}*/
+
 	@RequestMapping(value="/test",method = RequestMethod.GET)
 	@ResponseBody 
 	public String testMapping(){

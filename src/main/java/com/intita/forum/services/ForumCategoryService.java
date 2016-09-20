@@ -92,6 +92,13 @@ public Page<ForumCategory> getMainCategories(int page){
 public ForumCategory getCategoryById(Long id){
 	return forumCategoryRepository.findOne(id);
 }
+/**
+ * Receive list of categories and remove unaccessible categories (for given user) from it
+ * @param pageObj
+ * @param user
+ * @param page
+ * @return
+ */
 public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user,int page){
 	if (pageObj==null)return null;
 	List<ForumCategory> pageContent = pageObj.getContent();
@@ -103,6 +110,14 @@ public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
 	}
 	return CustomDataConverters.listToPage(accessibleCategoriesList, page, topicsCountForPage);
 }
+
+/**
+ * Receive list of categories and remove unaccessible categories (for given user) from it
+ * @param pageObj
+ * @param user
+ * @param page
+ * @return
+ */
 public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,IntitaUser user){
 	if (pageContent==null)return null;
 	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
@@ -114,7 +129,7 @@ public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> page
 	return accessibleCategoriesList;
 }
 /**
- * Need to fix . To slow ...
+ * Don't use it . To slow ...
  **/
 public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds,IntitaUser user){
 	if (categoriesIds==null)return new HashSet<Long>();
@@ -127,13 +142,21 @@ public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds
 	}
 	return accessibleCategoriesList;
 }
-public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user){
+/*public List<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user){
 	List<ForumCategory> pageContent = pageObj.getContent();
 	return filterNotAccesibleCategories(pageContent,user);
-}
+}*/
+/**
+ * Return childrens of Category sorted by some fields depends on UserSortingCriteria
+ * @param parentCategoryId
+ * @param user
+ * @param sortingCriteria
+ * @param page
+ * @return 
+ */
 @Transactional
-public List<ForumCategory> getSubCategoriesList(Long id,IntitaUser user,UserSortingCriteria sortingCriteria,Integer page){
-	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
+public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,IntitaUser user,UserSortingCriteria sortingCriteria,Integer page){
+	ForumCategory rootCategory = forumCategoryRepository.findOne(parentCategoryId);
 	List<ForumCategory> result = null;
 		if (sortingCriteria==null){
 			if (page!=null)
@@ -146,7 +169,7 @@ public List<ForumCategory> getSubCategoriesList(Long id,IntitaUser user,UserSort
 			String sortingPart = (sortingParam!=null) ? " ORDER BY c."+sortingParam : "";
 			if (sortingPart.length()>0)sortingPart+=" "+sortingCriteria.getOrder();
 			String whereParam = sortingCriteria.getDateParamNameForClass(ForumCategory.class);
-			String wherePart = "WHERE c.category.id = "+id +" ";
+			String wherePart = "WHERE c.category.id = "+parentCategoryId +" ";
 			if (whereParam!=null)
 			wherePart += " AND "+ whereParam ;
 			String hql = "SELECT c FROM forum_category c " + " "+wherePart+sortingPart;
@@ -157,6 +180,13 @@ public List<ForumCategory> getSubCategoriesList(Long id,IntitaUser user,UserSort
 		}
 	return filterNotAccesibleCategories(result,user);
 }
+/**
+ * Return page with children of category sorted by some fields depends on UserSortingCriteria
+ * @param id
+ * @param user
+ * @param sortingCriteria
+ * @return
+ */
 @Transactional
 public Page<ForumCategory> getSubCategoriesSinglePage(Long id,IntitaUser user,UserSortingCriteria sortingCriteria){
 List<ForumCategory> subCategoriesList = getSubCategoriesList(id,user,sortingCriteria,null);
@@ -165,7 +195,14 @@ if (subCategoriesList==null)
 Page<ForumCategory> result = CustomDataConverters.listToPage(subCategoriesList,0,subCategoriesList.size());
 return result;
 }
-
+/**
+ * Return specific page with childrens of category sorted by some fields depends on UserSortingCriteria
+ * @param id
+ * @param page
+ * @param user
+ * @param sortingCriteria
+ * @return
+ */
 @Transactional
 public Page<ForumCategory> getSubCategoriesPage(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
 List<ForumCategory> subCategoriesList = getSubCategoriesList(id,user,sortingCriteria,null);
@@ -174,6 +211,11 @@ if (subCategoriesList==null)
 Page<ForumCategory> result = CustomDataConverters.listToPage(subCategoriesList,page,categoriesCountForPage,subCategoriesList.size());
 return result;
 }
+/**
+ * return childrens of categorie without any custom sorting
+ * @param id
+ * @return
+ */
 @Transactional
 public ArrayList<ForumCategory> getSubCategories(Long id){
 	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
@@ -190,6 +232,10 @@ public ArrayList<ForumTopic> getAllInludeSubCategoriesArray(ForumCategory rootCa
 		}
 	return array;
 }
+/**
+ * Generate basic root categoires and add new categorie for each course to them if it's not added before.
+ * 
+ */
 @Transactional
 public void updateCategoriesFromCourses(){
 	initEducationCategory();//must be called first to set proper Id for educational category
@@ -197,6 +243,9 @@ public void updateCategoriesFromCourses(){
 	
 }
 
+/**
+ * add basic categories for role-based access
+ */
 @Transactional
 public void initCategoriesByRoles(){
 	final String ROLES_CATEGORY_NAME = "Розділ по ролях";
@@ -224,6 +273,11 @@ public void initCategoriesByRoles(){
 	//ForumCategory teacgersCategory =  ForumCategory.createInstance(ROLES_TEACHERS_CATEGORY_NAME,"Для вчителів",false);
 	ForumCategory teacgersCategory =  getOrCreateForumCategory(ROLES_TEACHERS_CATEGORY_NAME,roleCategory,"Для вчителів",false,IntitaUserRoles.TEACHER);
 }
+/**
+ * add new category to database basic on course data
+ * @param course
+ * @param parentCategory
+ */
 @Transactional
 public void saveCourseAsCategory(Course course,ForumCategory parentCategory){		
 
@@ -248,15 +302,30 @@ public void saveCourseAsCategory(Course course,ForumCategory parentCategory){
 			}
 		}	
 }
+/**
+ * Retreive ForumCategory which create from course with given id
+ * @param id
+ * @param isCourse
+ * @return
+ */
 @Transactional
 public ForumCategory getForumCategoryByCourseOrModule(Long id,boolean isCourse){
 	List<ForumCategory> list = forumCategoryRepository.findByCourseOrModuleIdAndIsCourseCategory(id,true);
 	if (list.size()>0) return list.get(0);
 	return null;
 }
-
+/**
+ * Find catagory by name in parent category and if not exist - create new one
+ * @param name
+ * @param parent
+ * @param description
+ * @param containSubCategories
+ * @param role
+ * @return
+ */
 @Transactional
-public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,boolean containSubCategories,IntitaUserRoles role){
+public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,
+		boolean containSubCategories,IntitaUserRoles role){
 	//return getOrCreateForumCategory(name,parent,description,null,null,containSubCategories);
 	ForumCategory roleCategory = null;
 	Long parentId = (parent==null) ? null : parent.getId();
@@ -287,48 +356,7 @@ public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,S
 		boolean containSubCategories){
 	return getOrCreateForumCategory(name, parent,description,containSubCategories,null);
 }
-//IntitaUserRoles
 
-/*@Transactional
-public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,
-		Long courseOrModuleId,Boolean derivedFromCourse,boolean containSubCategories ){
-	
-	ForumCategory targetCategory = null;
-	ArrayList<ForumCategory> categoriesTemp;
-	boolean isDerivedFromCourseOrCategory = derivedFromCourse!=null && courseOrModuleId !=null;
-	// if category created for module or course already excist
-	if(isDerivedFromCourseOrCategory){
-	if (forumCategoryRepository.countByCourseModuleIdAndIsCourseCategory(
-			courseOrModuleId,derivedFromCourse)==0){
-			if (derivedFromCourse)
-		targetCategory = ForumCategory.createInstanceForCourse(name,description,courseOrModuleId);
-		else
-			targetCategory = ForumCategory.createInstanceForModule(name,description,courseOrModuleId);	
-			
-			ForumCategoryStatistic statistic = new ForumCategoryStatistic();
-			statistic=forumCategoryStatisticService.save(statistic);
-				targetCategory.setStatistic(statistic);
-				
-		targetCategory.setCategory(parent);
-		targetCategory = forumCategoryRepository.save(targetCategory);
-	}
-	else{
-			categoriesTemp = forumCategoryRepository.findFirstByNameAndCourseOrModuleIdWhereDateEqualMinDate(name, courseOrModuleId);
-		if (categoriesTemp != null && categoriesTemp.size()>0){
-			targetCategory = categoriesTemp.get(0);
-		}
-	}
-	}
-	else{
-	//categoriesTemp = forumCategoryRepository.findFirstByNameWhereDateEqualMinDate(name);
-		targetCategory = ForumCategory.createInstance(name, description, containSubCategories);
-		targetCategory.setCategory(parent);
-		targetCategory = forumCategoryRepository.save(targetCategory);
-	}
-	
-	return targetCategory;
-}
-*/
 @Transactional
 public void initEducationCategory(){
 	final String EDUCATION_CATEGORY_NAME = "Навчання";
@@ -512,27 +540,6 @@ public void removeAllAutogeneratedCategoriesAndTopics(){
 public ForumTopic getLastTopic(Long categoryId,IntitaUser user){
 	ForumCategory category = forumCategoryRepository.findOne(categoryId);
 	return category.getLastTopic();
-	/*long startTime = new Date().getTime();
-	long delta = new Date().getTime() - startTime;
-	int currentLogStringIndex = 0;
-	ForumCategory category = forumCategoryRepository.findOne(categoryId);
-	if (category==null) return null;
-	delta = new Date().getTime() - startTime;
-	HashSet<Long> categoriesIds = getAllSubCategoriesIds(category,null);
-	delta = new Date().getTime() - startTime;
-	if (categoriesIds==null){
-		categoriesIds = new HashSet<Long>();
-	}
-	else{
-		categoriesIds = filterNotAccesibleCategoriesIds(categoriesIds,user);
-	}
-	delta = new Date().getTime() - startTime;
-	categoriesIds.add(category.getId());
-	ForumTopic lastTopic = forumCategoryRepository.getLastTopic(categoriesIds);
-	delta = new Date().getTime() - startTime;
-	delta = new Date().getTime() - startTime;
-	return lastTopic;
-	*/
 }
 @Transactional
 public List<ForumCategoryStatistic> getCategoriesStatistic(List<ForumCategory> categories){	
@@ -544,10 +551,6 @@ public List<ForumCategoryStatistic> getCategoriesStatistic(List<ForumCategory> c
 }
 @Transactional
 public ForumCategoryStatistic getCategorieStatistic(ForumCategory category){
-	/*HashSet<Long> allSubcategoriesIds = getAllSubCategoriesIds(category,null);
-	int categoriesCount = allSubcategoriesIds.size();
-	HashSet<Long> topicsIds = forumTopicService.getAllSubTopicsIds(category,allSubcategoriesIds);
-	int messagesCount = topicMessageService.getTotalMessagesCountByTopicsIds(topicsIds);*/	
 	ForumCategoryStatistic statistic = category.getStatistic();
 	return statistic;
 }
