@@ -10,6 +10,16 @@ $(document).ready(function() {
         complete: function() {} // Callback for Modal close
     });
       $('select').material_select();
+
+      $('.tool-bar-wraper select')
+    .focus(function() {
+      debugger
+        $('.tool-bar-wraper').css( "max-height", "400px" );
+    })
+    .blur(function() {
+      $('.tool-bar-wraper').css( "max-height", "40px" );
+    })
+
        $(".tool-bar-wraper").mousewheel(function(event, delta) {
 
       this.scrollLeft -= (delta * 30);

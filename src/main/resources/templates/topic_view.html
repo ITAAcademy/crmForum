@@ -15,42 +15,7 @@
     <div id="forumcontainer" class="container">
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <div class="configure-head hide-me">
-           <form method="GET" th:unless="${topic==null}" th:action="@{/operations/clearcookie/sorting_config}">
-                 <input type="hidden" name="itemType" value="TopicMessage" /> 
-                    <div class="sort-enter-bnt left">
-                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
-                        </button>
-                    </div>
-            </form>
-                <form method="post" th:unless="${topic==null}" th:action="@{/view/topic/__${topic.id}__}">
-                    <div class="tool-bar-wraper">
-                        <div class="input-field tool-bar-select">
-                            <select name="where">
-                            <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
-                               <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
-                            </select>
-                            <label>Показувати елементи за </label>
-                        </div>
-                        <div class="input-field tool-bar-select">
-                            <select name="sort">
-                             <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
-                            </select>
-                            <label>Сортувати за</label>
-                        </div>
-                        <div class="input-field tool-bar-select">
-                            <select name="order">
-                                <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
-                            </select>
-                            <label>Сортувати за</label>
-                        </div>
-                    </div>
-                    <div class="sort-enter-bnt right">
-                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <div th:include="sort_template" th:with="prefix = '',clearType='TopicMessage', link=@{/view/topic/__${topic.id}__}">...</div>
             <!-- Topic info -->
             <ul class="topic-content">
                 <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2},postLink='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" th:id="@{'msg__${message.id}__'}">
@@ -60,8 +25,8 @@
                             <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" style="  " th:title="${message.author.getNickName()}">
                                 <div th:text="${message.author.getNickName()}"></div>
                             </a>
-                           <div th:if="${onlineUsers[message.author.id]!=null}">online</div>
-                           <div th:if="${onlineUsers[message.author.id]==null}">offline</div>
+                            <div th:if="${onlineUsers[message.author.id]!=null}">online</div>
+                            <div th:if="${onlineUsers[message.author.id]==null}">offline</div>
                             <ul class="user-contact">
                                 <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
                                 <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
