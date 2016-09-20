@@ -90,6 +90,7 @@ public Page<ForumCategory> getMainCategories(int page){
 }
 @Transactional
 public ForumCategory getCategoryById(Long id){
+	if (id==null) return null;
 	return forumCategoryRepository.findOne(id);
 }
 /**
@@ -156,6 +157,7 @@ public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds
  */
 @Transactional
 public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,IntitaUser user,UserSortingCriteria sortingCriteria,Integer page){
+	if (parentCategoryId==null) return new ArrayList<ForumCategory>();
 	ForumCategory rootCategory = forumCategoryRepository.findOne(parentCategoryId);
 	List<ForumCategory> result = null;
 		if (sortingCriteria==null){
@@ -377,7 +379,7 @@ public void initEducationCategory(){
 }
 
 public LinkedList<ForumTreeNode> getCategoriesTree(ForumCategory lastCategory){
-	if (lastCategory==null)return null;
+	if (lastCategory==null)return new LinkedList<ForumTreeNode>();
 	long timeMs = new Date().getTime();
 	LinkedList<ForumTreeNode> tree = new LinkedList<ForumTreeNode>();
 	ForumCategory parent = lastCategory;

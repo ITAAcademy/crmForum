@@ -22,7 +22,7 @@
             <!--Categories configuration header -->
             <span>
             <div  target="categories" class="light-blue darken-4 topic-divided"> <span>Категорії</span></div>
-                     <div th:include="sort_template" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu= ${categoriesModel['sortingMenu']},clearType='ForumCategory', prefix='categories_', link=@{/view/category/__${currentCategory.id}__}">...</div>
+                     <div th:if="${currentCategory!=null}" th:include="sort_template" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu= ${categoriesModel['sortingMenu']},clearType='ForumCategory', prefix='categories_', link=@{/view/category/__${currentCategory.id}__}">...</div>
 
                 <!--/Categories configuration header -->
             <ul id="categories" th:classappend="${showFull} ? half" class="collection ul-container " th:with="items=${categoriesModel['items']},lastTopics=${categoriesModel['lastTopics']},statistic=${categoriesModel['statistic']}">
@@ -78,7 +78,7 @@
     <span >
                 <div target="topics" class="light-blue darken-4 topic-divided"> <span>Топіки</span>
                 <span ng:if="${topicsModel['items'].getNumberOfElements() == 0}">Топіки по запиту відсутні</span></div>
-                    <div th:include="sort_template" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu= ${topicsModel['sortingMenu']},clearType='ForumTopic', prefix='topics_', link=@{/view/category/__${currentCategory.id}__}">...</div>
+                    <div th:include="sort_template" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu= ${topicsModel['sortingMenu']},clearType='ForumTopic',currentCategoryId=@{currentCategory==null ? currentCategory : currentCategory.id}, prefix='topics_', link=@{/view/category/__${currentCategoryId}__}">...</div>
                 <!--/Topics configuration header -->
             <ul id="topics" th:classappend="${showFull} ? half" th:if="${topicsModel!=null}" class="collection ul-container" th:with="items=${topicsModel['items']},lastTopics=${topicsModel['lastTopics']},statistic=${topicsModel['statistic']},lastMessages=${topicsModel['lastMessages']}">
                 <!--Topics List-->

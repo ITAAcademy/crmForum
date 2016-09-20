@@ -267,44 +267,9 @@ public class ForumController {
 	}
 
 	@RequestMapping(value="/", method = RequestMethod.GET)
-	public ModelAndView  getIndex(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
+	public ModelAndView  getIndex(RedirectAttributes redirectAttributes,HttpServletRequest request,HttpServletResponse response, @RequestParam(required = false) String before,  Model model,Authentication principal) {
 		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
-		
-		//chatLangService.updateDataFromDatabase();
-		if(before != null)
-		{
-			return new ModelAndView("redirect:"+ before);
-		}
-		//if(auth != null)
-		//addLocolization(model, forumUsersService.getForumUser(auth));
-		ModelAndView result = new ModelAndView("category_view");
-		IntitaUser intitaUser = (IntitaUser) auth.getPrincipal();
-		Page<ForumCategory> categories = forumCategoryService.getMainCategories(0);
-		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
-		for (ForumCategory category : categories){
-			lastTopics.add(category.getLastTopic());
-		}
-		if (intitaUser!=null){
-			result.addObject("username",intitaUser.getNickName());
-			onlineUsersActivity.put(intitaUser.getId(), UserActionInfo.forEmptyAction());
-		}
-		ModelMap categoriesModelMap = new ModelMap();
-		categoriesModelMap.addAttribute("items",categories);
-		categoriesModelMap.addAttribute("lastTopics",lastTopics);
-		List<ForumCategory> pageCategories = categories.getContent();
-		List<ForumCategoryStatistic> categoriesStatistic = forumCategoryService.getCategoriesStatistic(pageCategories);
-		categoriesModelMap.addAttribute("statistic",categoriesStatistic);
-		int pagesCount = categories.getTotalPages();
-		if(pagesCount<1)pagesCount=1;
-		categoriesModelMap.addAttribute("pagesCount",pagesCount);
-		categoriesModelMap.addAttribute("currentPage",1);
-		result.addObject("categoriesModel",categoriesModelMap);
-		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
-		result.addObject("prettyTime",p);
-		result.addObject("config",configParamService.getCachedConfigMap());
-		result.addObject("user", intitaUser);
-		result.addObject("blockSearch", true);
-		return result;
+		return viewCategoryById(redirectAttributes,null,null,1,request,response,auth,null,null);
 	}
 
 	@RequestMapping(value="/test",method = RequestMethod.GET)
@@ -362,7 +327,9 @@ public class ForumController {
 			}
 			totalFuncTime = new Date().getTime() - beginTime;
 			ModelMap categoriesModelMap = new ModelMap();
-			Page<ForumCategory> categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,user,categoriesSortingCriteria);
+			Page<ForumCategory> categories = null;
+			if (categoryId!=null)categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,user,categoriesSortingCriteria);
+			else categories = forumCategoryService.getMainCategories(0);
 			totalFuncTime = new Date().getTime() - beginTime;
 			categoriesModelMap.addAttribute("items",categories);
 			ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
