@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,15 +96,16 @@ public void createEmptyCategoriesStatisticForAllCategories(){
 }
 
 /**
- * To do
+ * Update all categories statistic and return ids of updated categories;
  * @param categoryId
  */
 @Transactional
-public void updateAllCategoriesStatistic(){
+public ArrayList<Long> updateAllCategoriesStatistic(){
 	ArrayList<Long> categories = forumCategoryService.getAllCategoriesIds();
 	for (Long categoryId : categories){
-		updateCategorieStatistic(categoryId);
+		updateCategorieStatistic(categoryId);		
 	}
+	return categories;
 }
 @Transactional
 public void updateCategorieStatistic(Long categoryId){

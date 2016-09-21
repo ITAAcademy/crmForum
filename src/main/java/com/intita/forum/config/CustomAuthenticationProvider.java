@@ -97,7 +97,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				log.info(e.getMessage());
 				//throw new UsernameNotFoundException(IntitaIdStr);
 				session.setMaxInactiveInterval(5);
-				return new UsernamePasswordAuthenticationToken(new IntitaUser("anonymousUser", ""), token.getCredentials());
+				return new UsernamePasswordAuthenticationToken(new IntitaUser("anonymousUser", ""), token.getCredentials(),null);
 				///return new UsernamePasswordAuthenticationToken("", token.getCredentials(), authorities);
 				}
 					Object obj_s = session.getAttribute("forumId");
