@@ -21,7 +21,7 @@
             <div class="ul-container-sh"></div>
             <!--Categories configuration header -->
             <span>
-            <div  target="categories" class="light-blue darken-4 topic-divided"> <span>Категорії</span></div>
+            <div  target="categories" neighbor="topics" class="light-blue darken-4 topic-divided"> <span>Категорії</span></div>
                      <div th:if="${currentCategory!=null}" th:include="sort_template" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu= ${categoriesModel['sortingMenu']},clearType='ForumCategory', prefix='categories_', link=@{/view/category/__${currentCategory.id}__}">...</div>
 
                 <!--/Categories configuration header -->
@@ -76,7 +76,7 @@
     <!--Topics view-->
     <!--Topics configuration header -->
     <span >
-                <div target="topics" class="light-blue darken-4 topic-divided"> <span>Топіки</span>
+                <div target="topics" neighbor="categories" class="light-blue darken-4 topic-divided"> <span>Топіки</span>
                 <span th:if="${topicsModel['items'].getNumberOfElements() == 0}">Топіки по запиту відсутні</span></div>
                     <div th:include="sort_template" th:with="sortingCriteria=${topicsModel['sortingCriteria']},sortingMenu= ${topicsModel['sortingMenu']},clearType='ForumTopic',currentCategoryId=@{currentCategory==null ? currentCategory : currentCategory.id}, prefix='topics_', link=@{/view/category/__${currentCategoryId}__}">...</div>
                 <!--/Topics configuration header -->

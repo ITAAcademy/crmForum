@@ -50,8 +50,17 @@ $(document).ready(function() {
     });
     $('.topic-divided')
     .click(function(e) {
-        var target = $(this).attr("target")
-        $('#' + target).toggleClass('hide-me').toggleClass('half');
+        var target = $(this).attr("target");
+        var neighbor = $(this).attr("neighbor");
+        var targetElm =  $('#' + target);
+        targetElm.toggleClass('hide-me')
+        if(targetElm.hasClass('hide-me'))
+            targetElm.removeClass('half');
+        else
+            targetElm.addClass('half');
+        var neighborElm = $('#' + neighbor);
+        if(!neighborElm.hasClass('hide-me'))
+            neighborElm.toggleClass('half');
         
         e.stopPropagation();
     });
