@@ -255,6 +255,11 @@ public void initCategoriesByRoles(){
 	final String ROLES_ACCOUNTANTS_CATEGORY_NAME = "Бухгалтери";
 	final String ROLES_TEACHERS_CATEGORY_NAME = "Вчителі";
 	
+	final String ROLES_STUDENTS_CATEGORY_NAME = "Студенти";
+	final String ROLES_TENANTS_CATEGORY_NAME = "Тенанти";
+	final String ROLES_CONTENT_MANAGER_CATEGORY_NAME = "Контент менеджери";
+	
+	
 	/*ForumCategory roleCategory = null;
 	ArrayList<ForumCategory> categories = forumCategoryRepository.findByNameAndCategoryIdWhereDateEqualMinDate(ROLES_CATEGORY_NAME,
 			null);
@@ -274,6 +279,12 @@ public void initCategoriesByRoles(){
 
 	//ForumCategory teacgersCategory =  ForumCategory.createInstance(ROLES_TEACHERS_CATEGORY_NAME,"Для вчителів",false);
 	ForumCategory teacgersCategory =  getOrCreateForumCategory(ROLES_TEACHERS_CATEGORY_NAME,roleCategory,"Для вчителів",false,IntitaUserRoles.TEACHER);
+
+	ForumCategory studentsCategory =  getOrCreateForumCategory(ROLES_STUDENTS_CATEGORY_NAME,roleCategory,"Для студентів",false,IntitaUserRoles.STUDENT);
+	
+	ForumCategory tenantsCategory =  getOrCreateForumCategory(ROLES_TENANTS_CATEGORY_NAME,roleCategory,"Для тенантів",false,IntitaUserRoles.TENANT);
+
+	ForumCategory conentsManagersCategory =  getOrCreateForumCategory(ROLES_CONTENT_MANAGER_CATEGORY_NAME,roleCategory,"Для контент менеджерів",false,IntitaUserRoles.CONTENT_MANAGER);
 }
 /**
  * add new category to database basic on course data
