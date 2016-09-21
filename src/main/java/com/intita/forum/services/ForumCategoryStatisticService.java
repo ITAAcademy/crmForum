@@ -123,7 +123,9 @@ public void updateCategorieStatistic(Long categoryId){
 	statistic.setCategoriesCount(categoriesCount);
 	statistic.setTopicsCount(topics.size());
 	statistic.setMessagesCount(messagesCount);
-	statisticRepository.save(statistic);
+	statistic = statisticRepository.save(statistic);
+	category.setStatistic(statistic);
+	forumCategoryService.update(category);
 	endTime = new Date().getTime();
 	long deltaTime = endTime - startTime;
 	//statisticRepository.setStatistic(categoryId,categoriesCount, 0,0);
