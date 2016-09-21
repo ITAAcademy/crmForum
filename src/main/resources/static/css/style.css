@@ -426,6 +426,7 @@
 
 .ul-container.half {
     max-height: calc(50% - 60px);
+    min-height: calc(50% - 60px);
 }
 
 .ul-container::-webkit-scrollbar {
