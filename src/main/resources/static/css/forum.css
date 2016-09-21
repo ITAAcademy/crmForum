@@ -24,7 +24,7 @@ body {
 
 .wraper.fixed {
     height: 1px;
-    min-height: calc(100% - 20px);
+    min-height: calc(100% - 70px);
     max-height: calc(100% - 70px);
     /* overflow: hidden; */
     background-color: white;

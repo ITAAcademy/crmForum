@@ -151,11 +151,17 @@
 </div>
 <!-- Modal Structure -->
 <div th:if="${currentCategory != null}" id="modal1" class="modal bottom-sheet modal-fixed-footer" style="max-height: 90%;overflow: hidden">
-    <form id="addTopicForm" method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
+ <div class="row">
+    <div class="col s12">
+      <ul class="tabs">
+        <li class="tab col s6"><a class="active" href="#addTopicForm">Новий топік</a></li>
+        <li class="tab col s6"><a href="#addCategoryForm">Нова категорія</a></li>
+      </ul>
+    </div>
+     <form id="addTopicForm" class="col s12" method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_topic}">
         <div class="modal-content">
-            <h4>Створити новий топік</h4>
             <div class="row">
-                <div class="input-field col s6">
+                <div class="input-field col s12">
                     <input id="topic_name" name="topic_name" type="text" class="validate" />
                     <label for="topic_name">Заголовок</label>
                 </div>
@@ -169,6 +175,22 @@
             <button id="addTopicButton" style="" class=" modal-action modal-close waves-effect waves-green btn-flat" value="Додати" th:onclick="@{'javascript:addTopic(event,\'__${#httpServletRequest.getContextPath()}__/operations/category/__${currentCategory.id}__/add_topic\')'}">Додати</button>
         </div>
     </form>
+         <form id="addCategoryForm" class="col s12" method="post" th:action="@{/operations/category/__${currentCategory.id}__/add_сategory}">
+        <div class="modal-content">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="topic_name" name="topic_name" type="text" class="validate" />
+                    <label for="topic_name">Заголовок категорії</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="addTopicButton" style="" class=" modal-action modal-close waves-effect waves-green btn-flat" value="Додати" th:onclick="@{'javascript:addTopic(event,\'__${#httpServletRequest.getContextPath()}__/operations/category/__${currentCategory.id}__/add_сategory\')'}">Додати</button>
+        </div>
+    </form>
+  </div>
+
+   
 </div>
 
 </html>

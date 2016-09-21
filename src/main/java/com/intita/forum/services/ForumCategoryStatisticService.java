@@ -117,7 +117,9 @@ public void updateCategorieStatistic(Long categoryId){
 	HashSet<Long> topics = forumTopicService.getAllSubTopicsIds(category,categories);
 	int messagesCount = topicMessagesService.getTotalMessagesCountByTopicsIds(topics);
 	ForumCategoryStatistic statistic = category.getStatistic();
-	if (statistic==null) return;
+	if (statistic == null) 
+		statistic = new ForumCategoryStatistic();
+	statistic.setCategory(category);
 	statistic.setCategoriesCount(categoriesCount);
 	statistic.setTopicsCount(topics.size());
 	statistic.setMessagesCount(messagesCount);

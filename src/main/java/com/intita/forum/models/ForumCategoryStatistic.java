@@ -17,6 +17,12 @@ private int categoriesCount;
 
 @OneToOne(mappedBy="statistic")
 ForumCategory category;
+public ForumCategory getCategory() {
+	return category;
+}
+public void setCategory(ForumCategory category) {
+	this.category = category;
+}
 public ForumCategoryStatistic(){
 	
 }
