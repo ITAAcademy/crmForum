@@ -15,7 +15,7 @@
     <div id="forumcontainer" class="container">
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <div th:include="sort_template" th:with="prefix = '',clearType='TopicMessage', link=@{/view/topic/__${topic.id}__}">...</div>
+            <div th:if = "${topic != null}" th:include="sort_template" th:with="prefix = '',clearType='TopicMessage', link=@{'/view/topic/' + ${topic.id}}">...</div>
             <!-- Topic info -->
             <ul class="topic-content">
                 <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2},postLink='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" th:id="@{'msg__${message.id}__'}">
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="s12 m10 l10 user-msg">
-                        <h4 th:if="${iterationStatus.count == 1}" th:text="${message.topic.name}" style="text-align: center;"></h4>
+                        <h4 th:if="${iterationStatus.count == 1 || blockSearch != null}" th:text="${message.topic.name}" style="text-align: center;"></h4>
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
                             <div class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id="@{'topicMessage__${indexCurrentMsg}__'}" th:attr="messageId=${message.id}"></div>
                             <br/>

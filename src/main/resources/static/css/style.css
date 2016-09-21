@@ -372,7 +372,7 @@
 }
 
 .input-field.tool-bar-select input {
-    max-height: 27px;
+    max-height: 22px;
     margin: 0px;
     border-top: 1px white solid;
     opacity: 0.8;
@@ -382,7 +382,7 @@
 .input-field.tool-bar-select label {
     color: white;
     font-size: 14px;
-    line-height: 12px;
+    line-height: 14px;
 }
 
 
