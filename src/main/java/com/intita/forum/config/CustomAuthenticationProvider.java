@@ -1,5 +1,8 @@
 package com.intita.forum.config;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
@@ -14,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -21,6 +25,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.intita.forum.models.IntitaUser;
+import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.services.IntitaUserService;
 import com.intita.forum.services.RedisService;
 import com.intita.forum.util.SerializedPhpParser;
@@ -43,8 +48,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		Authentication token = (Authentication) authentication;
-		List<GrantedAuthority> authorities = "ADMIN".equals(token.getCredentials()) ? 
-				AuthorityUtils.createAuthorityList("ROLE_ADMIN") : null;
+
 				ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 
 				Cookie[] array = attr.getRequest().getCookies();
@@ -93,13 +97,23 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 				log.info(e.getMessage());
 				//throw new UsernameNotFoundException(IntitaIdStr);
 				session.setMaxInactiveInterval(5);
-				return new UsernamePasswordAuthenticationToken(new IntitaUser("anonymousUser", ""), token.getCredentials(), authorities);
+				return new UsernamePasswordAuthenticationToken(new IntitaUser("anonymousUser", ""), token.getCredentials());
 				///return new UsernamePasswordAuthenticationToken("", token.getCredentials(), authorities);
 				}
 					Object obj_s = session.getAttribute("forumId");
 
 				session.setAttribute("chatLg", IntitaLg);
-				Authentication auth = new UsernamePasswordAuthenticationToken(userService.getById(intitaIdLong), token.getCredentials(), authorities);
+				IntitaUser user = userService.getById(intitaIdLong);
+				Set<IntitaUserRoles> roles = userService.getRoles(user.getId());
+				List<SimpleGrantedAuthority> authoritiesList = new ArrayList<SimpleGrantedAuthority>();
+				for (IntitaUserRoles role : roles){
+					authoritiesList.add(new SimpleGrantedAuthority(role.name()));
+				}
+				Authentication auth = new UsernamePasswordAuthenticationToken(user, token.getCredentials(), authoritiesList);
+				
+				
+		
+				GrantedAuthority autfsdh = new SimpleGrantedAuthority("test");
 				//	auth.setAuthenticated(true);
 				return auth;
 	}

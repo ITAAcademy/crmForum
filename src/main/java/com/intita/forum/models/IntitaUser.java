@@ -113,8 +113,9 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Set<String> authoritis = intitaUserService.getRolesNames(id);
-		return AuthorityUtils.createAuthorityList(authoritis.toArray(new String[authoritis.size()]));
+		 List<GrantedAuthority> authorities =
+                 new ArrayList<GrantedAuthority>();
+         return authorities;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
