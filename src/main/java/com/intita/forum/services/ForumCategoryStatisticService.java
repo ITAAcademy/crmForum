@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumCategoryStatistic;
+import com.intita.forum.models.ForumTopic;
 import com.intita.forum.repositories.ForumCategoryStatisticRepository;
 
 
@@ -25,7 +26,7 @@ public class ForumCategoryStatisticService {
 	@Autowired TopicMessageService topicMessagesService;
 public void incrementTopicsCount(Long categoryId){
 	ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-	ForumCategoryStatistic statistic = statisticRepository.findOne(category.getStatistic().getId());
+	ForumCategoryStatistic statistic = category.getStatistic();
 	int topicsCount = statistic.getTopicsCount();
 	statistic.setTopicsCount(topicsCount+1);
 	statisticRepository.save(statistic);
@@ -33,7 +34,7 @@ public void incrementTopicsCount(Long categoryId){
 
 public void incrementCategoriesCount(Long categoryId){
 	ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-	ForumCategoryStatistic statistic = statisticRepository.findOne(category.getId());
+	ForumCategoryStatistic statistic = category.getStatistic();
 	int categoriesCount = statistic.getCategoriesCount();
 	statistic.setCategoriesCount(categoriesCount+1);
 	statisticRepository.save(statistic);
@@ -41,7 +42,7 @@ public void incrementCategoriesCount(Long categoryId){
 @Transactional
 public void incrementTopicMessagesCount(Long categoryId){
 	ForumCategory category = forumCategoryService.getCategoryById(categoryId);
-	ForumCategoryStatistic statistic = statisticRepository.findOne(category.getId());
+	ForumCategoryStatistic statistic = category.getStatistic();
 	int messagesCount = statistic.getMessagesCount();
 	statistic.setMessagesCount(messagesCount+1);
 	statisticRepository.save(statistic);
@@ -100,14 +101,12 @@ public void createEmptyCategoriesStatisticForAllCategories(){
  * @param categoryId
  */
 @Transactional
-public ArrayList<Long> updateAllCategoriesStatistic(){
-	ArrayList<Long> categories = forumCategoryService.getAllCategoriesIds();
-	for (Long categoryId : categories){
-		updateCategorieStatistic(categoryId);		
-	}
-	return categories;
+public void updateAllCategoriesStatistic(){
+	ArrayList<ForumCategory> categories = forumCategoryService.getRootCategories();
+	for (ForumCategory category : categories)
+		updateCategoriesStatistic(category);		
 }
-@Transactional
+/*@Transactional
 public void updateCategorieStatistic(Long categoryId){
 	long startTime = new Date().getTime();
 	long endTime = startTime;
@@ -129,7 +128,38 @@ public void updateCategorieStatistic(Long categoryId){
 	endTime = new Date().getTime();
 	long deltaTime = endTime - startTime;
 	//statisticRepository.setStatistic(categoryId,categoriesCount, 0,0);
+}*/
+@Transactional
+public ForumCategoryStatistic updateCategoriesStatistic(ForumCategory category){
+	List<ForumCategory> subcategories = forumCategoryService.getSubCategories(category);
+	HashSet<Long> topics = forumTopicService.getAllSubTopicsIdsByCategories(category,subcategories);
+	int messagesCount = topicMessagesService.getTotalMessagesCountByTopicsIds(topics);
+	int topicsCount = topics == null ? 0 : topics.size();
+	int categoriesCount = subcategories == null ? 0 : subcategories.size();
+	ForumCategoryStatistic totalForumCategoryStatistic =  category.getStatistic();
+	//check if category already has statistic mapping, create new if false and set topics,categories and messages count 
+	if (totalForumCategoryStatistic==null){
+		totalForumCategoryStatistic = new ForumCategoryStatistic(topicsCount,categoriesCount,messagesCount);
+		totalForumCategoryStatistic = totalForumCategoryStatistic = statisticRepository.save(totalForumCategoryStatistic);
+	}
+	else{
+		totalForumCategoryStatistic.setTopicsCount(topicsCount);
+		totalForumCategoryStatistic.setCategoriesCount(categoriesCount);
+		totalForumCategoryStatistic.setMessagesCount(messagesCount);
+	}
+	//	
+	for (ForumCategory subCategory : subcategories){
+		ForumCategoryStatistic statistic = updateCategoriesStatistic(subCategory);
+		totalForumCategoryStatistic.add(statistic);
+	}
+	//totalForumCategoryStatistic.setCategory(category);
+	
+	category.setStatistic(totalForumCategoryStatistic);
+	//log.info("Category statistic saved("+category.getName()+"):"+totalForumCategoryStatistic);
+	return totalForumCategoryStatistic;
+	
 }
+
 @Transactional
 public ForumCategoryStatistic save(ForumCategoryStatistic statistic){
 	return statisticRepository.save(statistic);

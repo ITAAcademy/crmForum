@@ -19,6 +19,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 
 @Entity(name="forum_category")
@@ -37,6 +40,7 @@ private Long courseModuleId;
 private Boolean isCourseCategory;
 @OneToOne
 private ForumTopic lastTopic;
+@NotFound(action = NotFoundAction.IGNORE)
 @OneToOne
 private ForumCategoryStatistic statistic;
 @ElementCollection(targetClass = IntitaUserRoles.class)

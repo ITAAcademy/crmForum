@@ -17,6 +17,7 @@ import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 
 public interface ForumCategoryRepository  extends CrudRepository<ForumCategory, Long> {
+	ArrayList<ForumCategory> findByCategoryIsNull();
 	Page<ForumCategory> findAll(Pageable pageable);
 	ArrayList<ForumCategory> findAll();
 	@Query(value="SELECT c.id FROM forum_category c")
@@ -26,6 +27,7 @@ public interface ForumCategoryRepository  extends CrudRepository<ForumCategory, 
 	Page<ForumCategory> findByCategoryOrderByDate(ForumCategory category,Pageable pageable);
 	Page<ForumCategory> findByCategoryOrderByName(ForumCategory category,String name, Pageable pageable);
 	ArrayList<ForumCategory> findByCategory(ForumCategory category);
+	ArrayList<ForumCategory> findByCategoryId(Long categoryid);
 	@Query(value = "SELECT t FROM forum_topic t WHERE date = ( select max ( date ) FROM forum_topic t WHERE t.category.id IN (:categoriesIds)) AND t.category.id IN (:categoriesIds)")
 	ForumTopic getLastTopic(@Param(value = "categoriesIds") HashSet<Long> categoriesIds);
 	int countByCourseModuleIdAndIsCourseCategory(Long id,Boolean isCourseCategory);

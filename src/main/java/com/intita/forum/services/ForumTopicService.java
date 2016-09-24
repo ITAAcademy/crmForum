@@ -1,6 +1,7 @@
 package com.intita.forum.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Set;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -40,10 +43,28 @@ public class ForumTopicService {
 	@Autowired private ForumCategoryStatisticService forumCategoryStatisticService;
 	@Autowired 
 	private SessionFactory sessionFactory;
+	private final static Logger log = LoggerFactory.getLogger(ForumTopicService.class);
 	
+	@Transactional
+	public ForumTopic getLastTopicAfterDate(Long categoryId, Date paramDate){
+		//if (paramDate == null) 
+		List<ForumTopic> topics = forumTopicRepository.findInCategoryWhereDateGreaterThenParamDateSortByDateDesc(categoryId,paramDate);
+		ForumTopic lastTopic  = topics.size()>0 ? topics.get(0) : null;
+		return lastTopic;
+	}
 	@Transactional
 	public Page<ForumTopic> getAllTopics(Long categoryId,int page){
 		return forumTopicRepository.findByCategoryId(categoryId,new PageRequest(page,topicsCountForPage)); 
+	}
+	@Transactional
+	public List<ForumTopic> getAllTopics(Long categoryId){
+		return forumTopicRepository.findByCategoryId(categoryId);
+	}
+	@Transactional
+	public ForumTopic getLastTopic(Long categoryId){
+		List<ForumTopic> lastTopics = forumTopicRepository.findInCategorySortByDateDesc(categoryId);
+		ForumTopic lastTopic = lastTopics.size() > 0 ? lastTopics.get(0) : null;
+		return lastTopic;
 	}
 	@Transactional
 	public Page<ForumTopic> getAllTopicsSortedByPin(Long categoryId,int page,UserSortingCriteria sortingCriteria){
@@ -134,12 +155,23 @@ public class ForumTopicService {
 		}
 		return false;
 	}
-	public HashSet<Long> getAllSubTopicsIds(ForumCategory category,HashSet<Long> cachedAllSubcategories){
+	@Transactional
+	public HashSet<Long> getAllSubTopicsIdsByCategoriesIds(ForumCategory category,HashSet<Long> cachedAllSubcategories){
 		HashSet<Long> categories = cachedAllSubcategories != null ? cachedAllSubcategories : forumCategoryService.getAllSubCategoriesIds(category, null);
-		if (categories==null) categories = new HashSet<Long>();
-		categories.add(category.getId());
+		if (categories==null || categories.size()<1)return new HashSet<Long>(); 
+			//categories = new HashSet<Long>();
+		//categories.add(category.getId());
 		HashSet<Long> topicIds = forumTopicRepository.findIdsByCategoryIds(categories);
 		return topicIds;
+	}
+	@Transactional
+	public HashSet<Long> getAllSubTopicsIdsByCategories(ForumCategory category,List<ForumCategory> cachedAllSubcategories){
+		if (cachedAllSubcategories==null) return getAllSubTopicsIdsByCategoriesIds(category,null);
+		HashSet<Long> cachedAllSubcategoriesIds = new HashSet<Long>();
+		for (ForumCategory categorie : cachedAllSubcategories){
+			cachedAllSubcategoriesIds.add(categorie.getId());
+		}
+		return getAllSubTopicsIdsByCategoriesIds(category,cachedAllSubcategoriesIds);
 	}
 	
 	public List<ForumCategoryStatistic> getTopicsStatisticByIds(List<Long> topicsIds){
