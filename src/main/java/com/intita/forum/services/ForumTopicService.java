@@ -61,6 +61,10 @@ public class ForumTopicService {
 		return forumTopicRepository.findByCategoryId(categoryId);
 	}
 	@Transactional
+	public HashSet<Long> getAllTopicsIds(Long categoryId){
+		return forumTopicRepository.findAllIdsByCategory(categoryId);
+	}
+	@Transactional
 	public ForumTopic getLastTopic(Long categoryId){
 		List<ForumTopic> lastTopics = forumTopicRepository.findInCategorySortByDateDesc(categoryId);
 		ForumTopic lastTopic = lastTopics.size() > 0 ? lastTopics.get(0) : null;
@@ -157,11 +161,16 @@ public class ForumTopicService {
 	}
 	@Transactional
 	public HashSet<Long> getAllSubTopicsIdsByCategoriesIds(ForumCategory category,HashSet<Long> cachedAllSubcategories){
-		HashSet<Long> categories = cachedAllSubcategories != null ? cachedAllSubcategories : forumCategoryService.getAllSubCategoriesIds(category, null);
-		if (categories==null || categories.size()<1)return new HashSet<Long>(); 
+		
+		HashSet<Long> categories = cachedAllSubcategories != null ? cachedAllSubcategories : forumCategoryService.getSubCategoriesIds(category);
+		HashSet<Long> currentCategoryTopics =  forumTopicRepository.findAllIdsByCategory(category.getId());
+		if (categories==null || categories.size()<1){
+			return currentCategoryTopics;
+		}
 			//categories = new HashSet<Long>();
 		//categories.add(category.getId());
 		HashSet<Long> topicIds = forumTopicRepository.findIdsByCategoryIds(categories);
+		topicIds.addAll(currentCategoryTopics);
 		return topicIds;
 	}
 	@Transactional

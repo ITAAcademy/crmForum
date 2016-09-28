@@ -222,10 +222,7 @@ return result;
 public ArrayList<ForumCategory> getSubCategories(ForumCategory rootCategory){
 	return forumCategoryRepository.findByCategory(rootCategory);
 }
-@Transactional
-public ArrayList<ForumCategory> getSubCategoriesById(Long rootCategoryid){
-	return forumCategoryRepository.findByCategoryId(rootCategoryid);
-}
+
 @Transactional
 public ArrayList<ForumTopic> getAllInludeSubCategoriesArray(ForumCategory rootCategory){
 	ArrayList<ForumTopic> array = new ArrayList<>();
@@ -452,6 +449,10 @@ public LinkedList<ForumCategory> getAllSubCategories(ForumCategory category,Hash
 public HashSet<Long> getAllSubCategoriesIds(Long categoryId,HashSet<Long> idsParam){
 	ForumCategory category = forumCategoryRepository.findOne(categoryId);
 	return getAllSubCategoriesIds(category,idsParam);
+}
+@Transactional
+public HashSet<Long> getSubCategoriesIds(ForumCategory category){
+	return forumCategoryRepository.findSubCategoriesIdsByCategory(category.getId());
 }
 @Transactional
 public HashSet<Long> getAllSubCategoriesIds(ForumCategory category,HashSet<Long> idsParam){

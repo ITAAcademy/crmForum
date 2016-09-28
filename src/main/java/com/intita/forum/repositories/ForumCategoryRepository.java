@@ -27,7 +27,8 @@ public interface ForumCategoryRepository  extends CrudRepository<ForumCategory, 
 	Page<ForumCategory> findByCategoryOrderByDate(ForumCategory category,Pageable pageable);
 	Page<ForumCategory> findByCategoryOrderByName(ForumCategory category,String name, Pageable pageable);
 	ArrayList<ForumCategory> findByCategory(ForumCategory category);
-	ArrayList<ForumCategory> findByCategoryId(Long categoryid);
+	@Query(value = "SELECT c.id FROM forum_category c WHERE category.id=:categoryId")
+	HashSet<Long> findSubCategoriesIdsByCategory(@Param(value="categoryId")Long categoryId);
 	@Query(value = "SELECT t FROM forum_topic t WHERE date = ( select max ( date ) FROM forum_topic t WHERE t.category.id IN (:categoriesIds)) AND t.category.id IN (:categoriesIds)")
 	ForumTopic getLastTopic(@Param(value = "categoriesIds") HashSet<Long> categoriesIds);
 	int countByCourseModuleIdAndIsCourseCategory(Long id,Boolean isCourseCategory);

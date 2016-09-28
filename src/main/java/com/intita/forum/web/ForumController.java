@@ -130,7 +130,7 @@ public class ForumController {
 		//forumCategoryStatisticService.createEmptyCategoriesStatisticForAllCategories();
 		forumCategoryStatisticService.updateAllCategoriesStatistic();
 		log.info("all categories statistic updated");
-		//forumCategoryService.updateLastTopics();
+		forumCategoryService.updateLastTopics();
 
 	}
 	public TextProcessor getTextProcessorInstance(HttpServletRequest request){

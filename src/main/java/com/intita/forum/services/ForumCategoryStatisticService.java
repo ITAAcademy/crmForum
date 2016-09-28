@@ -132,7 +132,7 @@ public void updateCategorieStatistic(Long categoryId){
 @Transactional
 public ForumCategoryStatistic updateCategoriesStatistic(ForumCategory category){
 	List<ForumCategory> subcategories = forumCategoryService.getSubCategories(category);
-	HashSet<Long> topics = forumTopicService.getAllSubTopicsIdsByCategories(category,subcategories);
+	HashSet<Long> topics = forumTopicService.getAllTopicsIds(category.getId());
 	int messagesCount = topicMessagesService.getTotalMessagesCountByTopicsIds(topics);
 	int topicsCount = topics == null ? 0 : topics.size();
 	int categoriesCount = subcategories == null ? 0 : subcategories.size();
@@ -140,7 +140,7 @@ public ForumCategoryStatistic updateCategoriesStatistic(ForumCategory category){
 	//check if category already has statistic mapping, create new if false and set topics,categories and messages count 
 	if (totalForumCategoryStatistic==null){
 		totalForumCategoryStatistic = new ForumCategoryStatistic(topicsCount,categoriesCount,messagesCount);
-		totalForumCategoryStatistic = totalForumCategoryStatistic = statisticRepository.save(totalForumCategoryStatistic);
+		totalForumCategoryStatistic = statisticRepository.save(totalForumCategoryStatistic);
 	}
 	else{
 		totalForumCategoryStatistic.setTopicsCount(topicsCount);
@@ -148,6 +148,7 @@ public ForumCategoryStatistic updateCategoriesStatistic(ForumCategory category){
 		totalForumCategoryStatistic.setMessagesCount(messagesCount);
 	}
 	//	
+	
 	for (ForumCategory subCategory : subcategories){
 		ForumCategoryStatistic statistic = updateCategoriesStatistic(subCategory);
 		totalForumCategoryStatistic.add(statistic);
@@ -155,6 +156,7 @@ public ForumCategoryStatistic updateCategoriesStatistic(ForumCategory category){
 	//totalForumCategoryStatistic.setCategory(category);
 	
 	category.setStatistic(totalForumCategoryStatistic);
+	//log.info("statistic:"+totalForumCategoryStatistic);
 	//log.info("Category statistic saved("+category.getName()+"):"+totalForumCategoryStatistic);
 	return totalForumCategoryStatistic;
 	
