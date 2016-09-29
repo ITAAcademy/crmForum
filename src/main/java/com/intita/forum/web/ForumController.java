@@ -128,10 +128,9 @@ public class ForumController {
 		refreshConfigParameters();
 		forumCategoryService.updateCategoriesFromCourses();
 		//forumCategoryStatisticService.createEmptyCategoriesStatisticForAllCategories();
-		List<Long> updatedCaegories = forumCategoryStatisticService.updateAllCategoriesStatistic();
-
-		//for (Long categoryId : updatedCaegories)
-		//forumCategoryService.updateLastTopic(category, topic);
+		forumCategoryStatisticService.updateAllCategoriesStatistic();
+		log.info("all categories statistic updated");
+		forumCategoryService.updateLastTopics();
 	}
 	public TextProcessor getTextProcessorInstance(HttpServletRequest request){
 		if(bbCodeProcessor == null)//recreate bbCode processor?

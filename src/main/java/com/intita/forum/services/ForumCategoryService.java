@@ -61,7 +61,7 @@ public class ForumCategoryService {
 	@Autowired
 	private ForumCategoryStatisticService forumCategoryStatisticService;
 	
-	private final static Logger log = LoggerFactory.getLogger(ForumCategory.class);
+	private final static Logger log = LoggerFactory.getLogger(ForumCategoryService.class);
 	
 	@Value("${forum.categoriesOrTopicsCountPerPage}")
 	private int topicsCountForPage;
@@ -219,10 +219,10 @@ return result;
  * @return
  */
 @Transactional
-public ArrayList<ForumCategory> getSubCategories(Long id){
-	ForumCategory rootCategory = forumCategoryRepository.findOne(id);
+public ArrayList<ForumCategory> getSubCategories(ForumCategory rootCategory){
 	return forumCategoryRepository.findByCategory(rootCategory);
 }
+
 @Transactional
 public ArrayList<ForumTopic> getAllInludeSubCategoriesArray(ForumCategory rootCategory){
 	ArrayList<ForumTopic> array = new ArrayList<>();
@@ -300,6 +300,9 @@ public void saveCourseAsCategory(Course course,ForumCategory parentCategory){
 		category  = ForumCategory.createInstanceForCourse(course.getTitleUa(),course.getAlias(),course.getId());
 		category.setCategory(parentCategory);
 		category = forumCategoryRepository.save(category);
+		ForumCategoryStatistic statistic = new ForumCategoryStatistic();
+		statistic=forumCategoryStatisticService.save(statistic);
+		category.setStatistic(statistic);
 	}
 		ArrayList<Module> modules = moduleService.getAllFromCourse(course);
 		for (Module module : modules){
@@ -307,11 +310,12 @@ public void saveCourseAsCategory(Course course,ForumCategory parentCategory){
 			if (c == null){
 			//module isn't already excist
 			c = ForumCategory.createInstanceForModule(module.getTitleUa(),module.getAlias(),module.getId());
+			c  = forumCategoryRepository.save(c);
 			c.setCategory(category);
 			ForumCategoryStatistic statistic = new ForumCategoryStatistic();
 			statistic=forumCategoryStatisticService.save(statistic);
 			c.setStatistic(statistic);
-			forumCategoryRepository.save(c);
+			
 			}
 		}	
 }
@@ -323,7 +327,7 @@ public void saveCourseAsCategory(Course course,ForumCategory parentCategory){
  */
 @Transactional
 public ForumCategory getForumCategoryByCourseOrModule(Long id,boolean isCourse){
-	List<ForumCategory> list = forumCategoryRepository.findByCourseOrModuleIdAndIsCourseCategory(id,true);
+	List<ForumCategory> list = forumCategoryRepository.findByCourseOrModuleIdAndIsCourseCategory(id,isCourse);
 	if (list.size()>0) return list.get(0);
 	return null;
 }
@@ -340,7 +344,7 @@ public ForumCategory getForumCategoryByCourseOrModule(Long id,boolean isCourse){
 public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,
 		boolean containSubCategories,IntitaUserRoles role){
 	//return getOrCreateForumCategory(name,parent,description,null,null,containSubCategories);
-	ForumCategory roleCategory = null;
+	ForumCategory category = null;
 	Long parentId = (parent==null) ? null : parent.getId();
 	ForumCategory parentCategory = null;
 	if (parentId!=null)parentCategory = forumCategoryRepository.findOne(parentId);
@@ -349,20 +353,20 @@ public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,S
 	categories = forumCategoryRepository.findByNameAndCategoryIdIsNull(name);
 	else categories = forumCategoryRepository.findByNameAndCategoryId(name,parentId);
 	if (categories.size()>0){
-		roleCategory = categories.get(0);
+		category = categories.get(0);
 	}
-	if (roleCategory == null)
+	if (category == null)
 	{
-		roleCategory = ForumCategory.createInstance(name,description,containSubCategories);
+		category = ForumCategory.createInstance(name,description,containSubCategories);
 		if (role!=null)
-		roleCategory.addRoleDemand(role);
-		roleCategory.setCategory(parentCategory);
+		category.addRoleDemand(role);
+		category.setCategory(parentCategory);
 		ForumCategoryStatistic statistic = new ForumCategoryStatistic();
 		statistic=forumCategoryStatisticService.save(statistic);
-		roleCategory.setStatistic(statistic);
+		category.setStatistic(statistic);
 	}
-	roleCategory = forumCategoryRepository.save(roleCategory);
-	return roleCategory;
+	category = forumCategoryRepository.save(category);
+	return category;
 }
 @Transactional
 public ForumCategory getOrCreateForumCategory(String name,ForumCategory parent,String description,
@@ -414,9 +418,9 @@ public LinkedList<ForumTreeNode> getCategoriesTree(ForumCategory lastCategory){
  * @param topicId
  * @return
  */
-
+@Transactional
 public LinkedList<ForumCategory> getAllSubCategories(ForumCategory category,HashSet<Long> idsParam){
-	if (category==null)return null;
+	if (category==null)return new LinkedList<ForumCategory>();
 	LinkedList<ForumCategory> tree = new LinkedList<ForumCategory>();
 	HashSet<Long> ids = idsParam;
 	if(ids==null)ids =  new HashSet<Long>();
@@ -426,16 +430,16 @@ public LinkedList<ForumCategory> getAllSubCategories(ForumCategory category,Hash
 		ids.add(c.getId());
 		tree.addLast(c);;
 	}
-	for (ForumCategory subCategoryTmp : subcategories){
-		ForumCategory subCategory =forumCategoryRepository.findOne(subCategoryTmp.getId());
-		LinkedList<ForumCategory> subSubs = getAllSubCategories(subCategory,ids);
-		if (subSubs==null)return tree;
+	/*for (ForumCategory subCategoryTmp : subcategories){
+		//ForumCategory subCategory =forumCategoryRepository.findOne(subCategoryTmp.getId());
+		LinkedList<ForumCategory> subSubs = getAllSubCategories(subCategoryTmp,ids);
+		//if (subSubs==null)return tree;
 		for (ForumCategory subSub : subSubs){
 			if (ids.contains(subSub.getId()))continue;
 			tree.addLast(subSub);
 			ids.add(subSub.getId());
 		}
-	}
+	}*/
 	return tree;
 }
 /**
@@ -445,6 +449,10 @@ public LinkedList<ForumCategory> getAllSubCategories(ForumCategory category,Hash
 public HashSet<Long> getAllSubCategoriesIds(Long categoryId,HashSet<Long> idsParam){
 	ForumCategory category = forumCategoryRepository.findOne(categoryId);
 	return getAllSubCategoriesIds(category,idsParam);
+}
+@Transactional
+public HashSet<Long> getSubCategoriesIds(ForumCategory category){
+	return forumCategoryRepository.findSubCategoriesIdsByCategory(category.getId());
 }
 @Transactional
 public HashSet<Long> getAllSubCategoriesIds(ForumCategory category,HashSet<Long> idsParam){
@@ -477,9 +485,32 @@ public LinkedList<ForumTreeNode> getCategoriesTree(ForumTopic topic){
 
 	return tree;
 }
+
 @Transactional
-public void updateLastTopic(ForumCategory c,ForumTopic topic){
-	ForumCategory category = forumCategoryRepository.findOne(c.getId());
+public void updateLastTopic(Long categoryId,ForumTopic topic){
+	ForumCategory category = forumCategoryRepository.findOne(categoryId);
+	ArrayList<Long> categoriesToUpdateLastTopic = getParentCategoriesIds(category);
+	categoriesToUpdateLastTopic.add(category.getId());
+	forumCategoryRepository.updateLastTopic(categoriesToUpdateLastTopic,topic);
+	
+}
+/**
+ * Update lastTopic field in every category to make them relevant
+ */
+@Transactional
+public void updateLastTopics(){
+	ArrayList<ForumCategory> lastTopics = forumCategoryRepository.findByCategoryIsNull();
+	for (ForumCategory category : lastTopics)//get root categories;
+	{
+		ForumTopic lastTopic = processLastTopic(category.getId(), null);
+		if (lastTopic != null){
+			log.info("last topic for category:"+category.getId()+":"+lastTopic.getName());
+		}
+		else log.info("last topic for category:"+category.getId()+":null");
+	}
+}
+@Transactional
+public void updateLastTopic(ForumCategory category,ForumTopic topic){
 	ArrayList<Long> categoriesToUpdateLastTopic = getParentCategoriesIds(category);
 	categoriesToUpdateLastTopic.add(category.getId());
 	forumCategoryRepository.updateLastTopic(categoriesToUpdateLastTopic,topic);
@@ -558,14 +589,51 @@ public ForumTopic getLastTopic(Long categoryId,IntitaUser user){
 public List<ForumCategoryStatistic> getCategoriesStatistic(List<ForumCategory> categories){	
 	List<ForumCategoryStatistic> categoriesStatistic = new ArrayList<ForumCategoryStatistic>();
 	for (ForumCategory c : categories){
-	categoriesStatistic.add(getCategorieStatistic(c));
+	categoriesStatistic.add(c.getStatistic());
 	}
 	return categoriesStatistic;
 }
+/**
+ * process last topic in category and set category topic value to processed result
+ * @param categoryId
+ * @param currentLastTopic
+ * @return
+ */
 @Transactional
-public ForumCategoryStatistic getCategorieStatistic(ForumCategory category){
-	ForumCategoryStatistic statistic = category.getStatistic();
-	return statistic;
+public ForumTopic processLastTopic(ForumCategory category,ForumTopic currentLastTopic){
+	List<ForumCategory> subcategories = getSubCategories(category);
+	ForumTopic lastTopicInThisCategory = null;
+	lastTopicInThisCategory = forumTopicService.getLastTopic(category.getId());
+	for (ForumCategory subCategory : subcategories){
+		ForumTopic processedLastTopic = processLastTopic(subCategory,lastTopicInThisCategory);
+		if (processedLastTopic != null)
+		lastTopicInThisCategory = processedLastTopic;
+	}
+	if (lastTopicInThisCategory!=null)
+	updateLastTopic(category.getId(), lastTopicInThisCategory );
+	ForumTopic topicAfterCurrentLastTopic = null;
+	boolean isLastTopicInThisCategoryIsLaterThanParentCategoryTopic = 
+			lastTopicInThisCategory!=null && currentLastTopic!=null &&
+			(lastTopicInThisCategory.getDate().getTime() > currentLastTopic.getDate().getTime());
+	if (isLastTopicInThisCategoryIsLaterThanParentCategoryTopic)
+		topicAfterCurrentLastTopic = lastTopicInThisCategory;
+	return topicAfterCurrentLastTopic;
+}
+/**
+ * process last topic in category and set category last topic value to processed result
+ * @param categoryId
+ * @param currentLastTopic
+ * @return
+ */
+@Transactional
+public ForumTopic processLastTopic(Long categoryId,ForumTopic currentLastTopic){
+	ForumCategory category = forumCategoryRepository.findOne(categoryId);
+	return processLastTopic(category,currentLastTopic);
+}
+
+@Transactional
+public ArrayList<ForumCategory> getRootCategories(){
+	return forumCategoryRepository.findByCategoryIsNull();
 }
 
 

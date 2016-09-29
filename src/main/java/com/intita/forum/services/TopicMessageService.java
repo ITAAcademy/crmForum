@@ -269,7 +269,7 @@ public class TopicMessageService {
 		if (topic==null) return false;
 		return forumTopicService.checkTopicAccessToUser(authentication, topic.getId());
 	}
-	
+	@Transactional
 	public int getTotalMessagesCountByTopicsIds(HashSet<Long> topicIds){
 		if (topicIds.size()<1) return 0;
 		return topicMessageRepository.getMessagesCountInTopics(topicIds);

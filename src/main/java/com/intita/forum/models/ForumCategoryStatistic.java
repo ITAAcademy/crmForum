@@ -1,10 +1,13 @@
 package com.intita.forum.models;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity(name="forum_category_statistic")
 public class ForumCategoryStatistic {
@@ -15,6 +18,10 @@ private int topicsCount;
 private int messagesCount;
 private int categoriesCount;
 
+/**
+ * WARNING. Maybe error hiding
+ */
+//@NotFound(action = NotFoundAction.IGNORE)
 @OneToOne(mappedBy="statistic")
 ForumCategory category;
 public ForumCategory getCategory() {
@@ -30,6 +37,11 @@ public ForumCategoryStatistic(int topicsCount,int categoriesCount,int messagesCo
 	this.topicsCount = topicsCount;
 	this.messagesCount = messagesCount;
 	this.categoriesCount = categoriesCount;
+}
+public void add (ForumCategoryStatistic statistic){
+	this.topicsCount += statistic.topicsCount;
+	this.messagesCount += statistic.messagesCount;
+	this.categoriesCount += statistic.categoriesCount;
 }
 public int getTopicsCount() {
 	return topicsCount;
@@ -54,6 +66,10 @@ public Long getId() {
 }
 public void setId(Long id) {
 	this.id = id;
+}
+@Override
+public String toString(){
+	return "categories:"+categoriesCount+" topics:"+topicsCount+" messages:"+messagesCount;
 }
 
 }
