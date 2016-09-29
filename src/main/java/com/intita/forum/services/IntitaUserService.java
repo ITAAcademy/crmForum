@@ -125,7 +125,7 @@ public class IntitaUserService {
 	}
 	@Transactional
 	public boolean isAdmin(Long id){
-		if(usersRepo.findInAdminTable(id) != null)
+		if(id != null && usersRepo.findInAdminTable(id) != null)
 			return true;
 		return false;
 	}

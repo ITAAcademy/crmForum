@@ -3,8 +3,8 @@
         <a th:href="@{/}" class="brand-logo"><i class="material-icons"></i>Forum</a>
     </div>
     <div class="col l11 m12 s12">
-        <nav class="light-blue darken-4" style="max-height:64px;    overflow: hidden; box-shadow:none">
-            <span class="breadcrumb-container" style="height: 40px; display: block;position: relative; padding-left: 15px;">
+        <nav class="light-blue darken-4" style="overflow: hidden; box-shadow:none">
+            <span class="breadcrumb-container divided" style="padding-left: 15px;">
                         <a class="breadcrumb" th:href="@{/}"><div>Корінь</div></a>
                             <a th:each="item,itrStat : ${categoriesTree}" data-position="bottom" data-delay="50" th:attr="data-tooltip=${item.name}" class="breadcrumb tooltipped"  th:href="${item.type == T(com.intita.forum.domain.ForumTreeNode.TreeNodeType).CATEGORY} ?  @{/view/category/__${item.id}__} : ( ${item.type == T(com.intita.forum.domain.ForumTreeNode.TreeNodeType).TOPIC} ? (@{/view/topic/__${item.id}__}) : '#')" ><div th:text="${item.name}"></div></a>
                         </span>
@@ -44,7 +44,7 @@ $('.search-container  input')
     })
     .blur(function() {
         $('.search-container').removeClass('focused');
-        $(this).val("");
+     //   $(this).val("");
     })
     .keypress(function(e) {
         if (e.which == 13) {
@@ -71,7 +71,7 @@ $('.search-container  input')
             var link = URL_PREFIX + "view/search/" + id + "/1?type=" + type + "&searchvalue=" + $(e.target).val();
 
 
-            window.location.href = link;
+            window.location.replace(link);
             //window.location.replace(window.location.pathname + "?search=" + $(e.target).val());
         }
     });

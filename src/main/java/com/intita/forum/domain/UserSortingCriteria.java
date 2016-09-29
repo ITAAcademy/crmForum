@@ -249,7 +249,7 @@ public static UserSortingCriteria loadFromCookie(Class classObj,HttpServletReque
 		userCriteria.setSortByField(SortByField.valueOf(sortingCondition));
 	String sortingOrderIsAscendString = CookieHelper.getCookieValue(className+"sorting_order_is_ascend", request);
 	if (sortingOrderIsAscendString!=null && sortingOrderIsAscendString.length()>0){
-		if (sortingOrderIsAscendString=="true")userCriteria.setAscend(true);
+		if (sortingOrderIsAscendString.equals("true")) userCriteria.setAscend(true);
 		else userCriteria.setAscend(false);
 	}
 	return userCriteria;

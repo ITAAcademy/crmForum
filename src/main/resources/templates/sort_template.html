@@ -1,0 +1,34 @@
+<form id="deleteSortForm" method="GET" th:action="@{/operations/clearcookie/sorting_config}"></form>
+<input type="hidden" name="itemType" th:value="${clearType}" form="deleteSortForm"/>
+<div class="configure-head sorting_head hide-me">
+    <form method="post" th:action="${link}">
+        <div class="sorting_menu_button_wrapper">
+            <button form="deleteSortForm" class="btn" type="submit" name="action"><i class="material-icons right">delete</i></button>
+        </div>
+        <div class="tool-bar-wraper no-scroll">
+            <div class="input-field tool-bar-select">
+                <select th:name="${prefix + 'where'}">
+                    <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
+                    <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
+                </select>
+                <label>Показувати елементи за </label>
+            </div>
+            <div class="input-field tool-bar-select">
+                <select th:name="${prefix + 'sort'}">
+                    <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
+                </select>
+                <label>Сортувати за</label>
+            </div>
+            <div class="input-field tool-bar-select">
+                <select th:name="${prefix + 'order'}">
+                    <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
+                </select>
+                <label>Сортувати за</label>
+            </div>
+        </div>
+        <div class="sorting_menu_button_wrapper">
+            <button class="btn" type="submit" name="action"><i class="material-icons right">send</i>
+            </button>
+        </div>
+    </form>
+</div>

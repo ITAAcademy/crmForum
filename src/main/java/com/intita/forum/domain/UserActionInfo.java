@@ -3,16 +3,16 @@ package com.intita.forum.domain;
 import java.util.Date;
 
 public class UserActionInfo {
-private long lastCategoryId;
+private Long lastCategoryId;
 private long lastTopicId;
 private long lastActionTime;
-public static UserActionInfo forTopic(long topicId){
+public static UserActionInfo forTopic(Long topicId){
 	UserActionInfo info = new UserActionInfo();
 	info.lastTopicId = topicId;
 	info.lastActionTime = new Date().getTime();//current date;
 	return info;
 }
-public static UserActionInfo forCategory(long categoryId){
+public static UserActionInfo forCategory(Long categoryId){
 	UserActionInfo info = new UserActionInfo();
 	info.lastCategoryId = categoryId;
 	info.lastActionTime = new Date().getTime();

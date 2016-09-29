@@ -6,16 +6,26 @@ $(document).ready(function() {
         out_duration: 200, // Transition out duration
         starting_top: '4%', // Starting top style attribute
         ending_top: '10px;', // Ending top style attribute
-        ready: function() {}, // Callback for Modal open
+        ready: function() {$('ul.tabs').tabs();}, // Callback for Modal open
         complete: function() {} // Callback for Modal close
     });
-      $('select').material_select();
-       $(".tool-bar-wraper").mousewheel(function(event, delta) {
+    $('select').material_select();
 
-      this.scrollLeft -= (delta * 30);
-    
-      event.preventDefault();
-      debugger;
+    $('.tool-bar-wraper select')
+        .focus(function() {
+            debugger
+            $('.tool-bar-wraper').css("max-height", "400px");
+        })
+        .blur(function() {
+            $('.tool-bar-wraper').css("max-height", "40px");
+        })
 
-   });
+    $(".tool-bar-wraper").mousewheel(function(event, delta) {
+
+        this.scrollLeft -= (delta * 30);
+
+        event.preventDefault();
+        debugger;
+
+    });
 });

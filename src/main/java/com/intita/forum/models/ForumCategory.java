@@ -17,25 +17,32 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 
 @Entity(name="forum_category")
 public class ForumCategory {
 	public ForumCategory(){
-		
+
 	}
 	@Id
 	@GeneratedValue
 	private Long id;
 	
-	public enum CategoryChildrensType {ChildrenCategory,ChildrenTopic};
-private CategoryChildrensType categoryChildrensType;
 private String name;
 private String description;
 private Date date;
 private Long courseModuleId;
 private Boolean isCourseCategory;
+@OneToOne
+private ForumTopic lastTopic;
+@NotFound(action = NotFoundAction.IGNORE)
+@OneToOne
+private ForumCategoryStatistic statistic;
 @ElementCollection(targetClass = IntitaUserRoles.class)
 @Enumerated(EnumType.STRING)
 @CollectionTable(name="forum_categories_roles",joinColumns = {@JoinColumn(name="category_id")}) // use default join column name
@@ -46,9 +53,6 @@ public static ForumCategory createInstance(String name,String description,boolea
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-	if (containSubCategories)
-		instance.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
-	else instance.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
 	instance.date = new Date();
 	return instance;
 }
@@ -57,7 +61,6 @@ public static ForumCategory createInstanceForCourse(String name,String descripti
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-		instance.categoryChildrensType = CategoryChildrensType.ChildrenCategory;
 	instance.date = new Date();
 	instance.courseModuleId = courseId;
 	instance.isCourseCategory=true;
@@ -68,7 +71,6 @@ public static ForumCategory createInstanceForModule(String name,String descripti
 	ForumCategory instance = new ForumCategory();
 	instance.name=name;
 	instance.description=description;
-	instance.categoryChildrensType = CategoryChildrensType.ChildrenTopic;
 	instance.date = new Date();
 	instance.courseModuleId = moduleId;
 	instance.isCourseCategory=false;
@@ -90,15 +92,6 @@ private List<ForumCategory> categories;
 @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
 private List<ForumTopic> topics;
 
-public CategoryChildrensType getCategoryChildrensType() {
-	return categoryChildrensType;
-}
-public boolean isCategoriesContainer(){
-	return categoryChildrensType == CategoryChildrensType.ChildrenCategory;
-}
-public void setCategoryChildrensType(CategoryChildrensType categoryChildrensType) {
-	this.categoryChildrensType = categoryChildrensType;
-}
 public String getName() {
 	return name;
 }
@@ -158,6 +151,22 @@ public Boolean getIsCourseCategory() {
 }
 public void setIsCourseCategory(Boolean isCourseCategory) {
 	this.isCourseCategory = isCourseCategory;
+}
+
+public ForumTopic getLastTopic() {
+	return lastTopic;
+}
+
+public void setLastTopic(ForumTopic lastTopic) {
+	this.lastTopic = lastTopic;
+}
+
+public ForumCategoryStatistic getStatistic() {
+	return statistic;
+}
+
+public void setStatistic(ForumCategoryStatistic statistic) {
+	this.statistic = statistic;
 }
 
 

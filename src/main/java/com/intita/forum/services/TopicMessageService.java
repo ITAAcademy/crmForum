@@ -47,6 +47,9 @@ public class TopicMessageService {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private ForumCategoryStatisticService forumCategoryStatisticService;
 
 	@Value("${forum.messagesCountPerPage}")
 	private int messagesCountPerPage;
@@ -72,10 +75,6 @@ public class TopicMessageService {
 	public TopicMessage getLastMessageByTopic(ForumTopic topic){
 		return topicMessageRepository.findFirstByTopicOrderByDateDesc(topic);
 	}
-	@Transactional(readOnly=true)
-	public ArrayList<TopicMessage> getFirst20TipicMessagesByTopic(ForumTopic topic) {
-		return topicMessageRepository.findFirst20ByTopicOrderByIdDesc(topic);
-	}
 	@Transactional
 	public Page<TopicMessage> getMessagesByTopicId(Long topicId,int page) {
 
@@ -94,6 +93,12 @@ public class TopicMessageService {
 	public boolean addMessage(TopicMessage message) {
 		if (message==null) return false;
 		topicMessageRepository.save(message);
+		Long topicId = message.getTopic().getId();
+		ForumCategory parentCategory = forumTopicService.getTopic(topicId).getCategory();
+		if (parentCategory==null) return true;
+		ArrayList<Long> res = forumCategoryService.getParentCategoriesIdsIncludeTarget(parentCategory);
+		forumCategoryStatisticService.incrementTopicMessagesCount(res);
+		//forumCategoryStatisticService.incrementTopicMessagesCount(categoryId);
 		return true;
 	}
 	@Transactional()
@@ -132,8 +137,9 @@ public class TopicMessageService {
 		{
 			Date msg_date = message.getDate();
 			Date now_date = new Date();
-			System.out.println(msg_date.getTime() - now_date.getTime() + 60000*15);
-			if(msg_date.getTime() - now_date.getTime() + 60000*EDIT_TIME_MINUTES > 0)
+			long timeDelta = now_date.getTime() - msg_date.getTime();
+			//System.out.println("time delta:"+timeDelta);
+			if(timeDelta < 60000*EDIT_TIME_MINUTES)
 				return true;
 		}	
 		return false;
@@ -198,6 +204,7 @@ public class TopicMessageService {
 	public Page<TopicMessage> searchInCategory (ForumCategory categoryObj, String search, int page){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ArrayList<ForumTopic> array = new ArrayList<>();
+		array.addAll(categoryObj.getTopics());
 		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(categoryObj);
 		if(list != null)
 			array.addAll(list);
@@ -216,6 +223,7 @@ public class TopicMessageService {
 	public Page<TopicMessage> searchByTopicNameAndBodyAndAsAndInCategory (String search,ForumCategory category, int page){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ArrayList<ForumTopic> array = new ArrayList<>();
+		array.addAll(category.getTopics());
 		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(category);
 		if(list != null)
 			array.addAll(list);
@@ -227,6 +235,7 @@ public class TopicMessageService {
 	public Page<TopicMessage> searchByTopicNameAsAndInCategory (String search,ForumCategory category, int page){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		ArrayList<ForumTopic> array = new ArrayList<>();
+		array.addAll(category.getTopics());
 		ArrayList<ForumTopic> list = forumCategoryService.getAllInludeSubCategoriesArray(category);
 		if(list != null)
 			array.addAll(list);
@@ -260,7 +269,7 @@ public class TopicMessageService {
 		if (topic==null) return false;
 		return forumTopicService.checkTopicAccessToUser(authentication, topic.getId());
 	}
-	
+	@Transactional
 	public int getTotalMessagesCountByTopicsIds(HashSet<Long> topicIds){
 		if (topicIds.size()<1) return 0;
 		return topicMessageRepository.getMessagesCountInTopics(topicIds);

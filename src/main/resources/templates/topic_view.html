@@ -15,42 +15,7 @@
     <div id="forumcontainer" class="container">
         <div class="wraper row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
-            <div class="configure-head hide-me">
-           <form method="GET" th:unless="${topic==null}" th:action="@{/operations/clearcookie/sorting_config}">
-                 <input type="hidden" name="itemType" value="TopicMessage" /> 
-                    <div class="sort-enter-bnt left">
-                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">delete</i>
-                        </button>
-                    </div>
-            </form>
-                <form method="post" th:unless="${topic==null}" th:action="@{/view/topic/__${topic.id}__}">
-                    <div class="tool-bar-wraper">
-                        <div class="input-field tool-bar-select">
-                            <select name="where">
-                            <option th:each="item : ${sortingMenu['where']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['where']==item.key}">where_menu_item</option>
-                               <!-- <option th:selected="${sortingCriteria!=null and sortingCriteria['where']==0}" value="0">Усі повідомлення</option> -->
-                            </select>
-                            <label>Показувати елементи за </label>
-                        </div>
-                        <div class="input-field tool-bar-select">
-                            <select name="sort">
-                             <option th:each="item : ${sortingMenu['sort']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['sort']==item.key}">sorting_menu_item</option>
-                            </select>
-                            <label>Сортувати за</label>
-                        </div>
-                        <div class="input-field tool-bar-select">
-                            <select name="order">
-                                <option th:each="item : ${sortingMenu['order']}" th:value="${item.key}" th:text="${item.value}" th:selected="${sortingCriteria!=null and sortingCriteria['order']==item.key}">order_menu_item</option>
-                            </select>
-                            <label>Сортувати за</label>
-                        </div>
-                    </div>
-                    <div class="sort-enter-bnt right">
-                        <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <div th:if = "${topic != null}" th:include="sort_template" th:with="prefix = '',clearType='TopicMessage', link=@{'/view/topic/' + ${topic.id}}">...</div>
             <!-- Topic info -->
             <ul class="topic-content">
                 <li class="card-panel row" th:each="message,iterationStatus : ${messages}" th:with="indexCurrentMsg=${currentPage == 1 ? iterationStatus.count : iterationStatus.count == 1 ?  1 :iterationStatus.count+((currentPage-1)*9) + currentPage - 2},postLink='__${config['baseUrl']}____@{/}__view/post/__${message.id}__'" th:id="@{'msg__${message.id}__'}">
@@ -60,8 +25,8 @@
                             <a class="user-name" th:href="@{__${config['baseUrl']}__/profile/__${message.author.id}__}" style="  " th:title="${message.author.getNickName()}">
                                 <div th:text="${message.author.getNickName()}"></div>
                             </a>
-                           <div th:if="${onlineUsers[message.author.id]!=null}">online</div>
-                           <div th:if="${onlineUsers[message.author.id]==null}">offline</div>
+                            <div th:if="${onlineUsers[message.author.id]!=null}">online</div>
+                            <div th:if="${onlineUsers[message.author.id]==null}">offline</div>
                             <ul class="user-contact">
                                 <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
                                 <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__#/newmessages/receiver/}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
@@ -69,7 +34,7 @@
                         </div>
                     </div>
                     <div class="s12 m10 l10 user-msg">
-                        <h4 th:if="${iterationStatus.count == 1}" th:text="${message.topic.name}" style="text-align: center;"></h4>
+                        <h4 th:if="${iterationStatus.count == 1 || blockSearch != null}" th:text="${message.topic.name}" style="text-align: center;"></h4>
                         <p style="text-align: left; padding-left: 20px; font-size: 18px;">
                             <div class="topic_message_text" th:utext="${bbcode.process(message.body)}" th:id="@{'topicMessage__${indexCurrentMsg}__'}" th:attr="messageId=${message.id}"></div>
                             <br/>
@@ -100,7 +65,7 @@
                             <!--Social Separator -->
                             <li th:if="${!user.isAnonymous() &amp;&amp; topic != null}" style="font-size: 33px; line-height: 24px; vertical-align: middle;">|</li>
                             <!--/Social Separator -->
-                            <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger disabled"><i class="material-icons">delete</i></a></li>
+                            <li th:if="${canEditMap.get(message.id)}"><a href="#remove" class="btn-floating red modal-trigger"><i class="material-icons">delete</i></a></li>
                             <li th:if="${canEditMap.get(message.id)}"><a href="#edit00" th:onclick="'runEditPost(' + ${message.id} + ')'" class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
                             <li th:if="${!user.isAnonymous() &amp;&amp; topic != null}"><a class="btn-floating blue" th:onclick="@{'javascript:quotation(\'__${indexCurrentMsg}__\',\'__${message.author.login}__\')'}"><i class="material-icons">email</i></a></li>
                         </ul>

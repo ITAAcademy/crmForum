@@ -20,6 +20,11 @@ public class ModuleService {
 public ArrayList<Module> getAll(){
 	return moduleRepository.findAll();
 }
+	/**
+	 * Problem method
+	 * @param course
+	 * @return
+	 */
 	@Transactional
 	public ArrayList<Module> getAllFromCourse(Course course){
 		return courseModelsRepository.finModulesdByCourseId(course.getId());
