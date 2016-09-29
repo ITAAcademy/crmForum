@@ -129,6 +129,7 @@ public class ForumController {
 		forumCategoryService.updateCategoriesFromCourses();
 		//forumCategoryStatisticService.createEmptyCategoriesStatisticForAllCategories();
 		List<Long> updatedCaegories = forumCategoryStatisticService.updateAllCategoriesStatistic();
+
 		//for (Long categoryId : updatedCaegories)
 		//forumCategoryService.updateLastTopic(category, topic);
 	}
@@ -676,10 +677,10 @@ public class ForumController {
 		addNewMessage(topicText, topic.getId(), request, auth);
 		return new ResponseEntity<Long>(topic.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
 	}
-/*	
+	
 	@ResponseBody
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
-	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
+	@RequestMapping(value="/operations/category/{categoryId}/add_category",method = RequestMethod.POST)
 	public ResponseEntity<Long> addCategory(@RequestParam(value = "category_name") String categoryName, @PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
 		if (categoryName==null || categoryName.length()<=0) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		String referer = request.getHeader("Referer");
@@ -687,11 +688,20 @@ public class ForumController {
 		if (author == null || author.isAnonymous()) return new ResponseEntity<Long>(HttpStatus.UNAUTHORIZED);
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		if (category == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
-		ForumTopic topic = forumCategoryService.u (categoryName,category,author);
-		if (topic == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
-		return new ResponseEntity<Long>(topic.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
+		
+		ForumCategory nCategory = forumCategoryService.update(new ForumCategory());
+		ForumCategoryStatistic statistic = forumCategoryStatisticService.save(new ForumCategoryStatistic());
+		statistic.setCategory(nCategory);
+		nCategory.setStatistic(statistic);//???
+		nCategory.setName(categoryName);
+		nCategory.setCategory(category);
+		forumCategoryService.update(nCategory);
+		forumCategoryStatisticService.save(statistic);//???
+		
+		if (nCategory == null || statistic == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Long>(nCategory.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
 	}
-*/
+
 	@PreAuthorize("@forumTopicService.checkTopicAccessToUser(authentication,#topicId)")
 	@RequestMapping(value="/operations/topic/{topicId}/toggle_pin",method = RequestMethod.POST)
 	public String togglePinTopic(@PathVariable Long topicId,Authentication auth,HttpServletRequest request){

@@ -71,8 +71,8 @@ public class ForumCategoryService {
 	final private Long EDUCATIONAL_CATEGORY_ID = 1L;
 
 @Transactional
-public void update(ForumCategory category){
-	forumCategoryRepository.save(category);
+public ForumCategory update(ForumCategory category){
+	return forumCategoryRepository.save(category);
 }
 public Page<ForumCategory> getAllCategories(int page){
 	return forumCategoryRepository.findAll(new PageRequest(page,categoriesCountForPage)); 

@@ -14,12 +14,12 @@ function topicAdditionFail() {
     Materialize.toast('Не вдалось додати тему', 4000, 'red-toast') // 4000 is the duration of the toast
 }
 
-function topicAdditionSuccess(topicId) {
+function categoryAdditionSuccess(categoryId) {
     Materialize.toast('Категорію успішно додано', 4000, 'green-toast') // 4000 is the duration of the toast
-    GoToUrl(serverPrefix + '/view/topic/' + topicId);
+    GoToUrl(serverPrefix + '/view/category/' + categoryId);
 }
 
-function topicAdditionFail() {
+function categoryAdditionFail() {
     Materialize.toast('Не вдалось додати категорію', 4000, 'red-toast') // 4000 is the duration of the toast
 }
 
@@ -34,7 +34,7 @@ function addCategory(event, url) {
     event.preventDefault();
     for (instance in CKEDITOR.instances)
         CKEDITOR.instances[instance].updateElement();
-    submitForm('#addCategoryForm', url, topicAdditionSuccess, topicAdditionFail);
+    submitForm('#addCategoryForm', url, categoryAdditionSuccess, categoryAdditionFail);
 }
 
 
