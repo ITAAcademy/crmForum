@@ -100,12 +100,12 @@ public ForumCategory getCategoryById(Long id){
  * @param page
  * @return
  */
-public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,IntitaUser user,int page){
+public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> pageObj,Authentication auth,int page){
 	if (pageObj==null)return null;
 	List<ForumCategory> pageContent = pageObj.getContent();
-	List<ForumCategory> accessibleCategoriesList = filterNotAccesibleCategories(pageContent,user);
+	List<ForumCategory> accessibleCategoriesList = filterNotAccesibleCategories(pageContent,auth);
 	for (ForumCategory category : pageContent){
-		if(checkCategoryAccessToUser(user, category.getId())){
+		if(checkCategoryAccessToAuthentication(auth, category.getId())){
 			accessibleCategoriesList.add(category);	
 		}
 	}
@@ -119,11 +119,11 @@ public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
  * @param page
  * @return
  */
-public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,IntitaUser user){
+public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,Authentication auth){
 	if (pageContent==null)return null;
 	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
 	for (ForumCategory category : pageContent){
-		if(checkCategoryAccessToUser(user, category.getId())){
+		if(checkCategoryAccessToAuthentication(auth, category.getId())){
 			accessibleCategoriesList.add(category);	
 		}
 	}
@@ -132,12 +132,12 @@ public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> page
 /**
  * Don't use it . To slow ...
  **/
-public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds,IntitaUser user){
+public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds,Authentication authentication){
 	if (categoriesIds==null)return new HashSet<Long>();
-	if (user==null) return new HashSet<Long>();
+	if (authentication==null) return new HashSet<Long>();
 	HashSet<Long> accessibleCategoriesList = new HashSet<>();
 	for (Long categoryId : categoriesIds){
-		if(checkCategoryAccessToUser(user, categoryId)){
+		if(checkCategoryAccessToAuthentication(authentication, categoryId)){
 			accessibleCategoriesList.add(categoryId);	
 		}
 	}
@@ -156,7 +156,8 @@ public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds
  * @return 
  */
 @Transactional
-public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,IntitaUser user,UserSortingCriteria sortingCriteria,Integer page){
+public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,Authentication auth,UserSortingCriteria sortingCriteria,Integer page){
+	long startTime = new Date().getTime();
 	if (parentCategoryId==null) return new ArrayList<ForumCategory>();
 	ForumCategory rootCategory = forumCategoryRepository.findOne(parentCategoryId);
 	List<ForumCategory> result = null;
@@ -166,6 +167,7 @@ public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,IntitaUser
 			else result = forumCategoryRepository.findByCategory(rootCategory);
 		}
 		else{
+		
 			Session session = sessionFactory.getCurrentSession();
 			String sortingParam = sortingCriteria.getSortingParamNameForClass(ForumCategory.class);
 			String sortingPart = (sortingParam!=null) ? " ORDER BY c."+sortingParam : "";
@@ -180,18 +182,21 @@ public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,IntitaUser
 			query.setParameter("dateParam", sortingCriteria.getDateParam());
 			result = query.list();
 		}
-	return filterNotAccesibleCategories(result,user);
+		long delta = new Date().getTime() - startTime;
+		List<ForumCategory> accessibleCategories = filterNotAccesibleCategories(result,auth);
+		log.info("#a312a delta:"+delta);
+	return accessibleCategories;
 }
 /**
- * Return page with children of category sorted by some fields depends on UserSortingCriteria
+ * SLOW !!!. Return page with children of category sorted by some fields depends on UserSortingCriteria
  * @param id
  * @param user
  * @param sortingCriteria
  * @return
  */
 @Transactional
-public Page<ForumCategory> getSubCategoriesSinglePage(Long id,IntitaUser user,UserSortingCriteria sortingCriteria){
-List<ForumCategory> subCategoriesList = getSubCategoriesList(id,user,sortingCriteria,null);
+public Page<ForumCategory> getSubCategoriesSinglePage(Long id,Authentication auth,UserSortingCriteria sortingCriteria){
+List<ForumCategory> subCategoriesList = getSubCategoriesList(id,auth,sortingCriteria,null);
 if (subCategoriesList==null) 
 	subCategoriesList = new ArrayList<ForumCategory>();
 Page<ForumCategory> result = CustomDataConverters.listToPage(subCategoriesList,0,subCategoriesList.size());
@@ -206,8 +211,8 @@ return result;
  * @return
  */
 @Transactional
-public Page<ForumCategory> getSubCategoriesPage(Long id,int page,IntitaUser user,UserSortingCriteria sortingCriteria){
-List<ForumCategory> subCategoriesList = getSubCategoriesList(id,user,sortingCriteria,null);
+public Page<ForumCategory> getSubCategoriesPage(Long id,int page,Authentication auth,UserSortingCriteria sortingCriteria){
+List<ForumCategory> subCategoriesList = getSubCategoriesList(id,auth,sortingCriteria,null);
 if (subCategoriesList==null) 
 	subCategoriesList = new ArrayList<ForumCategory>();
 Page<ForumCategory> result = CustomDataConverters.listToPage(subCategoriesList,page,categoriesCountForPage,subCategoriesList.size());
@@ -543,21 +548,18 @@ public ArrayList<Long> getParentCategoriesIdsIncludeTarget(ForumCategory categor
 	return categories;
 }
 
-public boolean checkCategoryAccessToUser(Authentication  authentication,Long categoryId){
+public boolean checkCategoryAccessToAuthentication(Authentication  authentication,Long categoryId){
 
-	IntitaUser currentUser =  (IntitaUser) authentication.getPrincipal();
-	return checkCategoryAccessToUser(currentUser,categoryId);
-}
-public boolean checkCategoryAccessToUser(IntitaUser  user,Long categoryId){
-if (user==null || categoryId==null) return false;
+	if (authentication==null || categoryId==null) return false;
 	ForumCategory category = getCategoryById(categoryId);
 	if (category==null) return false;
 	LinkedList<Set<IntitaUserRoles>> demandedRoles = getDemandsForCategory(categoryId);
-	if(intitaUserService.hasAllRolesSets(user.getId(),demandedRoles)){
+	if(intitaUserService.hasAllRolesSetsByAuthentication(authentication,demandedRoles)){
 		return true;
 	}
 	return false;
 }
+
 public LinkedList<Set<IntitaUserRoles>> getDemandsForCategory(Long categoryId){
 	if (categoryId==null)return null;
 	ForumCategory category = getCategoryById(categoryId);

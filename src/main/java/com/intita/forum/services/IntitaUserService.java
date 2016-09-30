@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -207,7 +208,7 @@ public class IntitaUserService {
 		}
 		return false;
 	}
-	public boolean hasAllRolesSets(Long userId,LinkedList<Set<IntitaUserRoles>> demandedRoles){
+	public boolean hasAllRolesSetsByUserId(Long userId,LinkedList<Set<IntitaUserRoles>> demandedRoles){
 		if (demandedRoles==null || demandedRoles.size()<1) return true;
 		Set<IntitaUserRoles> userRoles = getRoles(userId);
 		boolean demandedListSatisfied = true;
@@ -224,6 +225,29 @@ public class IntitaUserService {
 			}
 		}		
 		return demandedListSatisfied;
+	}
+	public static boolean hasAllRolesSetsByAuthentication(Authentication authentication,LinkedList<Set<IntitaUserRoles>> demandedRoles){
+		List<SimpleGrantedAuthority> authorities = (List<SimpleGrantedAuthority>) authentication.getAuthorities();
+		Set<IntitaUserRoles> userRoles = new HashSet<IntitaUserRoles>();
+		for (SimpleGrantedAuthority authority : authorities){
+			IntitaUserRoles role = IntitaUser.IntitaUserRoles.valueOf(authority.getAuthority());
+			userRoles.add(role);
+		}
+		boolean demandedListSatisfied = true;
+		for (Set<IntitaUserRoles> demandedSet : demandedRoles ){
+			if (demandedSet.size()<1)return true;// no demand, so all demands satisfied=)
+			boolean demandedSetSatisfied = false;
+			for(IntitaUserRoles role : demandedSet){
+				if (userRoles.contains(role))demandedSetSatisfied = true;
+				break;
+			}
+			if (!demandedSetSatisfied){
+				demandedListSatisfied = false;
+				break;
+			}
+		}		
+		return demandedListSatisfied;
+		
 	}
 	
 

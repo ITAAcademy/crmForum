@@ -280,7 +280,7 @@ public class ForumController {
 	/*******************************
 	 * Category @RequestMapping
 	 ******************************/
-	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}/{pageOfTopic}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,
 			@PathVariable Long categoryId, @PathVariable int pageOfTopic, HttpServletRequest request,HttpServletResponse response, Authentication auth){
@@ -328,7 +328,7 @@ public class ForumController {
 			totalFuncTime = new Date().getTime() - beginTime;
 			ModelMap categoriesModelMap = new ModelMap();
 			Page<ForumCategory> categories = null;
-			if (categoryId!=null)categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,user,categoriesSortingCriteria);
+			if (categoryId!=null)categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,auth,categoriesSortingCriteria);
 			else categories = forumCategoryService.getMainCategories(0);
 			totalFuncTime = new Date().getTime() - beginTime;
 			categoriesModelMap.addAttribute("items",categories);
@@ -374,12 +374,12 @@ public class ForumController {
 			totalFuncTime = new Date().getTime() - beginTime;
 		return model;
 	}
-	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.GET)
 	public ModelAndView viewCategoryByIdMapping(RedirectAttributes redirectAttributes, @RequestParam(required = false) String search,@PathVariable Long categoryId, HttpServletRequest requset,HttpServletResponse response, Authentication principal){
 		return viewCategoryById(redirectAttributes, search, categoryId, 1, requset,response, principal,null,null);
 	}
-	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.POST)
 	public ModelAndView viewCategoryByIdMappingPost(@RequestParam Map<String,String> requestParams,RedirectAttributes redirectAttributes,@PathVariable Long categoryId, HttpServletRequest request,HttpServletResponse response, 
 		Authentication principal){
@@ -430,7 +430,7 @@ public class ForumController {
 		public final static int TOPIC = 1 << 1;
 		public final static int CATEGORY_NAME = 1 << 2;
 	}
-	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/view/search/{categoryId}/{page}",method = RequestMethod.GET)
 	public ModelAndView viewSearch(@RequestParam(name="searchvalue") String searchValue,@RequestParam(name="type") int type, @PathVariable Long categoryId, @PathVariable int page, HttpServletRequest request, Authentication auth){
 		ModelAndView model = new ModelAndView("topic_view");
@@ -659,7 +659,7 @@ public class ForumController {
 
 
 	@ResponseBody
-	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/operations/category/{categoryId}/add_topic",method = RequestMethod.POST)
 	public ResponseEntity<Long> addTopic(@RequestParam(value = "topic_name") String topicName,@RequestParam(value = "topic_text") String topicText,@PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
 		if (topicName==null || topicName.length()<=0 || topicText==null || topicText.length()<=0) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
@@ -675,7 +675,7 @@ public class ForumController {
 	}
 	
 	@ResponseBody
-	@PreAuthorize("@forumCategoryService.checkCategoryAccessToUser(authentication,#categoryId)")
+	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/operations/category/{categoryId}/add_category",method = RequestMethod.POST)
 	public ResponseEntity<Long> addCategory(@RequestParam(value = "category_name") String categoryName, @PathVariable Long categoryId,Authentication auth,HttpServletRequest request){
 		if (categoryName==null || categoryName.length()<=0) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);

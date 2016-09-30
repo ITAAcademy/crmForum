@@ -2,8 +2,10 @@ package com.intita.forum.models;
 
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,12 +20,12 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.services.IntitaUserService;
 
 /**
@@ -67,7 +69,7 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 	private int role;
 
 
-
+	
 	/*@OneToMany(mappedBy = "teacher_id", fetch = FetchType.LAZY)
 	private List<IntitaConsultation> consultantedConsultation = new ArrayList<>();
 

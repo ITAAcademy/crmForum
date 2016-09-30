@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -22,6 +23,7 @@ import com.intita.forum.util.ProfanityChecker;
  * @author Nicolas Haiduchok
  */
 @Configuration
+@EnableAspectJAutoProxy//for TEST purposes to check functions run time
 public class ChatConfig {
 
 	private static final int MAX_PROFANITY_LEVEL = 5;
