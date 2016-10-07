@@ -44,4 +44,8 @@ public interface IntitaUserRepository extends CrudRepository<IntitaUser, Long> {
   
   @Query(value = "SELECT * FROM user_student WHERE id_user = ?1 LIMIT 1", nativeQuery = true)
   Object findInStudentTable(Long userId);
+  
+  @Query(value = "SELECT * FROM user_trainer WHERE id_user = ?1 LIMIT 1", nativeQuery = true)
+  Object findInTrainerTable(Long userId);
+  
 }

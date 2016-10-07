@@ -1,5 +1,6 @@
 package com.intita.forum.config;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,9 +12,8 @@ import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.context.request.RequestContextListener;
-import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
 import com.intita.forum.domain.SessionProfanity;
 import com.intita.forum.event.ParticipantRepository;
@@ -32,6 +32,10 @@ public class ChatConfig {
 	@Description("Keeps connected users")
 	public ParticipantRepository participantRepository() {
 		return new ParticipantRepository();
+	}
+	@Bean
+	public StringHttpMessageConverter stringHttpMessageConverter() {
+	    return new StringHttpMessageConverter(Charset.forName("UTF-8"));
 	}
 
 	@Bean

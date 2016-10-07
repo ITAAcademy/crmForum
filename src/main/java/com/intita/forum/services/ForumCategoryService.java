@@ -264,6 +264,8 @@ public void initCategoriesByRoles(){
 	final String ROLES_TENANTS_CATEGORY_NAME = "Тенанти";
 	final String ROLES_CONTENT_MANAGER_CATEGORY_NAME = "Контент менеджери";
 	
+	final String ROLES_TRAINERS_CATEGORY_NAME = "Тренери";
+	final String ROLES_CONSULTANTS_CATEGORY_NAME = "Консультанти";
 	
 	/*ForumCategory roleCategory = null;
 	ArrayList<ForumCategory> categories = forumCategoryRepository.findByNameAndCategoryIdWhereDateEqualMinDate(ROLES_CATEGORY_NAME,
@@ -274,22 +276,18 @@ public void initCategoriesByRoles(){
 	if (roleCategory == null)
 		roleCategory = ForumCategory.createInstance(ROLES_CATEGORY_NAME,"для адміністраторів, бухгалтерів, вчителів",true);
 	roleCategory = forumCategoryRepository.save(roleCategory);*/
-	ForumCategory roleCategory = getOrCreateForumCategory(ROLES_CATEGORY_NAME,null,"для адміністраторів, бухгалтерів, вчителів",true);
-	
+	ForumCategory roleCategory = getOrCreateForumCategory(ROLES_CATEGORY_NAME,null,"для адміністраторів, бухгалтерів, вчителів",true);	
 	//ForumCategory adminCategory = ForumCategory.createInstance(ROLES_ADMINISTRATORS_CATEGORY_NAME,"Для адмінчиків",false);
 	ForumCategory adminCategory = getOrCreateForumCategory(ROLES_ADMINISTRATORS_CATEGORY_NAME,roleCategory,"Для адмінчиків",false,IntitaUserRoles.ADMIN);
-	
 	//ForumCategory accountantCategory = ForumCategory.createInstance(ROLES_ACCOUNTANTS_CATEGORY_NAME,"Для бухгалтерів",false);
 	ForumCategory accountantCategory =  getOrCreateForumCategory(ROLES_ACCOUNTANTS_CATEGORY_NAME,roleCategory,"Для бухгалтерів",false,IntitaUserRoles.ACCOUNTANT);
-
 	//ForumCategory teacgersCategory =  ForumCategory.createInstance(ROLES_TEACHERS_CATEGORY_NAME,"Для вчителів",false);
 	ForumCategory teacgersCategory =  getOrCreateForumCategory(ROLES_TEACHERS_CATEGORY_NAME,roleCategory,"Для вчителів",false,IntitaUserRoles.TEACHER);
-
 	ForumCategory studentsCategory =  getOrCreateForumCategory(ROLES_STUDENTS_CATEGORY_NAME,roleCategory,"Для студентів",false,IntitaUserRoles.STUDENT);
-	
 	ForumCategory tenantsCategory =  getOrCreateForumCategory(ROLES_TENANTS_CATEGORY_NAME,roleCategory,"Для тенантів",false,IntitaUserRoles.TENANT);
-
 	ForumCategory conentsManagersCategory =  getOrCreateForumCategory(ROLES_CONTENT_MANAGER_CATEGORY_NAME,roleCategory,"Для контент менеджерів",false,IntitaUserRoles.CONTENT_MANAGER);
+	ForumCategory trainersCategory =  getOrCreateForumCategory(ROLES_TRAINERS_CATEGORY_NAME,roleCategory,"Для тренерів",false,IntitaUserRoles.TRAINER);
+	ForumCategory consultantsCategory =  getOrCreateForumCategory(ROLES_CONSULTANTS_CATEGORY_NAME,roleCategory,"Для консультантів",false,IntitaUserRoles.CONSULTANT);
 }
 /**
  * add new category to database basic on course data

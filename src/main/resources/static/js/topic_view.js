@@ -11,7 +11,9 @@ var initMessages = function(editor) {
 }
 
 function runEditPost(idPost) {
-    $.post(URL_PREFIX + "operations/message/" + idPost + "/get", function(data) {
+$.ajax({
+
+type: "POST", url: URL_PREFIX + "operations/message/" + idPost + "/get", success: function(data) {
             CKEDITOR.instances["ckeditor_edit"].setData(data, {
                 callback: function() {
                     CKEDITOR.instances.ckeditor_edit.setMode('source');
@@ -23,10 +25,9 @@ function runEditPost(idPost) {
             $("#edit").openModal();
             if (typeof CKEDITOR.instances["ckeditor_edit"].outdent != 'undefined')
                 CKEDITOR.instances["ckeditor_edit"].outdent.exec();
-        })
-        .fail(function() {
+        }
 
-        });
+});
 }
 
 function runUpdatePost() {

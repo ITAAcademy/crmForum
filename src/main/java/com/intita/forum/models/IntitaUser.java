@@ -35,7 +35,7 @@ import com.intita.forum.services.IntitaUserService;
 @Entity(name="user")
 public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUser>{
 	private static final long serialVersionUID = -532710433531902917L;
-	public enum IntitaUserRoles  {ADMIN,ACCOUNTANT,STUDENT,TEACHER,USER,TENANT,CONTENT_MANAGER};
+	public enum IntitaUserRoles  {ADMIN,ACCOUNTANT,STUDENT,TEACHER,USER,TENANT,CONTENT_MANAGER,TRAINER,CONSULTANT};
 	@Transient
 	@Autowired
 	IntitaUserService intitaUserService;

@@ -152,6 +152,10 @@ public class IntitaUserService {
 			roles.add(IntitaUserRoles.ACCOUNTANT);
 		if(usersRepo.findInStudentTable(id) != null)
 			roles.add(IntitaUserRoles.STUDENT);
+		if(usersRepo.findInTrainerTable(id) != null)
+			roles.add(IntitaUserRoles.TRAINER);
+		if(usersRepo.findInConsultantTable(id) != null)
+			roles.add(IntitaUserRoles.CONSULTANT);
 		return roles;
 	}
 

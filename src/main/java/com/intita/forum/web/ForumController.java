@@ -712,15 +712,16 @@ public class ForumController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value="/operations/message/{messageId}/get",method = RequestMethod.POST)
-	public String getMsg(@PathVariable("messageId") Long msgID, Authentication auth,HttpServletRequest request){
+	@RequestMapping(value="/operations/message/{messageId}/get",method = RequestMethod.POST,produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> getMsg(@PathVariable("messageId") Long msgID, Authentication auth,HttpServletRequest request){
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		if(user.isAnonymous())
-			return "null";//need return code
+			return new ResponseEntity<String>("null",HttpStatus.OK);//need return code
 		TopicMessage msg = topicMessageService.getMessage(msgID);
 		if(msg == null /*|| !msg.getAuthor().equals(user)*/)
-			return "null";//need return code
-		return msg.getBody();
+			return new ResponseEntity<String>("null",HttpStatus.OK);//need return code
+		String messageBody = msg.getBody();
+		 return new ResponseEntity<String>(messageBody,HttpStatus.OK);
 	}
 	@ResponseBody
 	@RequestMapping(value="/operations/message/{messageId}/update",method = RequestMethod.POST)
