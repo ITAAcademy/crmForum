@@ -89,7 +89,7 @@
 		<code name="size">
 		<pattern ignoreCase="true">[size=<var name="size" inherit="true" />]<var name="text" inherit="true" />[/size]</pattern>
 		<template>
-		    	&lt;span style=&quot;font-size:<var name="size"/>;%&quot;&gt;<var name="text"/>&lt;/span&gt;
+		    	&lt;span style=&quot;font-size:<var name="size"/>%&quot;&gt;<var name="text"/>&lt;/span&gt;
 		</template>
 	</code>
 		<code name="img">

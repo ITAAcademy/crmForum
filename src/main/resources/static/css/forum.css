@@ -16,7 +16,6 @@ body {
     overflow-x: hidden;
 }
 
-
 #forumcontainer {
     height: 1px;
     min-height: 100%;
@@ -214,9 +213,11 @@ blockquote {
 .cke_editable {
     padding: 20px;
 }
-.topic_message_text{
+
+.topic_message_text {
     overflow: hidden;
 }
+
 .topic_message_text ul,
 .cke_editable ul {
     padding-left: 40px;
@@ -335,14 +336,13 @@ a.redirect {
 .cke_editable.cke_editable_themed.cke_contents_ltr img,
 .topic_message_text img {
     height: auto;
-    width: 400px;
+    max-width: 400px;
 }
 
 #cke_ckeditor img {
     max-height: 200px;
     max-width: 400px;
 }
-
 
 .pagination {
     text-align: center;
@@ -390,7 +390,7 @@ a.redirect {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
-.topic-divided{
+.topic-divided {
     height: 24px;
     display: block;
     position: relative;
@@ -399,6 +399,5 @@ a.redirect {
     padding-left: 24px;
     color: white;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
-    z-index: 1;  
+    z-index: 1;
 }
-
