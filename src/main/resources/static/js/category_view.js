@@ -49,21 +49,24 @@ $(document).ready(function() {
         checkSubmitAvailable();
     });
     $('.topic-divided')
-    .click(function(e) {
-        var target = $(this).attr("target");
-        var neighbor = $(this).attr("neighbor");
-        var targetElm =  $('#' + target);
-        targetElm.toggleClass('hide-me')
-        if(targetElm.hasClass('hide-me'))
-            targetElm.removeClass('half');
-        else
-            targetElm.addClass('half');
-        var neighborElm = $('#' + neighbor);
-        if(!neighborElm.hasClass('hide-me'))
-            neighborElm.toggleClass('half');
-        
-        e.stopPropagation();
-    });
+        .click(function(e) {
+            var target = $(this).attr("target");
+            var neighbor = $(this).attr("neighbor");
+            var targetElm = $('#' + target);
+            var neighborElm = $('#' + neighbor);
+
+            targetElm.toggleClass('hide-me')
+            if (targetElm.hasClass('hide-me')) {
+                targetElm.removeClass('half');
+                neighborElm.removeClass('half');
+            } else {
+                if (!neighborElm.hasClass('hide-me')) {
+                    targetElm.addClass('half');
+                    neighborElm.addClass('half');
+                }
+            }
+            e.stopPropagation();
+        });
 
 
     /*var submitButton = $('#addTopicButton');
