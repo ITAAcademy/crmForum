@@ -113,11 +113,11 @@ public class ForumController {
 	EntityManager entityManager;
 
 	private static final String KEFIRCONFIG_PATH = "bbcode/kefirconfig.xml";
-	
+
 	private static int MAXIMAL_USER_INACTIVE_TIME_MINUTES = 2; 
 	private TextProcessor bbCodeProcessor = null;
 	private BBProcessorFactory processorFactory;
-	
+
 	private HashMap<Long,UserActionInfo> onlineUsersActivity = new HashMap<Long,UserActionInfo>() ;
 	@PostConstruct
 	private void initTextProcessoe() {
@@ -287,8 +287,8 @@ public class ForumController {
 		return viewCategoryById(redirectAttributes,search,categoryId,pageOfTopic,request,response,auth,null,null);
 	}
 	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, String search,  Long categoryId, 
-			 int pageOfTopic, HttpServletRequest request,HttpServletResponse response, 
-			 Authentication auth,UserSortingCriteria categoriesSortingCriteria, UserSortingCriteria topicsSortingCriteria){
+			int pageOfTopic, HttpServletRequest request,HttpServletResponse response, 
+			Authentication auth,UserSortingCriteria categoriesSortingCriteria, UserSortingCriteria topicsSortingCriteria){
 		long beginTime = new Date().getTime();
 		long totalFuncTime = beginTime;
 		int currentLogString = 0;
@@ -299,16 +299,16 @@ public class ForumController {
 			return new ModelAndView("redirect:" + "/view/search/" + categoryId + "/1");
 		}
 		totalFuncTime = new Date().getTime() - beginTime;
-		
+
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView model = new ModelAndView();
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		if (user!=null){		
 			model.addObject("user", (IntitaUser)auth.getPrincipal());
 			onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
-			}
+		}
 		totalFuncTime = new Date().getTime() - beginTime;
-		
+
 		model.addObject("currentCategory",category);		
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
@@ -319,59 +319,59 @@ public class ForumController {
 		model.addObject("bbcode", getTextProcessorInstance(request));
 		totalFuncTime = new Date().getTime() - beginTime;
 		//Categories model configuring
-			if (categoriesSortingCriteria==null){	
-				categoriesSortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
-			}
-			else{
-				categoriesSortingCriteria.saveToCookie(ForumCategory.class, request,response);
-			}
-			totalFuncTime = new Date().getTime() - beginTime;
-			ModelMap categoriesModelMap = new ModelMap();
-			Page<ForumCategory> categories = null;
-			if (categoryId!=null)categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,auth,categoriesSortingCriteria);
-			else categories = forumCategoryService.getMainCategories(0);
-			totalFuncTime = new Date().getTime() - beginTime;
-			categoriesModelMap.addAttribute("items",categories);
-			ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
-			for (ForumCategory c : categories){
-				lastTopics.add(c.getLastTopic());
-			}
-			totalFuncTime = new Date().getTime() - beginTime;
-			categoriesModelMap.addAttribute("lastTopics",lastTopics);
-			categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories.getContent()));
-			categoriesModelMap.addAttribute("sortingCriteria",categoriesSortingCriteria.convertToOrdinal());
-			categoriesModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));
-			model.addObject("categoriesModel",categoriesModelMap);
+		if (categoriesSortingCriteria==null){	
+			categoriesSortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
+		}
+		else{
+			categoriesSortingCriteria.saveToCookie(ForumCategory.class, request,response);
+		}
+		totalFuncTime = new Date().getTime() - beginTime;
+		ModelMap categoriesModelMap = new ModelMap();
+		Page<ForumCategory> categories = null;
+		if (categoryId!=null)categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,auth,categoriesSortingCriteria);
+		else categories = forumCategoryService.getMainCategories(0);
+		totalFuncTime = new Date().getTime() - beginTime;
+		categoriesModelMap.addAttribute("items",categories);
+		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
+		for (ForumCategory c : categories){
+			lastTopics.add(c.getLastTopic());
+		}
+		totalFuncTime = new Date().getTime() - beginTime;
+		categoriesModelMap.addAttribute("lastTopics",lastTopics);
+		categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories.getContent()));
+		categoriesModelMap.addAttribute("sortingCriteria",categoriesSortingCriteria.convertToOrdinal());
+		categoriesModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));
+		model.addObject("categoriesModel",categoriesModelMap);
 		// Topics model configuring
-			if (topicsSortingCriteria==null){	
-				topicsSortingCriteria = UserSortingCriteria.loadFromCookie(ForumTopic.class, request);
-			}
-			else{
-				topicsSortingCriteria.saveToCookie(ForumTopic.class,request, response);
-			}
-			totalFuncTime = new Date().getTime() - beginTime;
-			Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, pageOfTopic-1,topicsSortingCriteria);
-			int pagesCount = topics.getTotalPages();
-			if(pagesCount<1)pagesCount=1;
-			ArrayList<TopicMessage> lastMessages = new ArrayList<TopicMessage>();
-			for (ForumTopic t : topics){
-				TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
-				lastMessages.add(lastMessage);
-			}
-			totalFuncTime = new Date().getTime() - beginTime;
-			ModelMap topicsModelMap = new ModelMap();
-			topicsModelMap.addAttribute("lastMessages",lastMessages);
-			topicsModelMap.addAttribute("items",topics);
-			
-			List<ForumTopic> pageTopics = topics.getContent();
-			topicsModelMap.addAttribute("statistic",forumTopicService.getTopicsStatistic(pageTopics));
-			topicsModelMap.addAttribute("sortingCriteria",topicsSortingCriteria.convertToOrdinal());
-			topicsModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class,forumLangService.getLocalization()));
-			totalFuncTime = new Date().getTime() - beginTime;
-			model.addObject("currentPage",pageOfTopic);
-			model.addObject("pagesCount",pagesCount);
-			model.addObject("topicsModel",topicsModelMap);
-			totalFuncTime = new Date().getTime() - beginTime;
+		if (topicsSortingCriteria==null){	
+			topicsSortingCriteria = UserSortingCriteria.loadFromCookie(ForumTopic.class, request);
+		}
+		else{
+			topicsSortingCriteria.saveToCookie(ForumTopic.class,request, response);
+		}
+		totalFuncTime = new Date().getTime() - beginTime;
+		Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, pageOfTopic-1,topicsSortingCriteria);
+		int pagesCount = topics.getTotalPages();
+		if(pagesCount<1)pagesCount=1;
+		ArrayList<TopicMessage> lastMessages = new ArrayList<TopicMessage>();
+		for (ForumTopic t : topics){
+			TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
+			lastMessages.add(lastMessage);
+		}
+		totalFuncTime = new Date().getTime() - beginTime;
+		ModelMap topicsModelMap = new ModelMap();
+		topicsModelMap.addAttribute("lastMessages",lastMessages);
+		topicsModelMap.addAttribute("items",topics);
+
+		List<ForumTopic> pageTopics = topics.getContent();
+		topicsModelMap.addAttribute("statistic",forumTopicService.getTopicsStatistic(pageTopics));
+		topicsModelMap.addAttribute("sortingCriteria",topicsSortingCriteria.convertToOrdinal());
+		topicsModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class,forumLangService.getLocalization()));
+		totalFuncTime = new Date().getTime() - beginTime;
+		model.addObject("currentPage",pageOfTopic);
+		model.addObject("pagesCount",pagesCount);
+		model.addObject("topicsModel",topicsModelMap);
+		totalFuncTime = new Date().getTime() - beginTime;
 		return model;
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
@@ -382,37 +382,37 @@ public class ForumController {
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/view/category/{categoryId}",method = RequestMethod.POST)
 	public ModelAndView viewCategoryByIdMappingPost(@RequestParam Map<String,String> requestParams,RedirectAttributes redirectAttributes,@PathVariable Long categoryId, HttpServletRequest request,HttpServletResponse response, 
-		Authentication principal){
+			Authentication principal){
 		boolean isCategoriesCriteriaSet = true, isTopicsCriteriaSet = true;
 		String search = requestParams.get("search");
 		Integer categoriesWhere = null,categoriesSort=null,topicsWhere=null,topicsSort=null;
 		Boolean categoriesOrder=null,topicsOrder=null;
 		try{
-		 categoriesWhere = Integer.parseInt(requestParams.get("categories_where"));
-		 categoriesSort = Integer.parseInt(requestParams.get("categories_sort"));
-		 categoriesOrder = Integer.parseInt(requestParams.get("categories_order")) > 0 ;
+			categoriesWhere = Integer.parseInt(requestParams.get("categories_where"));
+			categoriesSort = Integer.parseInt(requestParams.get("categories_sort"));
+			categoriesOrder = Integer.parseInt(requestParams.get("categories_order")) > 0 ;
 		}
 		catch(NumberFormatException e){
 			log.error(e.getMessage());
 			isCategoriesCriteriaSet = false;
 		}
 		try{
-		 topicsWhere = Integer.parseInt(requestParams.get("topics_where"));
-		 topicsSort = Integer.parseInt(requestParams.get("topics_sort"));
-		 topicsOrder = Integer.parseInt(requestParams.get("topics_order")) > 0;
+			topicsWhere = Integer.parseInt(requestParams.get("topics_where"));
+			topicsSort = Integer.parseInt(requestParams.get("topics_sort"));
+			topicsOrder = Integer.parseInt(requestParams.get("topics_order")) > 0;
 		}
 		catch(NumberFormatException e){
 			log.error(e.getMessage());
 			isTopicsCriteriaSet = false;
 		}
-		
+
 		UserSortingCriteria categoriesCriteria = null,topicsCriteria=null;
 		if (isCategoriesCriteriaSet)
 			categoriesCriteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(categoriesWhere),SortByField.fromInteger(categoriesSort),categoriesOrder);
 		if (isTopicsCriteriaSet)
 			topicsCriteria = new UserSortingCriteria(ShowItemsCriteria.fromInteger(topicsWhere),SortByField.fromInteger(topicsSort),topicsOrder);
-		
-		
+
+
 		return viewCategoryById(redirectAttributes, search, categoryId, 1, request,response, principal,categoriesCriteria,topicsCriteria);
 	}
 	/******************************
@@ -471,8 +471,8 @@ public class ForumController {
 		model.addObject("currentPage",page);
 		IntitaUser user = (IntitaUser)auth.getPrincipal();
 		if(user !=null){
-		onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
-		model.addObject("user", user);
+			onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
+			model.addObject("user", user);
 		}
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
@@ -524,7 +524,7 @@ public class ForumController {
 			@RequestParam(required = false) String search, @PathVariable Long topicId,HttpServletRequest request, HttpServletResponse response,Authentication auth,
 			@RequestParam(required = false) int where,@RequestParam(required = false) int sort,
 			@RequestParam(required = false) Boolean order){
-	return viewTopicByIdMappingPostWithPage(redirectAttributes,search,topicId,1,request,response,auth,where,sort,order);
+		return viewTopicByIdMappingPostWithPage(redirectAttributes,search,topicId,1,request,response,auth,where,sort,order);
 	}
 	public ModelAndView viewTopicById(RedirectAttributes redirectAttributes,  String search,  Long topicId,  int page, HttpServletRequest request,HttpServletResponse response, Authentication auth,UserSortingCriteria sortingCriteria){
 		if(search != null)
@@ -555,8 +555,8 @@ public class ForumController {
 		model.addObject("topic",topic);
 		IntitaUser user = (IntitaUser)auth.getPrincipal();
 		if (user!=null){
-		model.addObject("user", user);
-		onlineUsersActivity.put(user.getId(), UserActionInfo.forTopic(topicId));
+			model.addObject("user", user);
+			onlineUsersActivity.put(user.getId(), UserActionInfo.forTopic(topicId));
 		}
 		CustomPrettyTime p = new CustomPrettyTime(new Locale(getCurrentLang()));
 		model.addObject("prettyTime",p);
@@ -578,21 +578,21 @@ public class ForumController {
 
 		return model;
 	}
-	  @Scheduled(fixedRate = 120000)
-	    public void reportCurrentTime() {
-	      Iterator<Long> i = onlineUsersActivity.keySet().iterator();
-	      while (i.hasNext() ){
-	    	  Long key = i.next();
-	    	  UserActionInfo info = onlineUsersActivity.get(key);
-	    	  long currentTime = new Date().getTime();
-	    	  long delta =  currentTime - info.getLastActionTime();
-	    	  long minutesDelta = CustomDataConverters.millisecondsToMinutes(delta);
-	    	  if (minutesDelta>=MAXIMAL_USER_INACTIVE_TIME_MINUTES){
-	    		  i.remove();
-	    	  }
-	      }
-	    }
-	
+	@Scheduled(fixedRate = 120000)
+	public void reportCurrentTime() {
+		Iterator<Long> i = onlineUsersActivity.keySet().iterator();
+		while (i.hasNext() ){
+			Long key = i.next();
+			UserActionInfo info = onlineUsersActivity.get(key);
+			long currentTime = new Date().getTime();
+			long delta =  currentTime - info.getLastActionTime();
+			long minutesDelta = CustomDataConverters.millisecondsToMinutes(delta);
+			if (minutesDelta>=MAXIMAL_USER_INACTIVE_TIME_MINUTES){
+				i.remove();
+			}
+		}
+	}
+
 	@RequestMapping(value="/operations/clearcookie/sorting_config",method = RequestMethod.GET)
 	public String clearCookiesForSorting( @RequestParam(value="itemType") String itemType,HttpServletResponse response,HttpServletRequest request){
 		String referer = request.getHeader("Referer");
@@ -655,7 +655,7 @@ public class ForumController {
 			//TODO
 		}
 	}
-	
+
 
 
 	@ResponseBody
@@ -673,7 +673,7 @@ public class ForumController {
 		addNewMessage(topicText, topic.getId(), request, auth);
 		return new ResponseEntity<Long>(topic.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
 	}
-	
+
 	@ResponseBody
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")
 	@RequestMapping(value="/operations/category/{categoryId}/add_category",method = RequestMethod.POST)
@@ -684,7 +684,7 @@ public class ForumController {
 		if (author == null || author.isAnonymous()) return new ResponseEntity<Long>(HttpStatus.UNAUTHORIZED);
 		ForumCategory category = forumCategoryService.getCategoryById(categoryId);
 		if (category == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
-		
+
 		ForumCategory nCategory = forumCategoryService.update(new ForumCategory());
 		ForumCategoryStatistic statistic = forumCategoryStatisticService.save(new ForumCategoryStatistic());
 		statistic.setCategory(nCategory);
@@ -693,7 +693,7 @@ public class ForumController {
 		nCategory.setCategory(category);
 		forumCategoryService.update(nCategory);
 		forumCategoryStatisticService.save(statistic);//???
-		
+
 		if (nCategory == null || statistic == null) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		return new ResponseEntity<Long>(nCategory.getId(),HttpStatus.OK);//"redirect:"+"/view/topic/"+
 	}
@@ -721,30 +721,29 @@ public class ForumController {
 		if(msg == null /*|| !msg.getAuthor().equals(user)*/)
 			return new ResponseEntity<String>("null",HttpStatus.OK);//need return code
 		String messageBody = msg.getBody();
-		 return new ResponseEntity<String>(messageBody,HttpStatus.OK);
+		return new ResponseEntity<String>(messageBody,HttpStatus.OK);
 	}
 	@ResponseBody
 	@RequestMapping(value="/operations/message/{messageId}/update",method = RequestMethod.POST)
-	public ResponseEntity<String> getMsg(@PathVariable("messageId") Long msgID,@RequestParam("msg_body") String body,Authentication auth,HttpServletRequest request){
+	public ResponseEntity<String> updateMsg(@PathVariable("messageId") Long msgID,@RequestParam("msg_body") String body,Authentication auth,HttpServletRequest request){
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		if(body==null || body.length()<1)
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		if(user == null || user.isAnonymous())
+		if(user == null || IntitaUser.isAnonymous())
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		TopicMessage msg = topicMessageService.getMessage(msgID);
 		if(msg == null /*|| !msg.getAuthor().equals(user)*/)
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		if(!topicMessageService.canEdit(user, msg))
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		msg.setBody(body);
-		topicMessageService.addMessage(msg);
+		topicMessageService.updateMessage(msg, user, body);
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 
 	@RequestMapping(value="/operations/config/update",method = RequestMethod.POST)
 	public void refreshConfigParameters()
 	{
-	configParamService.refreshCachedConfigFromDb();
+		configParamService.refreshCachedConfigFromDb();
 	}
 
 

@@ -24,7 +24,9 @@ import com.intita.forum.models.ForumCategory;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.TopicMessage;
+import com.intita.forum.models.TopicMessageUpdateInfo;
 import com.intita.forum.repositories.TopicMessageRepository;
+import com.intita.forum.repositories.TopicMessageRepositoryUpdates;
 
 import utils.CustomDataConverters;
 
@@ -35,6 +37,8 @@ public class TopicMessageService {
 
 	@Autowired
 	private TopicMessageRepository topicMessageRepository;
+	@Autowired
+	private TopicMessageRepositoryUpdates topicMessageRepositoryUpdates;
 
 	@Autowired 
 	ForumCategoryService forumCategoryService;
@@ -47,7 +51,7 @@ public class TopicMessageService {
 
 	@Autowired
 	private SessionFactory sessionFactory;
-	
+
 	@Autowired
 	private ForumCategoryStatisticService forumCategoryStatisticService;
 
@@ -89,6 +93,27 @@ public class TopicMessageService {
 		topicMessageRepository.save(topicMessage);
 		return true;
 	}
+	@Transactional()
+	public boolean updateMessage(TopicMessage message, IntitaUser editor, String body) {
+		if (message==null) return false;
+		message.setBody(body);
+	//	message.setDate(new Date());
+		topicMessageRepository.save(message);
+		TopicMessageUpdateInfo updateInfo = message.getUpdateInfo();
+		if(updateInfo == null)
+		{
+			updateInfo = new TopicMessageUpdateInfo(editor, message);
+		}
+		else
+		{
+			updateInfo.setDate(new Date());
+			updateInfo.setEditor(editor);
+		}
+		topicMessageRepositoryUpdates.save(updateInfo);
+		
+		return true;
+	}
+
 	@Transactional()
 	public boolean addMessage(TopicMessage message) {
 		if (message==null) return false;
@@ -165,11 +190,11 @@ public class TopicMessageService {
 			String firstMessageExcludeConditionAppendix = " AND m.id<>"+firstMessage.getId();
 			String wherePart = topicIdConditionPrefix +firstMessageExcludeConditionAppendix+" ";
 			if (whereParam!=null)
-			wherePart += " AND "+ whereParam ;
+				wherePart += " AND "+ whereParam ;
 			String hql = "SELECT m FROM topic_message m " + " "+wherePart+sortingPart;
 			Query query = session.createQuery(hql);
 			if (whereParam!=null)
-			query.setParameter("dateParam", sortingCriteria.getDateParam());
+				query.setParameter("dateParam", sortingCriteria.getDateParam());
 			otherMessages = query.list();
 		}
 		List<TopicMessage> allMessages = new ArrayList<TopicMessage>();
@@ -218,7 +243,7 @@ public class TopicMessageService {
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);
 		return topicMessageRepository.findByBodyLikeAndTopicOrderByDateDesc("%" + search + "%", topic, pageable);
 	}
-	
+
 	@Transactional
 	public Page<TopicMessage> searchByTopicNameAndBodyAndAsAndInCategory (String search,ForumCategory category, int page){
 		PageRequest pageable = new PageRequest(page, messagesCountPerPage);

@@ -47,6 +47,7 @@
                     <a href="#!" th:href="@{'/view/post/__${message.id}__'}" style="position: absolute;bottom: 20px;left: 26px;">
                         <i class="material-icons">grade</i>
                         <i th:text="    №__${indexCurrentMsg}__"></i>
+                        <i th:if="${message.updateInfo != null}" th:text="'    повідомлення відредаговане користувачем ' + ${message.updateInfo.editor.getNickName()} + ' ' + ${prettyTime.format(message.updateInfo.date)}"></i>
                     </a>
                     <!-- Post controll btn -->
                     <div class="fixed-action-btn horizontal post-controll">

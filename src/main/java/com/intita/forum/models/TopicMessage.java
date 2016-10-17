@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,7 +23,6 @@ import org.hibernate.annotations.NotFoundAction;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.intita.forum.jsonview.Views;
-
 
 /**
  * 
@@ -60,6 +60,7 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	@NotFound(action=NotFoundAction.EXCEPTION)
 	private IntitaUser author;
 	
+
 	@ManyToOne(  fetch = FetchType.LAZY )
 	//@NotFound(action=NotFoundAction.IGNORE)
 	private ForumTopic topic;
@@ -72,6 +73,9 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	
 	@JsonView(Views.Public.class)
 	private ArrayList<String> attachedFiles = new ArrayList<String>();
+	
+	@OneToOne(mappedBy="msg",  fetch = FetchType.LAZY )
+	TopicMessageUpdateInfo updateInfo;
 	
 	@Column
 	@JsonView(Views.Public.class)
@@ -106,6 +110,13 @@ public class TopicMessage implements Serializable,Comparable<TopicMessage>  {
 	}
 	public void setDate(Date date) {
 		this.date = date;
+	}
+	
+	public TopicMessageUpdateInfo getUpdateInfo() {
+		return updateInfo;
+	}
+	public void setUpdateInfo(TopicMessageUpdateInfo updateInfo) {
+		this.updateInfo = updateInfo;
 	}
 	@Override
 	public int compareTo(TopicMessage o) {
