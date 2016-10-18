@@ -333,11 +333,15 @@ public class ForumController {
 		totalFuncTime = new Date().getTime() - beginTime;
 		categoriesModelMap.addAttribute("items",categories);
 		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
+		ArrayList<Boolean> lastTopicsAccessibility = new ArrayList<Boolean>();
 		for (ForumCategory c : categories){
 			lastTopics.add(c.getLastTopic());
+			boolean isTopicRoomAccessible = forumCategoryService.checkTopicAccessToAuthentication(auth,c.getLastTopic());
+			lastTopicsAccessibility.add(isTopicRoomAccessible);
 		}
 		totalFuncTime = new Date().getTime() - beginTime;
 		categoriesModelMap.addAttribute("lastTopics",lastTopics);
+		categoriesModelMap.addAttribute("lastTopicsAccessibility",lastTopicsAccessibility);
 		categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories.getContent()));
 		categoriesModelMap.addAttribute("sortingCriteria",categoriesSortingCriteria.convertToOrdinal());
 		categoriesModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));

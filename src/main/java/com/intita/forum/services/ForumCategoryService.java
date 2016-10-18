@@ -545,7 +545,7 @@ public ArrayList<Long> getParentCategoriesIdsIncludeTarget(ForumCategory categor
 	categories.add(category.getId());
 	return categories;
 }
-
+@Transactional
 public boolean checkCategoryAccessToAuthentication(Authentication  authentication,Long categoryId){
 
 	if (authentication==null || categoryId==null) return false;
@@ -556,6 +556,12 @@ public boolean checkCategoryAccessToAuthentication(Authentication  authenticatio
 		return true;
 	}
 	return false;
+}
+@Transactional
+public boolean checkTopicAccessToAuthentication(Authentication authentication,ForumTopic topic){
+	if (topic==null) return false;
+	if (topic.getCategory()==null) return true; // root category is accesible for all users
+	return checkCategoryAccessToAuthentication(authentication,topic.getCategory().getId());
 }
 
 public LinkedList<Set<IntitaUserRoles>> getDemandsForCategory(Long categoryId){
