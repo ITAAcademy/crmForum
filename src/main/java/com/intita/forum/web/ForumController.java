@@ -257,7 +257,7 @@ public class ForumController {
 	@RequestMapping(value="/login", method = RequestMethod.GET)
 	public ModelAndView  getLoginPage(HttpServletRequest request, @RequestParam(required = false) String before,  Model model,Authentication principal) {
 		Authentication auth =  authenticationProvider.autorization(authenticationProvider);
-
+		forumLangService.updateDataFromDatabase();
 		//chatLangService.updateDataFromDatabase();
 		if(before != null)
 		{
