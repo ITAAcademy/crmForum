@@ -22,18 +22,24 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.intita.forum.jsonview.Views;
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 
 @Entity(name="forum_category")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class ForumCategory {
 	public ForumCategory(){
 
 	}
 	@Id
 	@GeneratedValue
-	private Long id;
-	
-private String name;
+	private Long id;	
+	private String name;
 private String description;
 private Date date;
 private Long courseModuleId;

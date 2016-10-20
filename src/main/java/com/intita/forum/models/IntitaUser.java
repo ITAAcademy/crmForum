@@ -2,12 +2,9 @@ package com.intita.forum.models;
 
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,12 +17,13 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.intita.forum.services.IntitaUserService;
 
 /**
@@ -33,6 +31,8 @@ import com.intita.forum.services.IntitaUserService;
  * @author Nicolas Haiduchok, Zinchuk Roman
  */
 @Entity(name="user")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUser>{
 	private static final long serialVersionUID = -532710433531902917L;
 	public enum IntitaUserRoles  {ADMIN,ACCOUNTANT,STUDENT,TEACHER,USER,TENANT,CONTENT_MANAGER,TRAINER,CONSULTANT};
@@ -239,7 +239,6 @@ public class IntitaUser implements UserDetails, Serializable,Comparable<IntitaUs
 			return false;
 		return true;
 	}
-	
 	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
 	private List<TopicMessage> topicMessages = new ArrayList<>();
 	

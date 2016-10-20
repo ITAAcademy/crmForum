@@ -64,6 +64,8 @@ import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.Lecture;
 import com.intita.forum.models.TopicMessage;
+import com.intita.forum.modelswrappers.ForumCategoryJsonWrapper;
+import com.intita.forum.modelswrappers.ForumTopicJsonWrapper;
 import com.intita.forum.models.ForumCategoryStatistic;
 import com.intita.forum.services.ConfigParamService;
 import com.intita.forum.services.ForumCategoryService;
@@ -286,11 +288,18 @@ public class ForumController {
 			@PathVariable Long categoryId, @PathVariable int pageOfTopic, HttpServletRequest request,HttpServletResponse response, Authentication auth){
 		return viewCategoryById(redirectAttributes,search,categoryId,pageOfTopic,request,response,auth,null,null);
 	}
+
+	@RequestMapping(value="/api/category/get/sub_categories",method = RequestMethod.GET)
+	@ResponseBody
+	public List<ForumCategoryJsonWrapper> getSubCategories(@RequestParam(required = false) Long categoryId,Authentication auth,HttpServletRequest request,@RequestParam(defaultValue="1") int page){
+		UserSortingCriteria categoriesSortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
+		List<ForumCategoryJsonWrapper> categories = forumCategoryService.getCategoriesWrapped(auth,categoryId,categoriesSortingCriteria,page-1);
+		return categories;
+	}
+	
 	public ModelAndView viewCategoryById(RedirectAttributes redirectAttributes, String search,  Long categoryId, 
 			int pageOfTopic, HttpServletRequest request,HttpServletResponse response, 
 			Authentication auth,UserSortingCriteria categoriesSortingCriteria, UserSortingCriteria topicsSortingCriteria){
-		long beginTime = new Date().getTime();
-		long totalFuncTime = beginTime;
 		int currentLogString = 0;
 		if(search != null)
 		{
@@ -298,7 +307,6 @@ public class ForumController {
 			redirectAttributes.addAttribute("type", SearchType.CATEGORY);
 			return new ModelAndView("redirect:" + "/view/search/" + categoryId + "/1");
 		}
-		totalFuncTime = new Date().getTime() - beginTime;
 
 		IntitaUser user = (IntitaUser) auth.getPrincipal();
 		ModelAndView model = new ModelAndView();
@@ -307,7 +315,6 @@ public class ForumController {
 			model.addObject("user", (IntitaUser)auth.getPrincipal());
 			onlineUsersActivity.put(user.getId(), UserActionInfo.forCategory(categoryId));
 		}
-		totalFuncTime = new Date().getTime() - beginTime;
 
 		model.addObject("currentCategory",category);		
 		model.addObject("categoriesTree",forumCategoryService.getCategoriesTree(category));
@@ -317,7 +324,6 @@ public class ForumController {
 		model.setViewName("category_view");
 		model.addObject("isAdmin",intitaUserService.isAdmin(user.getId()));
 		model.addObject("bbcode", getTextProcessorInstance(request));
-		totalFuncTime = new Date().getTime() - beginTime;
 		//Categories model configuring
 		if (categoriesSortingCriteria==null){	
 			categoriesSortingCriteria = UserSortingCriteria.loadFromCookie(ForumCategory.class, request);
@@ -325,24 +331,15 @@ public class ForumController {
 		else{
 			categoriesSortingCriteria.saveToCookie(ForumCategory.class, request,response);
 		}
-		totalFuncTime = new Date().getTime() - beginTime;
 		ModelMap categoriesModelMap = new ModelMap();
-		Page<ForumCategory> categories = null;
-		if (categoryId!=null)categories = forumCategoryService.getSubCategoriesSinglePage(categoryId,auth,categoriesSortingCriteria);
-		else categories = forumCategoryService.getMainCategories(0);
-		totalFuncTime = new Date().getTime() - beginTime;
-		categoriesModelMap.addAttribute("items",categories);
-		ArrayList<ForumTopic> lastTopics = new ArrayList<ForumTopic>();
-		ArrayList<Boolean> lastTopicsAccessibility = new ArrayList<Boolean>();
-		for (ForumCategory c : categories){
-			lastTopics.add(c.getLastTopic());
-			boolean isTopicRoomAccessible = forumCategoryService.checkTopicAccessToAuthentication(auth,c.getLastTopic());
-			lastTopicsAccessibility.add(isTopicRoomAccessible);
-		}
-		totalFuncTime = new Date().getTime() - beginTime;
-		categoriesModelMap.addAttribute("lastTopics",lastTopics);
-		categoriesModelMap.addAttribute("lastTopicsAccessibility",lastTopicsAccessibility);
-		categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories.getContent()));
+		/*HashMap<String,List> categoriesAndLastTopicsMap = forumCategoryService.getCategoriesAndLastTopics(auth,categoryId,categoriesSortingCriteria,0);
+		List<ForumCategory> categories = categoriesAndLastTopicsMap.get("categories");
+		categoriesModelMap.addAttribute("items", categories );
+
+		categoriesModelMap.addAttribute("lastTopics",categoriesAndLastTopicsMap.get("lastTopics"));
+		categoriesModelMap.addAttribute("lastTopicsAccessibility",categoriesAndLastTopicsMap.get("lastTopicsAccessibility"));
+		categoriesModelMap.addAttribute("statistic",forumCategoryService.getCategoriesStatistic(categories));
+		*/
 		categoriesModelMap.addAttribute("sortingCriteria",categoriesSortingCriteria.convertToOrdinal());
 		categoriesModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumCategory.class,forumLangService.getLocalization()));
 		model.addObject("categoriesModel",categoriesModelMap);
@@ -353,7 +350,6 @@ public class ForumController {
 		else{
 			topicsSortingCriteria.saveToCookie(ForumTopic.class,request, response);
 		}
-		totalFuncTime = new Date().getTime() - beginTime;
 		Page<ForumTopic> topics = forumTopicService.getAllTopicsSortedByPin(categoryId, pageOfTopic-1,topicsSortingCriteria);
 		int pagesCount = topics.getTotalPages();
 		if(pagesCount<1)pagesCount=1;
@@ -362,7 +358,6 @@ public class ForumController {
 			TopicMessage lastMessage = topicMessageService.getLastMessageByTopic(t);
 			lastMessages.add(lastMessage);
 		}
-		totalFuncTime = new Date().getTime() - beginTime;
 		ModelMap topicsModelMap = new ModelMap();
 		topicsModelMap.addAttribute("lastMessages",lastMessages);
 		topicsModelMap.addAttribute("items",topics);
@@ -371,11 +366,9 @@ public class ForumController {
 		topicsModelMap.addAttribute("statistic",forumTopicService.getTopicsStatistic(pageTopics));
 		topicsModelMap.addAttribute("sortingCriteria",topicsSortingCriteria.convertToOrdinal());
 		topicsModelMap.addAttribute("sortingMenu",UserSortingCriteria.getSortingMenuData(ForumTopic.class,forumLangService.getLocalization()));
-		totalFuncTime = new Date().getTime() - beginTime;
 		model.addObject("currentPage",pageOfTopic);
 		model.addObject("pagesCount",pagesCount);
 		model.addObject("topicsModel",topicsModelMap);
-		totalFuncTime = new Date().getTime() - beginTime;
 		return model;
 	}
 	@PreAuthorize("@forumCategoryService.checkCategoryAccessToAuthentication(authentication,#categoryId)")

@@ -1,8 +1,4 @@
-function toArray(object) {
-    return angular.isArray(object) ? object : Object.keys(object).map(function(key) {
-        return object[key];
-    });
-}
+
 MAX_UPLOAD_FILE_SIZE_BYTES = 100 * 1000 * 1024;
 var MAXIMAL_MESSAGE_SIZE = 1000;
 var daysName = {},

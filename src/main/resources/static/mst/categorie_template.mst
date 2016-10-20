@@ -1,0 +1,47 @@
+    <ul>
+    {{#categories}}
+    <li class="collection-item valign-wrapper row topic-item" onclick="onDivLinkClick(event,'{{../serverPrefix}}/view/category/{{id}}')">
+                    <div class="icon-container">
+                        <i class="medium material-icons">label_outline</i>
+                    </div>
+                    <div class="col s8 m6 topic-info">
+                        <p><a class="topic-name" href="{{../serverPrefix}}/view/category/{{id}}">
+                           {{name}}
+                        </a></p>
+                        <p>{{description}}</p>
+                    </div>
+                    {{#lastTopicExcist}}
+                    <div class="col s4 m2 topic-statistic">
+                        <p>
+                            <a>{{statistic.topicsCount}}</a>
+                            <b>теми</b>
+                        </p>
+                        <p>
+                            <a>{{statistic.messagesCount}}</a>
+                            <b>повідомлень</b>
+                        </p>
+                    </div>
+                    {{/lastTopicExcist}}
+                    <div class="col m0 l4 topic-last">
+                           {{#lastTopicExcist}}
+                            <div class="circle sp img" style="background-image:url({{../serverPrefix}}/images/avatars/{{lastTopic.author.avatar}});" alt=""></div>
+                            <div class="msg">
+                                <p> <span>{{lastTopic.date}}</span></p>
+            <p> <b>Тема: </b>
+               {{#lastTopicAccessible}}
+                <a href="/view/topic/{{lastTopic.id}}">{{lastTopic.name}}</a>    
+                {{/lastTopicAccessible}}
+
+                {{^lastTopicAccessible}}
+                   <span>{{lastTopic.name}}</span>
+                {{/lastTopicAccessible}}
+            </p>
+            <p><b>Автор: </b>
+                <a href="{{../serverPrefix}}/profile/{{lastTopic.author.id}}">{{lastTopic.author.name}}</a>
+            </p>
+        </div>
+           {{/lastTopicExcist}}
+    </div>
+    </li>
+    {{/categories}}
+    </ul>

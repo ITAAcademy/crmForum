@@ -2,12 +2,11 @@ package com.intita.forum.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -27,13 +26,13 @@ import com.intita.forum.domain.ForumTreeNode.TreeNodeType;
 import com.intita.forum.domain.UserSortingCriteria;
 import com.intita.forum.models.Course;
 import com.intita.forum.models.ForumCategory;
+import com.intita.forum.models.ForumCategoryStatistic;
 import com.intita.forum.models.ForumTopic;
 import com.intita.forum.models.IntitaUser;
 import com.intita.forum.models.IntitaUser.IntitaUserRoles;
 import com.intita.forum.models.Module;
-import com.intita.forum.models.ForumCategoryStatistic;
+import com.intita.forum.modelswrappers.ForumCategoryJsonWrapper;
 import com.intita.forum.repositories.ForumCategoryRepository;
-import com.intita.forum.web.ForumController;
 
 import utils.CustomDataConverters;
 
@@ -88,6 +87,9 @@ public ArrayList<Long> getAllCategoriesIds(){
 public Page<ForumCategory> getMainCategories(int page){
 	return forumCategoryRepository.findByCategory(null, new PageRequest(page,categoriesCountForPage));
 }
+public ArrayList<ForumCategory> getMainCategories(){
+	return forumCategoryRepository.findByCategory(null);
+}
 @Transactional
 public ForumCategory getCategoryById(Long id){
 	if (id==null) return null;
@@ -119,7 +121,7 @@ public Page<ForumCategory> filterNotAccesibleCategories(Page<ForumCategory> page
  * @param page
  * @return
  */
-public List<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,Authentication auth){
+public ArrayList<ForumCategory> filterNotAccesibleCategories(List<ForumCategory> pageContent,Authentication auth){
 	if (pageContent==null)return null;
 	ArrayList<ForumCategory> accessibleCategoriesList = new ArrayList<ForumCategory>();
 	for (ForumCategory category : pageContent){
@@ -156,7 +158,7 @@ public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds
  * @return 
  */
 @Transactional
-public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,Authentication auth,UserSortingCriteria sortingCriteria,Integer page){
+public ArrayList<ForumCategory> getSubCategoriesList(Long parentCategoryId,Authentication auth,UserSortingCriteria sortingCriteria,Integer page){
 	long startTime = new Date().getTime();
 	if (parentCategoryId==null) return new ArrayList<ForumCategory>();
 	ForumCategory rootCategory = forumCategoryRepository.findOne(parentCategoryId);
@@ -180,13 +182,37 @@ public List<ForumCategory> getSubCategoriesList(Long parentCategoryId,Authentica
 			Query query = session.createQuery(hql);
 			if (whereParam!=null)
 			query.setParameter("dateParam", sortingCriteria.getDateParam());
+			query.setFirstResult(page*categoriesCountForPage);
+			query.setMaxResults(categoriesCountForPage);
 			result = query.list();
 		}
 		long delta = new Date().getTime() - startTime;
-		List<ForumCategory> accessibleCategories = filterNotAccesibleCategories(result,auth);
+		ArrayList<ForumCategory> accessibleCategories = filterNotAccesibleCategories(result,auth);
 		log.info("#a312a delta:"+delta);
 	return accessibleCategories;
 }
+/**
+ * generate map with categories, last topics and their accesibilities
+ * @param auth
+ * @param categoryId
+ * @param categoriesSortingCriteria
+ * @return map with keys "categories","lastTopics","lastTopicsAccessibility"
+ */
+@Transactional
+public List<ForumCategoryJsonWrapper> getCategoriesWrapped(Authentication auth,Long categoryId,UserSortingCriteria categoriesSortingCriteria,int page){
+	List<ForumCategoryJsonWrapper>  categoriesWrapped = new ArrayList<ForumCategoryJsonWrapper>();
+	ArrayList<ForumCategory> categories = null;
+	if (categoryId!=null)categories = getSubCategoriesList(categoryId,auth,categoriesSortingCriteria,page);
+	else categories = getMainCategories();
+	for (ForumCategory c : categories){
+		ForumCategoryJsonWrapper categoryWrapper = new ForumCategoryJsonWrapper(c);
+		boolean isTopicRoomAccessible = checkTopicAccessToAuthentication(auth,c.getLastTopic());
+		categoryWrapper.setLastTopicAccessible(isTopicRoomAccessible);
+		categoriesWrapped.add(categoryWrapper);
+	}
+return categoriesWrapped;	
+}
+
 /**
  * SLOW !!!. Return page with children of category sorted by some fields depends on UserSortingCriteria
  * @param id

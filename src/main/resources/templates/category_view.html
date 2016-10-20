@@ -3,6 +3,11 @@
 
 <head>
     <title>CrmForum</title>
+    <script th:inline="javascript">
+/*<![CDATA[*/
+    var currentCategory = [[${currentCategory == null ? null : currentCategory.id}]];
+/*]]>*/
+</script>
     <div th:include="includes">...</div>
     <script th:src="@{/libs/xbbcode.js}"></script>
     <script th:src="@{/modules/ckeditor/ckeditor.js}"></script>
@@ -12,10 +17,11 @@
     <script th:src="@{/libs/textchangejquery.js}"></script>
     <script th:src="@{/js/category_view.js}"></script>
     <script th:src="@{/libs/spoiler.js}"></script>
+    <script th:src="@{/libs/handlebars.js}"></script>
 </head>
 
 <body>
-    <div id="forumcontainer" class="container" th:with="showFull=${topicsModel!=null &amp;&amp; categoriesModel!=null &amp;&amp; categoriesModel['items'].getNumberOfElements() > 0 &amp;&amp; topicsModel['items'].getNumberOfElements() > 0}">
+    <div id="forumcontainer" class="container" th:with="showFull=true">
         <div class="wraper fixed row">
             <div th:replace="head_template" th:with="categoriesTree=${categoriesTree}">...</div>
             <div class="ul-container-sh"></div>
@@ -25,54 +31,8 @@
                      <div th:if="${currentCategory!=null}" th:include="sort_template" th:with="sortingCriteria=${categoriesModel['sortingCriteria']},sortingMenu= ${categoriesModel['sortingMenu']},clearType='ForumCategory', prefix='categories_', link=@{/view/category/__${currentCategory.id}__}">...</div>
 
                 <!--/Categories configuration header -->
-            <ul id="categories" th:classappend="${showFull} ? half" class="collection ul-container " th:with="items=${categoriesModel['items']},lastTopics=${categoriesModel['lastTopics']},lastTopicsAccessibility=${categoriesModel['lastTopicsAccessibility']},statistic=${categoriesModel['statistic']}">
+            <ul id="categories" th:classappend="${showFull} ? half" class="collection ul-container">
                 <!--Categories List-->
-                <li th:if="${categoriesModel!=null}" class="collection-item valign-wrapper row topic-item" th:onclick="'javascript:onDivLinkClick(event,\''+${#httpServletRequest.getContextPath()}+'/view/category/'+${category.id}+'\');'" th:each="category,status  : ${items}">
-                    <div class="icon-container">
-                        <i class="medium material-icons">label_outline</i>
-                    </div>
-                    <div class="col s8 m6 topic-info">
-                        <p><a class="topic-name" th:href="@{/view/category/__${category.id}__}" th:text="${category.name}">
-                            Назва розділу
-                        </a></p>
-                        <p th:text="${category.description}">
-                        </p>
-                    </div>
-                    <div th:if="${lastTopics[status.index]!=null}" class="col s4 m2 topic-statistic">
-                        <p>
-                            <a th:text="${statistic[status.index].topicsCount}">13245</a>
-                            <b>теми</b>
-                        </p>
-                        <p>
-                            <a th:text="${statistic[status.index].messagesCount}">54545</a>
-                            <b>повідомлень</b>
-                        </p>
-                    </div>
-                    <div class="col m0 l4 topic-last">
-                        <th:block th:if="${lastTopics[status.index]!=null}">
-                            <div class="circle sp img" th:style="'background-image:url(' + @{__${config['baseUrl']}__/images/avatars/__${lastTopics[status.index].author.avatar}__} + ');'" alt=""></div>
-                            <div class="msg">
-                                <p> <span th:text="${prettyTime.format(lastTopics[status.index].date)}"></span></p>
-            <p> <b>Тема: </b>
-             <th:block th:if="${lastTopicsAccessibility!=null  &amp;&amp; lastTopicsAccessibility.size() > status.index }">
-                <a th:if="${lastTopicsAccessibility[status.index]}" th:href="@{/view/topic/__${lastTopics[status.index].id}__}" th:text="${lastTopics[status.index].name}"></a>
-                 <span th:unless="${lastTopicsAccessibility[status.index]}" th:text="${lastTopics[status.index].name}"></span>
-             </th:block>
-            </p>
-            <p><b>Автор: </b>
-                <a th:href="@{__${config['baseUrl']}__/profile/__${lastTopics[status.index].author.id}__}" th:text="${lastTopics[status.index].author.getNickName()}"></a>
-            </p>
-        </div>
-        </th:block>
-        <th:block th:unless="${lastTopics[status.index]!=null}">
-            <p style="text-align: center;"><b>Топіки відсутні</b></p>
-        </th:block>
-    </div>
-    </li>
-    <li th:if="${categoriesModel==null || items.getNumberOfElements() == 0}" class="collection-item valign-wrapper row topic-item non-click" style="position: relative; display: table; width: 100%;">
-        <span style="display: table-cell; vertical-align: middle; text-align: center; width: 100%; font-size: 38px;
-">Категорії по запиту відсутні</span>
-    </li>
     </ul>
     <!--/Categories List-->
     </span>
@@ -188,7 +148,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button id="addTopicButton" style="" class=" modal-action modal-close waves-effect waves-green btn-flat" value="Додати" th:onclick="@{'javascript:addCategory(event,\'__${#httpServletRequest.getContextPath()}__/operations/category/__${currentCategory.id}__/add_category\')'}">Додати</button>
+            <button id="addCategoryButton" style="" class=" modal-action modal-close waves-effect waves-green btn-flat" value="Додати" th:onclick="@{'javascript:addCategory(event,\'__${#httpServletRequest.getContextPath()}__/operations/category/__${currentCategory.id}__/add_category\')'}">Додати</button>
         </div>
     </form>
   </div>
