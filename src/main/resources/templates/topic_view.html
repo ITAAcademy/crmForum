@@ -28,7 +28,7 @@
                             <div th:if="${onlineUsers[message.author.id]!=null}">online</div>
                             <div th:if="${onlineUsers[message.author.id]==null}">offline</div>
                             <ul class="user-contact">
-                                <li><a th:href="@{__${config['baseUrl']}__/crmChat/#/private_dialog_view/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
+                                <li><a th:href="@{__${config['baseUrl']}__/chat/go/rooms/private/__${message.author.id}__}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Створити чат" class="btn-floating red tooltipped"><i class="material-icons">chat_bubble_outline</i></a></li>
                                 <li><a th:href="@{__${config['baseUrl']}__/cabinet/?scenario=message&amp;receiver=__${message.author.id}__#/newmessages/receiver/}" th:classappend="${user.isAnonymous()} ? disabled" data-position="bottom" data-delay="100" data-tooltip="Відправити приватне повідомлення" class="btn-floating green darken-1 tooltipped"><i class="material-icons">email</i></a></li>
                             </ul>
                         </div>
