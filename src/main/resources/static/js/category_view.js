@@ -85,6 +85,11 @@ function addCategory(event, url) {
         output.append(html);
     }
 
+/*function disableScrollIfCategoriesEmpty(){
+    $('ul#categories').scroll(function(event) {
+   e.preventDefault();
+});
+}*/
 
 $(document).ready(function() {
     var cke = initCkEditor("ckeditor", 200);
@@ -123,13 +128,26 @@ $(document).ready(function() {
 
 
      
-        $('ul#categories').scroll(function(){
+        $('ul#categories').scroll(function(event){
             console.log('windows is scrolled');
         if($('ul#categories').scrollTop()+$('ul#categories').height() >= $('ul#categories').height() - 200 && !categoriesUpdatingInProgress){
 console.log('updating categories records');
-requestCategories(nextPage++);
+requestCategories(nextPage++); 
 }
         });
+
+        var yourElement = $('ul#categories');
+
+yourElement.on('scroll mousewheel wheel DOMMouseScroll', function (e) {
+    var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+
+    if (delta > 0 && $(this).scrollTop() <= 0)
+        return false;
+    if (delta < 0 && $(this).scrollTop() >= this.scrollHeight - $(this).outerHeight())
+        return false;
+
+    return true;
+});
   
         //$('categories')
     /*var submitButton = $('#addTopicButton');
