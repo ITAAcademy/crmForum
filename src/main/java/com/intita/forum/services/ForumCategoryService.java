@@ -159,7 +159,6 @@ public HashSet<Long> filterNotAccesibleCategoriesIds(HashSet<Long> categoriesIds
  */
 @Transactional
 public ArrayList<ForumCategory> getSubCategoriesList(Long parentCategoryId,Authentication auth,UserSortingCriteria sortingCriteria,Integer page){
-	long startTime = new Date().getTime();
 	if (parentCategoryId==null) return new ArrayList<ForumCategory>();
 	ForumCategory rootCategory = forumCategoryRepository.findOne(parentCategoryId);
 	List<ForumCategory> result = null;
@@ -186,9 +185,7 @@ public ArrayList<ForumCategory> getSubCategoriesList(Long parentCategoryId,Authe
 			query.setMaxResults(categoriesCountForPage);
 			result = query.list();
 		}
-		long delta = new Date().getTime() - startTime;
 		ArrayList<ForumCategory> accessibleCategories = filterNotAccesibleCategories(result,auth);
-		log.info("#a312a delta:"+delta);
 	return accessibleCategories;
 }
 /**
